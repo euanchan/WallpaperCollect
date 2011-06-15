@@ -11,6 +11,9 @@ syntax: glob
 *.pdb
 *.manifest.res
 *.manifest
-Debug
-Release
-bin
+*.dll
+*.exp
+*.ilk
+*.lib
+*.exe
+*.dep
