@@ -1,0 +1,16 @@
+syntax: glob
+*.user
+*.suo
+*.ncb
+*.hgignore
+*.hg
+*.htm
+*.pch
+*.obj
+*.idb
+*.pdb
+*.manifest.res
+*.manifest
+Debug
+Release
+bin
