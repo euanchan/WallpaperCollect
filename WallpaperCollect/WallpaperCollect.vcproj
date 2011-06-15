@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="./Inc"
+				AdditionalIncludeDirectories=".\Inc;..\ThirdPart\tinyxml\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;WALLPAPERCOLLECT_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Src\Util.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Src\WallpaperCollect.cpp"
 				>
 			</File>
@@ -206,6 +210,10 @@
 			</File>
 			<File
 				RelativePath=".\Inc\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Inc\Util.h"
 				>
 			</File>
 			<File

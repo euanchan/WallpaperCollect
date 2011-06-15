@@ -9,7 +9,7 @@ public:
 	~CHtmlParse(void);
 	void ResetSrc(const string& htmlSource);
 
-	HtmlPicStruct GetWallpaperImgUrl(const HtmlKeyStruct& key);
+	THtmlPicAtt GetWallpaperImgUrl(const TChildpageKey& key);
 
 private:
 	string   htmlSrc;

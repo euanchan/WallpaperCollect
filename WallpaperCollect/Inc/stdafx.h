@@ -44,7 +44,11 @@
 #include <windows.h>
 
 #include <string>
+#include <vector>
+#include <set>
 using std::string;
+using std::pair;
+using std::vector;
 
 #include "ComDef.h"
 

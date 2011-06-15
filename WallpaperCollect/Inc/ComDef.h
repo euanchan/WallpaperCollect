@@ -10,7 +10,7 @@ typedef struct
 {
 	string picName;
 	string picUrl;
-}HtmlPicStruct;
+}THtmlPicAtt;
 
 typedef struct
 {
@@ -20,7 +20,17 @@ typedef struct
 	string picUrlKey;
 	string picUrlL;
 	string picUrlR;
-}HtmlKeyStruct;
+}TChildpageKey;
 
+typedef struct
+{
+	TChildpageKey child;
+	string nextChildKey;
+	string mainUrl;
+}TSiteInfo;
+
+
+typedef pair<string, TSiteInfo> TSitePair;
+typedef vector<TSitePair>      TSitePairList;
 
 #endif

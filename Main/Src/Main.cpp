@@ -41,14 +41,14 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 void test()
 {
 	char szPath[MAX_PATH] = {0};
-	string strPath;
+	string cachePath;
 	::GetModuleFileName(NULL, szPath, sizeof(szPath));
 	strcpy(strrchr(szPath,'\\'), "\\Cache\\");
-	strPath = szPath;
+	cachePath = szPath;
 
 	CWallpaperCollect wpCol;
 
-	wpCol.SetSite("http://www.deskcity.com");
-	wpCol.SetSaveDir(strPath);
+	wpCol.SetSite("http://www.deskcity.com/");
+	wpCol.SetSaveDir(cachePath);
 	wpCol.ColFromPicViewPage("http://www.deskcity.com/details/show/4074/83985.html");
 }

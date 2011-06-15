@@ -29,6 +29,9 @@ public:
 	bool ColFromPicViewPage(const string& pageUrl);
 
 private:
+	bool LoadConfigFile();
+
+private:
 // 	CWebServer* webServ;
 // 	CHtmlParse* parser;
 	string     siteUrl;  // Ö÷ÓòÃû

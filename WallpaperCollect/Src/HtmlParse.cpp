@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "HtmlParse.h"
+#include "Util.h"
 
 CHtmlParse::CHtmlParse(const string& htmlSource)
 : htmlSrc(htmlSource)
@@ -15,26 +16,20 @@ void CHtmlParse::ResetSrc(const string& htmlSource)
 	htmlSrc = htmlSource;
 }
 
-HtmlPicStruct CHtmlParse::GetWallpaperImgUrl(const HtmlKeyStruct& key)
+THtmlPicAtt CHtmlParse::GetWallpaperImgUrl(const TChildpageKey& key)
 {
-	int pos = htmlSrc.find(key.picNameKey);
-	int picNameL = htmlSrc.find(key.picNameL, pos);
-	int picNameR = htmlSrc.find(key.picNameR, picNameL);
+	size_t pos = htmlSrc.find(key.picNameKey);
+	size_t picNameL = htmlSrc.find(key.picNameL, pos);
+	size_t picNameR = htmlSrc.find(key.picNameR, picNameL);
 	picNameL += key.picNameL.length();
-	HtmlPicStruct htmlPic;
+	THtmlPicAtt htmlPic;
 	htmlPic.picName = htmlSrc.substr(picNameL, picNameR - picNameL);
 
-	int len = ::WideCharToMultiByte(CP_ACP, NULL, 
-		htmlPic.picName.c_str(), htmlPic.picName.length(), NULL,    0 ); 
-	char* nameStr = new char[len + 1];
-	memset(nameStr, 0, len);
-	::WideCharToMultiByte(CP_ACP, NULL, htmlPic.picName.c_str(), 
-		htmlPic.picName.length(), nameStr, len); 
-	nameStr[len]=L'\0 ';
+	htmlPic.picName = UTF82GB(htmlPic.picName);
 
 	pos = htmlSrc.find(key.picUrlKey, picNameR);
-	int picUrlL = htmlSrc.find(key.picUrlL, pos);
-	int picUrlR = htmlSrc.find(key.picUrlR, picUrlL);
+	size_t picUrlL = htmlSrc.find(key.picUrlL, pos);
+	size_t picUrlR = htmlSrc.find(key.picUrlR, picUrlL);
 	picUrlL += key.picUrlL.length();
 	picUrlR += key.picUrlR.length();
 	htmlPic.picUrl = htmlSrc.substr(picUrlL, picUrlR - picUrlL);
