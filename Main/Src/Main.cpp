@@ -41,7 +41,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 void test()
 {
 	char szPath[MAX_PATH] = {0};
-	string cachePath;
+	wstring cachePath;
 	::GetModuleFileName(NULL, szPath, sizeof(szPath));
 	strcpy(strrchr(szPath,'\\'), "\\Cache\\");
 	cachePath = szPath;

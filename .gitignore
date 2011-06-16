@@ -5,6 +5,7 @@ syntax: glob
 *.hgignore
 *.hg
 *.htm
+*.html
 *.pch
 *.obj
 *.idb
@@ -17,3 +18,5 @@ syntax: glob
 *.lib
 *.exe
 *.dep
+Cache
+Log

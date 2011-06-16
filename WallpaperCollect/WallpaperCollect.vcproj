@@ -22,7 +22,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="2"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\Inc;..\ThirdPart\tinyxml\include"
+				AdditionalIncludeDirectories=".\Inc;..\ThirdPart\tinyxml\include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;WALLPAPERCOLLECT_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -119,6 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories=".\Inc;..\ThirdPart\tinyxml\include;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;WALLPAPERCOLLECT_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -179,11 +180,31 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\Src\BasePtr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Src\ComDef.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Src\File.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Src\HtmlParse.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Src\Util.cpp"
+				RelativePath=".\Src\Log.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Src\PathInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Src\Tool.cpp"
 				>
 			</File>
 			<File
@@ -205,7 +226,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Inc\File.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Inc\HtmlParse.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Inc\Log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Inc\MyMacro.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Inc\PathInfo.h"
 				>
 			</File>
 			<File
@@ -213,7 +250,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Inc\Util.h"
+				RelativePath=".\Inc\Tool.h"
 				>
 			</File>
 			<File

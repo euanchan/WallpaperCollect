@@ -7,8 +7,9 @@
 #define WallpaperCollect_API __declspec(dllimport)
 #endif
 
-#include <string>
-using std::string;
+using std::wstring;
+
+class TSiteInfo;
 class WallpaperCollect_API CWallpaperCollect
 {
 public:
@@ -16,7 +17,7 @@ public:
 	~CWallpaperCollect(void);
 
 	void SetSite(const string& url);
-	void SetSaveDir(const string& saveDir);
+	void SetSaveDir(const wstring& saveDir);
 	// bool ParseAndCollect(const char* url);
 
 
@@ -35,6 +36,7 @@ private:
 // 	CWebServer* webServ;
 // 	CHtmlParse* parser;
 	string     siteUrl;  // 主域名
-	string     saveDir;  // 壁纸保存路径
+	wstring     saveDir;  // 壁纸保存路径
+	TSiteInfo* pCurSite;  // 设置siteUrl后更新
 };
 #endif

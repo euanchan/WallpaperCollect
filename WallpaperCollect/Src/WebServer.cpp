@@ -1,4 +1,6 @@
 
+#include  <atlbase.h>
+
 #include "stdafx.h"
 #include "WebServer.h"
 
@@ -6,7 +8,7 @@ IMPLEMENT_DYNAMIC(CWebServer, CWnd)
 
 CWebServer::CWebServer(void)
 {
-	afxCurrentAppName = "WallpaperCollect.dll";
+	afxCurrentAppName = _T("WallpaperCollect.dll");
 }
 
 CWebServer::~CWebServer(void)
@@ -18,10 +20,12 @@ END_MESSAGE_MAP()
 
 
 
-string CWebServer::ColPageSourceHtml(const string& pageUrl)
+string CWebServer::ColPageSourceHtml( const string& pageUrl )
 {
-	std::string htmlStr;
-	CString theUrl = pageUrl.c_str();
+	wstring htmlWStr;
+	string htmlStr;
+	USES_CONVERSION;
+	CString theUrl = A2W(pageUrl.c_str());
 	CInternetSession session;
 	CInternetFile* file = NULL;
 
@@ -45,24 +49,26 @@ string CWebServer::ColPageSourceHtml(const string& pageUrl)
 		while (file->ReadString(somecode) != NULL) 
 		{
 			somecode += "\n";
-			htmlStr += somecode;
+			htmlWStr += somecode;
 		}
+		htmlStr = W2A(htmlWStr.c_str());
+
 		file->Close();
 		delete file;
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	char szPath[MAX_PATH] = {0};
+	wchar szPath[MAX_PATH] = {0};
 	CString strPath;
 	::GetModuleFileName(NULL,szPath,sizeof(szPath));
-	strcpy(strrchr(szPath,'\\'), "\\1.html");
+	wcscpy(wcsrchr(szPath, _T('\\')), _T("\\1.html"));
 	strPath = szPath;
 
 	CStdioFile data;
 	if (data.Open(strPath, CFile::modeCreate | CFile::modeWrite | 
 		CFile::shareDenyWrite | CFile::typeText))
 	{
-		data.WriteString(htmlStr.c_str());
+		data.WriteString(htmlWStr.c_str());
 		data.Close();
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -71,15 +77,18 @@ string CWebServer::ColPageSourceHtml(const string& pageUrl)
 }
 
 
-bool CWebServer::DownLoadFile(const string& url, const string& filePath)
+bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 {
 	bool ret = false;
+
+	USES_CONVERSION;
+	wstring wUrl = A2W(url.c_str());
 	CInternetSession netSess;
 	CHttpFile *pHttpFile = NULL;
 	try
 	{
 		DWORD dwFlag = INTERNET_FLAG_TRANSFER_BINARY|INTERNET_FLAG_DONT_CACHE|INTERNET_FLAG_RELOAD;
-		pHttpFile = (CHttpFile *)netSess.OpenURL(url.c_str(), 1, dwFlag);
+		pHttpFile = (CHttpFile *)netSess.OpenURL(wUrl.c_str(), 1, dwFlag);
 		if (NULL != pHttpFile)
 		{
 			DWORD bufSize = 1024;
@@ -87,7 +96,7 @@ bool CWebServer::DownLoadFile(const string& url, const string& filePath)
 			BYTE buf[1024];
 			int len = 0;
 			CFile file;
-			if (file.Open(_T(filePath.c_str()), CFile::modeCreate | CFile::modeWrite | CFile::typeBinary))
+			if (file.Open(filePath.c_str(), CFile::modeCreate | CFile::modeWrite | CFile::typeBinary))
 			{
 				memset(buf, 0, bufSize);
 				while (true)

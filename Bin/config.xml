@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<wallpapercollection>
-	<wallpapersite>
-		<name>×ÀÃæ³ÇÊÐ</name>
-		<site>http://www.deskcity.com/</site>
-		<htmlpicnamekey>imginfo</htmlpicnamekey>
-		<htmlpicnamel>&lt;strong&lr;</htmlpicnamel>
-		<htmlpicnamer>&lt;/strong&lr;</htmlpicnamer>
-		<htmlpicurlkey>s_img</htmlpicurlkey>
-		<htmlpicurll>src=\&quot;</htmlpicurll>
-		<htmlpicurlr>.jpg</htmlpicurlr>
-	</wallpapersite>
+<WallpaperCollection>
+		<WallpaperSite>
+				<Name>deskcity</Name>
+				<Site>http://www.deskcity.com/</Site>
+				<HtmlPicNameKey>imginfo</HtmlPicNameKey>
+				<HtmlPicNameL>&lt;strong></HtmlPicNameL>
+				<HtmlPicNameR>&lt;/strong></HtmlPicNameR>
+				<HtmlPicUrlKey>s_img</HtmlPicUrlKey>
+				<HtmlPicUrlL>src=&quot;</HtmlPicUrlL>
+				<HtmlPicUrlR>.jpg</HtmlPicUrlR>
+		</WallpaperSite>
 
-</wallpapercollection>
+</WallpaperCollection>

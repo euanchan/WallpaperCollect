@@ -45,12 +45,20 @@
 
 #include <string>
 #include <vector>
-#include <set>
+using std::wstring;
 using std::string;
-using std::pair;
 using std::vector;
 
+
+#include "MyMacro.h"
 #include "ComDef.h"
+
+#pragma warning(disable: 4018)
+#pragma warning(disable: 4244)
+#pragma warning(disable: 4251)
+#pragma warning(disable: 4267)
+#pragma warning(disable: 4311)
+#pragma warning(disable: 4996)
 
 
 // TODO: 在此处引用程序需要的其他头文件
