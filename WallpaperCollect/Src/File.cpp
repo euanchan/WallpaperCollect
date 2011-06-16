@@ -145,7 +145,7 @@ BOOL FileOp::open(const wchar* pFileName,uint8 openMode,uint8 shareMode)
 // 		ZMPathSplit( path, &path );
 // 		BuildDirectory( path );
 	}
-	//m_pFILE = ::CreateFile(pFileName,accessM,shareM,NULL,openM, FILE_ATTRIBUTE_NORMAL, NULL);
+	m_pFILE = ::CreateFile(pFileName,accessM,shareM,NULL,openM, FILE_ATTRIBUTE_NORMAL, NULL);
 	DWORD err = GetLastError();
  
 	return m_pFILE != INVALID_HANDLE_VALUE ;

@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "WebServer.h"
+#include "Tool.h"
 
 IMPLEMENT_DYNAMIC(CWebServer, CWnd)
 
@@ -22,7 +23,7 @@ END_MESSAGE_MAP()
 
 string CWebServer::ColPageSourceHtml( const string& pageUrl )
 {
-	wstring htmlWStr;
+	CString htmlWStr;
 	string htmlStr;
 	USES_CONVERSION;
 	CString theUrl = A2W(pageUrl.c_str());
@@ -42,16 +43,20 @@ string CWebServer::ColPageSourceHtml( const string& pageUrl )
 
 	if (file)
 	{
-		CString  somecode;	//也可采用LPTSTR类型，将不会删除文本中的\n回车符
-
-		// 读写网页文件，直到为空
-		// 如果采用LPTSTR类型，读取最大个数nMax置0，使它遇空字符时结束
-		while (file->ReadString(somecode) != NULL) 
+		char recvBuf[1025] = {0};
+		while (file->Read((void*)recvBuf, 1024) != NULL) 
 		{
-			somecode += "\n";
-			htmlWStr += somecode;
+			htmlStr += recvBuf;
 		}
-		htmlStr = W2A(htmlWStr.c_str());
+		htmlWStr = htmlStr.c_str();  // 存储为本地文件时使用
+		int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, htmlStr.c_str(), -1, NULL, 0);
+		WCHAR *pUnicode = new WCHAR[unicodeLen + 1];
+		memset(pUnicode, 0, (unicodeLen + 1)*sizeof(wchar_t));
+
+		MultiByteToWideChar(CP_UTF8, 0, htmlStr.c_str(), -1, pUnicode, unicodeLen);
+		CString htmlWStrTmp = pUnicode; 
+		delete []pUnicode;
+		htmlStr = W2A(htmlWStrTmp);
 
 		file->Close();
 		delete file;
@@ -61,14 +66,15 @@ string CWebServer::ColPageSourceHtml( const string& pageUrl )
 	wchar szPath[MAX_PATH] = {0};
 	CString strPath;
 	::GetModuleFileName(NULL,szPath,sizeof(szPath));
-	wcscpy(wcsrchr(szPath, _T('\\')), _T("\\1.html"));
+	wcscpy(wcsrchr(szPath, _T('\\')), _T("\\Cache\\1.html"));
 	strPath = szPath;
 
 	CStdioFile data;
 	if (data.Open(strPath, CFile::modeCreate | CFile::modeWrite | 
 		CFile::shareDenyWrite | CFile::typeText))
 	{
-		data.WriteString(htmlWStr.c_str());
+		setlocale(LC_CTYPE, ("chs"));  
+		data.WriteString(htmlWStr);
 		data.Close();
 	}
 	//////////////////////////////////////////////////////////////////////////

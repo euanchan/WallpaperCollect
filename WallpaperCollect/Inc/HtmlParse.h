@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CHTMLPARSE_H
+#define CHTMLPARSE_H
 
 #include "ComDef.h"
 
@@ -14,3 +15,5 @@ public:
 private:
 	string   htmlSrc;
 };
+
+#endif

@@ -8,6 +8,7 @@
 #endif
 
 using std::wstring;
+using std::string;
 
 class TSiteInfo;
 class WallpaperCollect_API CWallpaperCollect

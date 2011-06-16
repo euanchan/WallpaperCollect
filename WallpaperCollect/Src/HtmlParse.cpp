@@ -29,8 +29,6 @@ THtmlPicAttri CHtmlParse::GetWallpaperImgUrl(const TChildpageKey& key)
 	USES_CONVERSION;
 	htmlPic.picName = A2W(picNameStr.c_str());
 
-	//htmlPic.picName = UTF82GB(htmlPic.picName);
-
 	pos = htmlSrc.find(key.picUrlKey, picNameR);
 	size_t picUrlL = htmlSrc.find(key.picUrlL, pos);
 	size_t picUrlR = htmlSrc.find(key.picUrlR, picUrlL);

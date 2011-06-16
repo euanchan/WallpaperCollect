@@ -1,6 +1,7 @@
-#pragma once
-#include "tinyxml.h"
+#ifndef LOG_H
+#define LOG_H
 
+#include "tinyxml.h"
 
 class CLogXml
 {
@@ -19,8 +20,7 @@ public:
 public:
 	~CLogXml(void);
 public:
-	TiXmlDocument m_doc;
-	
+	TiXmlDocument m_doc;	
 	string m_strPath;
 };
 
@@ -72,4 +72,8 @@ public:
 			gLog << DbLog::Time << a << DbLog::Enter << DbLog::Flush;\
 		}
 #define tMainLog( a ) if( gSystem.iNeedLog ){DbLog gLog( TEXT("MainLog.txt") );gLog<<DbLog::Time<<a<<DbLog::Enter<<DbLog::Flush;}
+#endif
+
+
+
 #endif

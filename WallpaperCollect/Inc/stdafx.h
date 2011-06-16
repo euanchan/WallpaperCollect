@@ -59,6 +59,7 @@ using std::vector;
 #pragma warning(disable: 4267)
 #pragma warning(disable: 4311)
 #pragma warning(disable: 4996)
+#pragma warning(disable: 4099)
 
 
 // TODO: 在此处引用程序需要的其他头文件

@@ -95,6 +95,7 @@ bool CWallpaperCollect::LoadConfigFile()
 		bGlobalValueInit = true;
 		Log.Save();
 	}
+	return true;
 }
 
 void CWallpaperCollect::SetSite( const string& url )

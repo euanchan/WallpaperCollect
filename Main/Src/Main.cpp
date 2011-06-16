@@ -40,10 +40,10 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 void test()
 {
-	char szPath[MAX_PATH] = {0};
+	wchar_t szPath[MAX_PATH] = {0};
 	wstring cachePath;
 	::GetModuleFileName(NULL, szPath, sizeof(szPath));
-	strcpy(strrchr(szPath,'\\'), "\\Cache\\");
+	wcscpy(wcsrchr(szPath, '\\'), _T("\\Cache\\"));
 	cachePath = szPath;
 
 	CWallpaperCollect wpCol;
