@@ -10,6 +10,7 @@
 #include "tinyxml.h"
 #include "Log.h"
 #include "Tool.h"
+#include "PathInfo.h"
 
 TSiteList gSiteList;
 CLogXml Log;
@@ -24,6 +25,11 @@ CWallpaperCollect::CWallpaperCollect(void)
 	{
 		Log.Init(L"log");
 		LoadConfigFile();
+		if (gPathInfoPtr == NULL)
+		{
+			gPathInfoPtr = new CPathInfo();
+			gPathInfo.InitPathInfo();
+		}
 	}
 }
 
@@ -57,33 +63,74 @@ bool CWallpaperCollect::LoadConfigFile()
 			if (0 == strcmp(strNodeV.c_str(), "WallpaperSite"))
 			{
 				TSiteInfo  siteInfo;
-				TChildpageKey childKey;
-				TiXmlElement *siteElm = secNode->FirstChildElement();
-				while (siteElm)
+				TiXmlElement *thdNode = secNode->FirstChildElement();
+				while (thdNode)
 				{
-					string childnode = siteElm->Value();
-					if ("Name" == childnode)
-						siteInfo.siteName = siteElm->GetText() ? siteElm->GetText() : "";
-					else if ("Site" == childnode)
-						siteInfo.mainUrl = siteElm->GetText() ? siteElm->GetText() : "";
-					else if ("HtmlPicNameKey" == childnode)
-						childKey.picNameKey = siteElm->GetText() ? siteElm->GetText() : "";
-					else if ("HtmlPicNameL" == childnode)
-						childKey.picNameL = siteElm->GetText() ? siteElm->GetText() : "";
-					else if ("HtmlPicNameR" == childnode)
-						childKey.picNameR = siteElm->GetText() ? siteElm->GetText() : "";
-					else if ("HtmlPicUrlKey" == childnode)
-						childKey.picUrlKey = siteElm->GetText() ? siteElm->GetText() : "";
-					else if ("HtmlPicUrlL" == childnode)
-						childKey.picUrlL = siteElm->GetText() ? siteElm->GetText() : "";
-					else if ("HtmlPicUrlR" == childnode)
-						childKey.picUrlR = siteElm->GetText() ? siteElm->GetText() : "";
+					string thdNodeStr = thdNode->Value();
+					if ("Name" == thdNodeStr)
+						siteInfo.siteName = thdNode->GetText() ? thdNode->GetText() : "";
+					else if ("Site" == thdNodeStr)
+						siteInfo.mainUrl = thdNode->GetText() ? thdNode->GetText() : "";
+					else if ("Level1PageKey" == thdNodeStr)
+					{
+						TPicshowPageKey picShowPageKey;
+						TiXmlElement *siteElm = thdNode->FirstChildElement();
+						while (siteElm)
+						{
+							string childnode = siteElm->Value();
+							if ("Name" == childnode)
+								siteInfo.siteName = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("Site" == childnode)
+								siteInfo.mainUrl = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("HtmlPicNameKey" == childnode)
+								picShowPageKey.picNameKey = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("HtmlPicNameL" == childnode)
+								picShowPageKey.picNameL = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("HtmlPicNameR" == childnode)
+								picShowPageKey.picNameR = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("HtmlPicUrlKey" == childnode)
+								picShowPageKey.picUrlKey = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("HtmlPicUrlL" == childnode)
+								picShowPageKey.picUrlL = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("HtmlPicUrlR" == childnode)
+								picShowPageKey.picUrlR = siteElm->GetText() ? siteElm->GetText() : "";
 
-					siteElm = siteElm->NextSiblingElement();
+							siteElm = siteElm->NextSiblingElement();
+						}
+						siteInfo.picshowPageKey = picShowPageKey;
+					}
+					else if ("Level2PageKey" == thdNodeStr)
+					{
+						TPackagePageKey packagePageKey;
+						TiXmlElement *siteElm = thdNode->FirstChildElement();
+						while (siteElm)
+						{
+							string childnode = siteElm->Value();
+							if ("Name" == childnode)
+								siteInfo.siteName = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("Site" == childnode)
+								siteInfo.mainUrl = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("PackageNameKey" == childnode)
+								packagePageKey.nameKey = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("PackageNameL" == childnode)
+								packagePageKey.nameL = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("PackageNameR" == childnode)
+								packagePageKey.nameR = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("PicPageUrlKey" == childnode)
+								packagePageKey.urlKey = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("PicPageUrlL" == childnode)
+								packagePageKey.urlL = siteElm->GetText() ? siteElm->GetText() : "";
+							else if ("PicPageUrlR" == childnode)
+								packagePageKey.urlR = siteElm->GetText() ? siteElm->GetText() : "";
+
+							siteElm = siteElm->NextSiblingElement();
+						}
+						siteInfo.packagePageKey = packagePageKey;
+					}
+					thdNode = thdNode->NextSiblingElement();
 				}
-				siteInfo.child = childKey;
-				gSiteList.push_back(siteInfo);
 
+				gSiteList.push_back(siteInfo);
 				Log.AddLog(siteInfo.siteName.c_str());
 			}
 			else
@@ -134,36 +181,57 @@ void CWallpaperCollect::SetSaveDir(const wstring& saveDir)
 }
 
 // 分析页面内容，每取得包含单张壁纸的页面后，调用ColFromPicViewPage处理
+// 如http://www.deskcity.com/details/picture/4074.html
 bool CWallpaperCollect::ColFromPicListPage( const string& pageUrl )
 {
+	if (!pCurSite) return false;
+
+	// 获取网页源代码
+	CWebServer webServ;
+	string pageHtml = webServ.ColPageSourceHtml(pageUrl);
+
+	// 解析得到显示壁纸页面的url，存入数组
+	CHtmlParse parser(pageHtml);
+	TPackagePageAttri package;
+	package = parser.GetWallpaperPagesUrl(*pCurSite);	
+
+	// 解析packageName,设置壁纸保存文件夹名
+	package.packageName = splitFirstString(package.packageName);
+	saveDir.append(package.packageName + _T("\\"));
+	MakeSurePathExists(saveDir.c_str(), false);
+	
+	// 调用ColFromPicViewPage下载图片
+	size_t count = package.urlArr.size();
+	for (size_t i = 0; i < count; i++)
+	{
+		ColFromPicViewPage(package.urlArr[i]);
+	}
 	return false;
 }
 
 // 分析页面内容，取得单张壁纸的url，根据url下载图片
+// 如http://www.deskcity.com/details/show/4074/83985.html
 bool CWallpaperCollect::ColFromPicViewPage( const string& pageUrl )
 {
 	if (!pCurSite) return false;
 
+	// 获取网页源代码
 	CWebServer webServ;
 	string pageHtml = webServ.ColPageSourceHtml(pageUrl);
 
 	// 解析获得壁纸的链接、壁纸相关信息
 	CHtmlParse parser(pageHtml);
-	TChildpageKey htmlKey;
-	THtmlPicAttri htmlPic;
-	htmlKey.Assign(*pCurSite);
-	htmlPic = parser.GetWallpaperImgUrl(htmlKey);
-
-	// 处理获得的图片url
-	htmlPic.picUrl.insert(0, siteUrl.c_str());
+	TPicshowPageAttri picShowPageAttri;
+	picShowPageAttri = parser.GetWallpaperImgUrl(*pCurSite);
 
 	USES_CONVERSION;
-	wchar *picNameExt = A2W(htmlKey.picUrlR.c_str());
+	wchar *picNameExt = A2W(pCurSite->picshowPageKey.picUrlR.c_str());
+	wstring filePath = saveDir + picShowPageAttri.picName + picNameExt;
 
-	wstring filePath = saveDir + htmlPic.picName + picNameExt;
+	// TODO:处理图片已存在
 
 	// 下载图片保存到指定目录
-	webServ.DownLoadFile(htmlPic.picUrl, filePath);
+	webServ.DownLoadFile(picShowPageAttri.picUrl, filePath);
 
 	return true;
 }

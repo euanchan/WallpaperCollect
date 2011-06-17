@@ -3,12 +3,22 @@
 		<WallpaperSite>
 				<Name>deskcity</Name>
 				<Site>http://www.deskcity.com/</Site>
-				<HtmlPicNameKey>imginfo</HtmlPicNameKey>
-				<HtmlPicNameL>&lt;strong></HtmlPicNameL>
-				<HtmlPicNameR>&lt;/strong></HtmlPicNameR>
-				<HtmlPicUrlKey>s_img</HtmlPicUrlKey>
-				<HtmlPicUrlL>src=&quot;</HtmlPicUrlL>
-				<HtmlPicUrlR>.jpg</HtmlPicUrlR>
+				<Level1PageKey>
+						<HtmlPicNameKey>imginfo</HtmlPicNameKey>
+						<HtmlPicNameL>&lt;strong></HtmlPicNameL>
+						<HtmlPicNameR>&lt;/strong></HtmlPicNameR>
+						<HtmlPicUrlKey>s_img</HtmlPicUrlKey>
+						<HtmlPicUrlL>src=&quot;</HtmlPicUrlL>
+						<HtmlPicUrlR>.jpg</HtmlPicUrlR>
+				</Level1PageKey>
+				<Level2PageKey>
+						<PackageNameKey>&lt;head></PackageNameKey>
+						<PackageNameL>&lt;title></PackageNameL>
+						<PackageNameR>&lt;/title></PackageNameR>
+						<PicPageUrlKey>class=&quot;img</PicPageUrlKey>
+						<PicPageUrlL>href='</PicPageUrlL>
+						<PicPageUrlR>'</PicPageUrlR>
+				</Level2PageKey>
 		</WallpaperSite>
 
 </WallpaperCollection>

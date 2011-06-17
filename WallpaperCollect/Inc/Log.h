@@ -25,6 +25,7 @@ public:
 };
 
 #define DB_BUF_SIZE 1024
+
 class DbLog
 {
 public:
@@ -65,13 +66,17 @@ public:
 #define tYZGLog( a )
 #define tSkLog( a )
 #else
+		/*if( gSystem.iNeedLog )\*/
 #define tTestLog( a ) \
-		if( gSystem.iNeedLog )\
 		{\
 			DbLog gLog( TEXT("TestLog.txt") );\
 			gLog << DbLog::Time << a << DbLog::Enter << DbLog::Flush;\
 		}
-#define tMainLog( a ) if( gSystem.iNeedLog ){DbLog gLog( TEXT("MainLog.txt") );gLog<<DbLog::Time<<a<<DbLog::Enter<<DbLog::Flush;}
+#define tMainLog( a )\
+		{\
+			DbLog gLog( TEXT("MainLog.txt") );\
+			gLog<<DbLog::Time<<a<<DbLog::Enter<<DbLog::Flush;\
+		}
 #endif
 
 

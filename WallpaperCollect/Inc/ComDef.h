@@ -23,31 +23,64 @@ enum SiteType
 	kSiteDeskCity
 };
 
-typedef struct
-{
-	wstring picName;
-	string picUrl;
-}THtmlPicAttri;
-
-class TSiteInfo;
-class TChildpageKey
+//////////////////////////////////////////////////////////////////////////
+class TPicshowPageAttri
 {
 public:
-	string picNameKey;
+	wstring picName;
+	string picUrl;
+};
+
+class TSiteInfo;
+// 包含实际壁纸链接的网页(pageLevel1)关键字
+class TPicshowPageKey 
+{
+public:
+	string picNameKey; // 壁纸名称关键字
 	string picNameL;
 	string picNameR;
-	string picUrlKey;
+	string picUrlKey;  // 壁纸Url关键字
 	string picUrlL;
 	string picUrlR;
 
-	void Assign(const TSiteInfo& siteInfo);
+	void Log(const string& siteName) const;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 包含多个pageLevel1页面链接的网页(pageLevel2)关键字信息
+class TPackagePageKey
+{
+public:
+	string nameKey;  // 壁纸合集目录名称关键字
+	string nameL;
+	string nameR;
+	string urlKey;  // 单个壁纸页面链接关键字
+	string urlL;
+	string urlR;
+
+	void Log(const string& siteName) const;
+};
+
+class TPackagePageAttri
+{
+public:
+	wstring  packageName;  // 壁纸合集名称
+	vector<string> urlArr;
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 包含多个pageLevel2页面链接的网页(pageLevel3)关键字信息
+class TPackagesPageKey
+{
+
 };
 
 class TSiteInfo
 {
 public:
-	TChildpageKey child;
-	string nextChildKey;
+	TPicshowPageKey picshowPageKey;
+	TPackagePageKey packagePageKey;
+	//string nextChildKey;
 	string mainUrl;
 	string siteName;
 };

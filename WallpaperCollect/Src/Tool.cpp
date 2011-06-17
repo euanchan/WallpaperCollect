@@ -10,6 +10,14 @@ CUtil::~CUtil(void)
 {
 }
 
+wstring splitFirstString(const wstring& longStr)  // 取出第一段不包含空格的字符串
+{
+	CString str = longStr.c_str();
+	str.TrimLeft();
+	str = str.Left(str.Find(_T(" ")));
+	return str.GetBuffer();
+}
+
 BOOL MakeSurePathExists(const CString &strPath, bool fileNameIncluded)
 {
 	int Pos=0;

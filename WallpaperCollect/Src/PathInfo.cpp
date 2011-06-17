@@ -4,6 +4,7 @@
 
 CPathInfo::CPathInfo()
 {
+	modulePath = _T("");
 }
 CPathInfo::~CPathInfo()
 {

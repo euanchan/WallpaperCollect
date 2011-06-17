@@ -7,6 +7,7 @@ public:
 	~CUtil(void);
 };
 
+wstring splitFirstString(const wstring& longStr);  // 取出第一段不包含空格的字符串
 BOOL MakeSurePathExists(const CString &path, bool fileNameIncluded);
 string GB2UTF8(const string& sSrc);
 string UTF82GB(const string& szSrc);
