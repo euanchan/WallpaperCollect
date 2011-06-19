@@ -122,6 +122,7 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 	}
 	catch (...)
 	{
+		//AfxMessageBox(_T("Download File failed"));
 		if(NULL != pHttpFile)
 		{
 			pHttpFile->Close();

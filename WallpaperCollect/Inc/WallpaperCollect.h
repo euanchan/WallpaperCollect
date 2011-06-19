@@ -10,6 +10,7 @@
 using std::wstring;
 using std::string;
 
+class TiXmlElement;
 class TSiteInfo;
 class WallpaperCollect_API CWallpaperCollect
 {
@@ -21,17 +22,24 @@ public:
 	void SetSaveDir(const wstring& saveDir);
 	// bool ParseAndCollect(const char* url);
 
+	// 从一个合集(包含多个level2链接)页面获取壁纸
+	// 如http://www.deskcity.com/details/index/152.html
+	bool ColFromPackagePage(const string& pageUrl, const wstring& rootPath);
 
-	// 从一个展示多个壁纸的页面获取壁纸，
+	// 从一个多壁纸展示(包含多个level1链接)页面(level2)获取壁纸，
 	// 如http://www.deskcity.com/details/picture/4074.html
-	bool ColFromPicListPage(const string& pageUrl);
+	bool ColFromPicListPage(const string& pageUrl, const wstring& rootPath);
 
-	// 从一个包含单张完整壁纸的页面获取壁纸，
+	// 从一个包含单张完整壁纸的页面(level1)获取壁纸，
 	// 如http://www.deskcity.com/details/show/4074/83985.html
-	bool ColFromPicViewPage(const string& pageUrl);
+	bool ColFromPicViewPage(const string& pageUrl, const wstring& rootPath);
 
 private:
 	bool LoadConfigFile();
+
+	void InitLevel1PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo );
+	void InitLevel2PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo );
+	void InitLevel3PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo );
 
 private:
 // 	CWebServer* webServ;

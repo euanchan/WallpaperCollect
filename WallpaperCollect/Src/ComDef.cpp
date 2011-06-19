@@ -19,7 +19,7 @@
 // }
 
 
-void TPicshowPageKey::Log(const string& siteName) const 
+void TPicShowPageKey::Log(const string& siteName) const 
 {
 	if (picNameKey.length() == 0)
 		tMainLog("Site:" << siteName.c_str() << "PicNameKey is NULL");
@@ -35,7 +35,7 @@ void TPicshowPageKey::Log(const string& siteName) const
 		tMainLog("Site:" << siteName.c_str() << "picUrlR is NULL");
 }
 
-void TPackagePageKey::Log(const string& siteName) const
+void TPicsShowPageKey::Log(const string& siteName) const
 {
 	if (nameKey.length() == 0)
 		tMainLog("Site:" << siteName.c_str() << "packageKey is NULL");

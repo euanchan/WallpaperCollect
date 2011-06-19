@@ -4,21 +4,38 @@
 				<Name>deskcity</Name>
 				<Site>http://www.deskcity.com/</Site>
 				<Level1PageKey>
-						<HtmlPicNameKey>imginfo</HtmlPicNameKey>
-						<HtmlPicNameL>&lt;strong></HtmlPicNameL>
-						<HtmlPicNameR>&lt;/strong></HtmlPicNameR>
-						<HtmlPicUrlKey>s_img</HtmlPicUrlKey>
-						<HtmlPicUrlL>src=&quot;</HtmlPicUrlL>
-						<HtmlPicUrlR>.jpg</HtmlPicUrlR>
+						<picShowNameKey>imginfo</picShowNameKey>
+						<picShowNameL>&lt;strong></picShowNameL>
+						<picShowNameR>&lt;/strong></picShowNameR>
+						<picShowUrlKey>s_img</picShowUrlKey>
+						<picShowUrlL>src=&quot;</picShowUrlL>
+						<picShowUrlR>.jpg</picShowUrlR>
 				</Level1PageKey>
 				<Level2PageKey>
-						<PackageNameKey>&lt;head></PackageNameKey>
-						<PackageNameL>&lt;title></PackageNameL>
-						<PackageNameR>&lt;/title></PackageNameR>
-						<PicPageUrlKey>class=&quot;img</PicPageUrlKey>
-						<PicPageUrlL>href='</PicPageUrlL>
-						<PicPageUrlR>'</PicPageUrlR>
+						<picsShowNameKey>&lt;head></picsShowNameKey>
+						<picsShowNameL>&lt;title></picsShowNameL>
+						<picsShowNameR>&lt;/title></picsShowNameR>
+						<picsShowUrlKey>class=&quot;img</picsShowUrlKey>
+						<picsShowUrlL>href='</picsShowUrlL>
+						<picsShowUrlR>'</picsShowUrlR>
 				</Level2PageKey>
+				<Level3PageKey>
+						<packageNameKey>&lt;head></packageNameKey>
+						<packageNameL>&lt;title></packageNameL>
+						<packageNameR>&lt;/title></packageNameR>
+						<packageUrlKey>class=&quot;img</packageUrlKey>
+						<packageUrlL>href='</packageUrlL>
+						<packageUrlR>'</packageUrlR>
+				</Level3PageKey>
+				<PaginationKey>
+						<divKey>pagination</divKey>
+						<indexKey>a href</indexKey>
+						<indexL>&quot;></indexL>
+						<indexR>&lt;/a></indexR>
+						<currentKey>current</currentKey>
+						<currentL>&quot;></currentL>
+						<currentR>&lt;/a></currentR>						
+				</PageInfo>
 		</WallpaperSite>
 
 </WallpaperCollection>

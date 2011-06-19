@@ -24,7 +24,7 @@ enum SiteType
 };
 
 //////////////////////////////////////////////////////////////////////////
-class TPicshowPageAttri
+class TPicShowPageAttri
 {
 public:
 	wstring picName;
@@ -33,7 +33,7 @@ public:
 
 class TSiteInfo;
 // 包含实际壁纸链接的网页(pageLevel1)关键字
-class TPicshowPageKey 
+class TPicShowPageKey 
 {
 public:
 	string picNameKey; // 壁纸名称关键字
@@ -48,10 +48,10 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 // 包含多个pageLevel1页面链接的网页(pageLevel2)关键字信息
-class TPackagePageKey
+class TPicsShowPageKey
 {
 public:
-	string nameKey;  // 壁纸合集目录名称关键字
+	string nameKey;  // 壁纸辑目录名称关键字
 	string nameL;
 	string nameR;
 	string urlKey;  // 单个壁纸页面链接关键字
@@ -61,25 +61,62 @@ public:
 	void Log(const string& siteName) const;
 };
 
-class TPackagePageAttri
+class TPicsShowPageAttri
 {
 public:
-	wstring  packageName;  // 壁纸合集名称
+	wstring  name;  // 壁纸合集名称
 	vector<string> urlArr;
 };
 
 //////////////////////////////////////////////////////////////////////////
 // 包含多个pageLevel2页面链接的网页(pageLevel3)关键字信息
-class TPackagesPageKey
+class TPackagePageKey
 {
+public:
+	string nameKey;  // 壁纸合集目录名称关键字
+	string nameL;
+	string nameR;
+	string urlKey;   // 壁纸辑页面链接关键字
+	string urlL;
+	string urlR;
+};
+class TPackagePageAttri
+{
+public:
+	wstring name;
+	vector<string> urlArr;
+};
 
+//////////////////////////////////////////////////////////////////////////
+// 上一页、下一页关键词信息
+class TPaginationKey
+{
+	string divKey;
+	string indexKey;
+	string indexL;
+	string indexR;
+	string currentKey;
+	string currentL;
+	string currentR;
+};
+
+class TPaginationAttri
+{
+public:
+	string curLevelUrlBase;
+	string extentStr;
+	size_t minPage;
+	size_t curPage;
+	size_t maxPage;
 };
 
 class TSiteInfo
 {
 public:
-	TPicshowPageKey picshowPageKey;
-	TPackagePageKey packagePageKey;
+	TPicShowPageKey  picShowPageKey;
+	TPicsShowPageKey picsShowPageKey;
+	TPackagePageKey  packagePageKey;
+	TPaginationKey   paginationKey;
 	//string nextChildKey;
 	string mainUrl;
 	string siteName;
