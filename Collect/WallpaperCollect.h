@@ -25,6 +25,8 @@ public:
 	// 从一个合集(包含多个level2链接)页面获取壁纸
 	// 如http://www.deskcity.com/details/index/152.html
 	bool ColFromPackagePage(const string& pageUrl, const wstring& rootPath);
+	// 若分为多页，全部获取
+	bool ColFromPackagePages(const string& pageUrl, const wstring& rootPath);
 
 	// 从一个多壁纸展示(包含多个level1链接)页面(level2)获取壁纸，
 	// 如http://www.deskcity.com/details/picture/4074.html
@@ -40,6 +42,7 @@ private:
 	void InitLevel1PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo );
 	void InitLevel2PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo );
 	void InitLevel3PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo );
+	void InitPaginationKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo );
 
 private:
 // 	CWebServer* webServ;

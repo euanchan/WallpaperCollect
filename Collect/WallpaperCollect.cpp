@@ -98,6 +98,10 @@ bool CWallpaperCollect::LoadConfigFile()
 					{
 						InitLevel3PageKeyInfo(thdNode, siteInfo);
 					}
+					else if ("PaginationKey" == thdNodeStr)
+					{
+						InitPaginationKeyInfo(thdNode, siteInfo);
+					}
 					else
 					{
 						;
@@ -124,24 +128,24 @@ bool CWallpaperCollect::LoadConfigFile()
 void CWallpaperCollect::InitLevel1PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo ) 
 {
 	TPicShowPageKey picShowPageKey;
-	TiXmlElement *siteElm = thdNode->FirstChildElement();
-	while (siteElm)
+	TiXmlElement *curKeyElm = thdNode->FirstChildElement();
+	while (curKeyElm)
 	{
-		string childnode = siteElm->Value();
+		string childnode = curKeyElm->Value();
 		if (keyArr[0][0] == childnode)
-			picShowPageKey.picNameKey = siteElm->GetText() ? siteElm->GetText() : "";
+			picShowPageKey.picNameKey = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[0][1] == childnode)
-			picShowPageKey.picNameL = siteElm->GetText() ? siteElm->GetText() : "";
+			picShowPageKey.picNameL = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[0][2] == childnode)
-			picShowPageKey.picNameR = siteElm->GetText() ? siteElm->GetText() : "";
+			picShowPageKey.picNameR = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[0][3] == childnode)
-			picShowPageKey.picUrlKey = siteElm->GetText() ? siteElm->GetText() : "";
+			picShowPageKey.picUrlKey = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[0][4] == childnode)
-			picShowPageKey.picUrlL = siteElm->GetText() ? siteElm->GetText() : "";
+			picShowPageKey.picUrlL = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[0][5] == childnode)
-			picShowPageKey.picUrlR = siteElm->GetText() ? siteElm->GetText() : "";
+			picShowPageKey.picUrlR = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 
-		siteElm = siteElm->NextSiblingElement();
+		curKeyElm = curKeyElm->NextSiblingElement();
 	}
 	siteInfo.picShowPageKey = picShowPageKey;
 }
@@ -149,24 +153,24 @@ void CWallpaperCollect::InitLevel1PageKeyInfo( TiXmlElement * thdNode, TSiteInfo
 void CWallpaperCollect::InitLevel2PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo ) 
 {
 	TPicsShowPageKey picsShowPageKey;
-	TiXmlElement *siteElm = thdNode->FirstChildElement();
-	while (siteElm)
+	TiXmlElement *curKeyElm = thdNode->FirstChildElement();
+	while (curKeyElm)
 	{
-		string childnode = siteElm->Value();
+		string childnode = curKeyElm->Value();
 		if (keyArr[1][0] == childnode)
-			picsShowPageKey.nameKey = siteElm->GetText() ? siteElm->GetText() : "";
+			picsShowPageKey.nameKey = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[1][1] == childnode)
-			picsShowPageKey.nameL = siteElm->GetText() ? siteElm->GetText() : "";
+			picsShowPageKey.nameL = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[1][2] == childnode)
-			picsShowPageKey.nameR = siteElm->GetText() ? siteElm->GetText() : "";
+			picsShowPageKey.nameR = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[1][3] == childnode)
-			picsShowPageKey.urlKey = siteElm->GetText() ? siteElm->GetText() : "";
+			picsShowPageKey.urlKey = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[1][4] == childnode)
-			picsShowPageKey.urlL = siteElm->GetText() ? siteElm->GetText() : "";
+			picsShowPageKey.urlL = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[1][5] == childnode)
-			picsShowPageKey.urlR = siteElm->GetText() ? siteElm->GetText() : "";
+			picsShowPageKey.urlR = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 
-		siteElm = siteElm->NextSiblingElement();
+		curKeyElm = curKeyElm->NextSiblingElement();
 	}
 	siteInfo.picsShowPageKey = picsShowPageKey;
 }
@@ -174,26 +178,53 @@ void CWallpaperCollect::InitLevel2PageKeyInfo( TiXmlElement * thdNode, TSiteInfo
 void CWallpaperCollect::InitLevel3PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo ) 
 {
 	TPackagePageKey packagePageKey;
-	TiXmlElement *siteElm = thdNode->FirstChildElement();
-	while (siteElm)
+	TiXmlElement *curKeyElm = thdNode->FirstChildElement();
+	while (curKeyElm)
 	{
-		string childnode = siteElm->Value();
+		string childnode = curKeyElm->Value();
 		if (keyArr[2][0] == childnode)
-			packagePageKey.nameKey = siteElm->GetText() ? siteElm->GetText() : "";
+			packagePageKey.nameKey = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[2][1] == childnode)
-			packagePageKey.nameL = siteElm->GetText() ? siteElm->GetText() : "";
+			packagePageKey.nameL = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[2][2] == childnode)
-			packagePageKey.nameR = siteElm->GetText() ? siteElm->GetText() : "";
+			packagePageKey.nameR = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[2][3] == childnode)
-			packagePageKey.urlKey = siteElm->GetText() ? siteElm->GetText() : "";
+			packagePageKey.urlKey = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[2][4] == childnode)
-			packagePageKey.urlL = siteElm->GetText() ? siteElm->GetText() : "";
+			packagePageKey.urlL = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 		else if (keyArr[2][5] == childnode)
-			packagePageKey.urlR = siteElm->GetText() ? siteElm->GetText() : "";
+			packagePageKey.urlR = curKeyElm->GetText() ? curKeyElm->GetText() : "";
 
-		siteElm = siteElm->NextSiblingElement();
+		curKeyElm = curKeyElm->NextSiblingElement();
 	}
 	siteInfo.packagePageKey = packagePageKey;
+}
+
+void CWallpaperCollect::InitPaginationKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo )
+{
+	TPaginationKey paginationKey;
+	TiXmlElement *curKeyElm = thdNode->FirstChildElement();
+	while (curKeyElm)
+	{
+		string childNode = curKeyElm->Value();
+		if ("divKey" == childNode)
+			paginationKey.divKey = curKeyElm->GetText() ? curKeyElm->GetText() : "";
+		else if ("indexKey" == childNode)
+			paginationKey.indexKey = curKeyElm->GetText() ? curKeyElm->GetText() : "";
+		else if ("indexL" == childNode)
+			paginationKey.indexL = curKeyElm->GetText() ? curKeyElm->GetText() : "";
+		else if ("indexR" == childNode)
+			paginationKey.indexR = curKeyElm->GetText() ? curKeyElm->GetText() : "";
+		else if ("currentKey" == childNode)
+			paginationKey.currentKey = curKeyElm->GetText() ? curKeyElm->GetText() : "";
+		else if ("currentL" == childNode)
+			paginationKey.currentL = curKeyElm->GetText() ? curKeyElm->GetText() : "";
+		else if ("currentR" == childNode)
+			paginationKey.currentR = curKeyElm->GetText() ? curKeyElm->GetText() : "";
+
+		curKeyElm = curKeyElm->NextSiblingElement();
+	}
+	siteInfo.paginationKey = paginationKey;
 }
 
 void CWallpaperCollect::SetSite( const string& url )
@@ -231,6 +262,43 @@ void CWallpaperCollect::SetSaveDir(const wstring& saveDir)
 	MakeSurePathExists(saveDir.c_str(), false);
 }
 
+// 查找是否页面中有上下页信息，若有对每个页面调用ColFromPackagePage()
+bool CWallpaperCollect::ColFromPackagePages(const string& pageUrl, const wstring& rootPath)
+{
+	if (!pCurSite) return false;
+	
+	// 获取网页源码
+	CWebServer webServ;
+	string pageHtml = webServ.ColPageSourceHtml(pageUrl);
+
+	// 解析判断是否包含上下页信息
+	CHtmlParse parser(pageHtml);
+	TPaginationAttri paginationAtt = parser.GetPageIndexInfo(*pCurSite);
+
+	// 
+	string separateStr;
+	if (paginationAtt.curPage > 1)
+		separateStr = "/";
+	else
+		separateStr = ".htm";
+	int sepPos = pageUrl.rfind(separateStr);
+	paginationAtt.pageUrlBase = pageUrl.substr(0, sepPos);
+
+	// 解析得到
+	if (paginationAtt.maxPage <= 1)
+		ColFromPackagePage(pageUrl, rootPath);
+	else
+	{
+		ColFromPackagePage(paginationAtt.pageUrlBase, rootPath);
+		for (int i = 2; i < paginationAtt.maxPage; i++)
+		{
+			char indexStr[4];
+			itoa(i, indexStr, 10);
+			string url = paginationAtt.pageUrlBase + "/" + indexStr;
+			ColFromPackagePage(url, rootPath);
+		}
+	}
+}
 
 // 分析页面内容，每取得包含(level2)页面后，调用ColFromPicListPage处理
 // 如http://www.deskcity.com/details/index/152.html
@@ -246,6 +314,8 @@ bool CWallpaperCollect::ColFromPackagePage(const string& pageUrl, const wstring&
 	CHtmlParse parser(pageHtml);
 	TPackagePageAttri packagePageAtt;
 	packagePageAtt = parser.GetLevel2PageUrls(*pCurSite);
+	if (packagePageAtt.name.length() <= 1)
+		return false;
 
 	// 解析得到合集名，设置壁纸保存文件夹名
 	packagePageAtt.name = splitFirstString(packagePageAtt.name);
@@ -273,7 +343,9 @@ bool CWallpaperCollect::ColFromPicListPage( const string& pageUrl, const wstring
 	// 解析得到显示壁纸页面的url，存入数组
 	CHtmlParse parser(pageHtml);
 	TPicsShowPageAttri picsShowPageArr;
-	picsShowPageArr = parser.GetLevel1PageUrls(*pCurSite);	
+	picsShowPageArr = parser.GetLevel1PageUrls(*pCurSite);
+	if (picsShowPageArr.name.length() <= 1)
+		return false;
 
 	// 解析TPicsShowPageAttri::name,设置壁纸保存文件夹名
 	picsShowPageArr.name = splitFirstString(picsShowPageArr.name);
@@ -303,6 +375,9 @@ bool CWallpaperCollect::ColFromPicViewPage( const string& pageUrl, const wstring
 	CHtmlParse parser(pageHtml);
 	TPicShowPageAttri picShowPageAttri;
 	picShowPageAttri = parser.GetWallpaperImgUrl(*pCurSite);
+	if (picShowPageAttri.picName.length() <= 1 ||
+		picShowPageAttri.picUrl.length() <= 1)
+		return false;
 
 	USES_CONVERSION;
 	wchar *picNameExt = A2W(pCurSite->picShowPageKey.picUrlR.c_str());

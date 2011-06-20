@@ -29,11 +29,43 @@ void CHtmlParse::ResetSrc(const string& htmlSource)
 	<span class="disabled">下一页</span></div>
 
 */
-// 获取下一页
-TPaginationAttri CHtmlParse::GetNextPageUrl(const TSiteInfo& siteInfo)
+// 获取当前页面的页码信息
+TPaginationAttri CHtmlParse::GetPageIndexInfo(const TSiteInfo& siteInfo)
 {
 	TPaginationAttri pages;
-	size_t pos = 
+	int divBegPos = htmlSrc.find(siteInfo.paginationKey.divKey);
+	int divEndPos = htmlSrc.find("/div>", divBegPos);
+	if (divBegPos == -1 || divEndPos == -1)
+		return pages;
+	
+	string paginationStr = htmlSrc.substr(divBegPos, divEndPos - divBegPos);
+
+	int pos = 0;
+	while ((pos = paginationStr.find(siteInfo.paginationKey.indexKey, pos)) != -1)
+	{
+		int pageIndexPosL = paginationStr.find(siteInfo.paginationKey.indexL, pos);
+		pageIndexPosL += siteInfo.paginationKey.indexL.length();
+		int pageIndexPosR = paginationStr.find(siteInfo.paginationKey.indexR, pageIndexPosL);
+		pos = pageIndexPosR;
+		if (pageIndexPosL == -1 || pageIndexPosR == -1)
+			break;
+
+		string pageIndexStr = paginationStr.substr(pageIndexPosL, pageIndexPosR - pageIndexPosL);
+		int pageIndex = atoi(pageIndexStr.c_str());
+		if (pageIndex > pages.maxPage)
+			pages.maxPage = pageIndex;
+	}
+	pos = paginationStr.find(siteInfo.paginationKey.currentKey);
+	int curIndexPosL = paginationStr.find(siteInfo.paginationKey.currentL, pos);
+	curIndexPosL += siteInfo.paginationKey.currentL.length();
+	int curIndexPosR = paginationStr.find(siteInfo.paginationKey.currentR, curIndexPosL);
+	if (curIndexPosL == -1 || curIndexPosR == -1)
+		return pages;
+
+	string curIndexStr = paginationStr.substr(curIndexPosL, curIndexPosR - curIndexPosL);
+	pages.curPage = atoi(curIndexStr.c_str());
+
+	return pages;
 }
 
 TPackagePageAttri CHtmlParse::GetLevel2PageUrls(const TSiteInfo& siteInfo)
@@ -42,10 +74,12 @@ TPackagePageAttri CHtmlParse::GetLevel2PageUrls(const TSiteInfo& siteInfo)
 
 	TPackagePageAttri packagePageAtt;
 
-	size_t pos = htmlSrc.find(siteInfo.packagePageKey.nameKey);
-	size_t namePosL = htmlSrc.find(siteInfo.packagePageKey.nameL, pos);
-	size_t namePosR = htmlSrc.find(siteInfo.packagePageKey.nameR, namePosL);
+	int pos = htmlSrc.find(siteInfo.packagePageKey.nameKey);
+	int namePosL = htmlSrc.find(siteInfo.packagePageKey.nameL, pos);
+	int namePosR = htmlSrc.find(siteInfo.packagePageKey.nameR, namePosL);
 	namePosL += siteInfo.packagePageKey.nameL.length();
+	if (namePosL == -1 || namePosR == -1)
+		return packagePageAtt;
 
 	string packageNameStr = htmlSrc.substr(namePosL, namePosR - namePosL);
 	USES_CONVERSION;
@@ -54,11 +88,14 @@ TPackagePageAttri CHtmlParse::GetLevel2PageUrls(const TSiteInfo& siteInfo)
 	pos = namePosR;
 	while ((pos = htmlSrc.find(siteInfo.packagePageKey.urlKey, pos)) != -1)
 	{
-		size_t urlPosL = htmlSrc.find(siteInfo.packagePageKey.urlL, pos);
+		int urlPosL = htmlSrc.find(siteInfo.packagePageKey.urlL, pos);
 		urlPosL += siteInfo.packagePageKey.urlL.length();
 		pos = urlPosL;
-		size_t urlPosR = htmlSrc.find(siteInfo.packagePageKey.urlR, urlPosL);
+		int urlPosR = htmlSrc.find(siteInfo.packagePageKey.urlR, urlPosL);
 		pos = urlPosR;
+
+		if (urlPosL == -1 || urlPosR == -1) 
+			break;
 
 		// 补充url
 		string urlStr = htmlSrc.substr(urlPosL, urlPosR - urlPosL);
@@ -76,10 +113,12 @@ TPicsShowPageAttri CHtmlParse::GetLevel1PageUrls(const TSiteInfo& siteInfo)
 
 	TPicsShowPageAttri picsShowPageAtt;
 
-	size_t pos = htmlSrc.find(siteInfo.picsShowPageKey.nameKey);
-	size_t namePosL = htmlSrc.find(siteInfo.picsShowPageKey.nameL, pos);
-	size_t namePosR = htmlSrc.find(siteInfo.picsShowPageKey.nameR, namePosL);
+	int pos = htmlSrc.find(siteInfo.picsShowPageKey.nameKey);
+	int namePosL = htmlSrc.find(siteInfo.picsShowPageKey.nameL, pos);
+	int namePosR = htmlSrc.find(siteInfo.picsShowPageKey.nameR, namePosL);
 	namePosL += siteInfo.picsShowPageKey.nameL.length();
+	if (namePosL == -1 || namePosR == -1)
+		return picsShowPageAtt;
 
 	string packageNameStr = htmlSrc.substr(namePosL, namePosR - namePosL);
 	USES_CONVERSION;
@@ -88,11 +127,14 @@ TPicsShowPageAttri CHtmlParse::GetLevel1PageUrls(const TSiteInfo& siteInfo)
 	pos = namePosR;
 	while ((pos = htmlSrc.find(siteInfo.picsShowPageKey.urlKey, pos)) != -1)
 	{
-		size_t urlPosL = htmlSrc.find(siteInfo.picsShowPageKey.urlL, pos);
+		int urlPosL = htmlSrc.find(siteInfo.picsShowPageKey.urlL, pos);
 		urlPosL += siteInfo.picsShowPageKey.urlL.length();
 		pos = urlPosL;
-		size_t urlPosR = htmlSrc.find(siteInfo.picsShowPageKey.urlR, urlPosL);
+		int urlPosR = htmlSrc.find(siteInfo.picsShowPageKey.urlR, urlPosL);
 		pos = urlPosR;
+
+		if (urlPosL == -1 || urlPosR == -1) 
+			break;
 
 		// 补充url
 		string urlStr = htmlSrc.substr(urlPosL, urlPosR - urlPosL);
@@ -109,20 +151,25 @@ TPicShowPageAttri CHtmlParse::GetWallpaperImgUrl( const TSiteInfo& siteInfo )
 
 	TPicShowPageAttri picShowPageAtt;
 
-	size_t pos = htmlSrc.find(siteInfo.picShowPageKey.picNameKey);
-	size_t picNameL = htmlSrc.find(siteInfo.picShowPageKey.picNameL, pos);
-	size_t picNameR = htmlSrc.find(siteInfo.picShowPageKey.picNameR, picNameL);
+	int pos = htmlSrc.find(siteInfo.picShowPageKey.picNameKey);
+	int picNameL = htmlSrc.find(siteInfo.picShowPageKey.picNameL, pos);
+	int picNameR = htmlSrc.find(siteInfo.picShowPageKey.picNameR, picNameL);
 	picNameL += siteInfo.picShowPageKey.picNameL.length();
+	if (picNameL == -1 || picNameR == -1)
+		return picShowPageAtt;
 
 	string picNameStr = htmlSrc.substr(picNameL, picNameR - picNameL);
 	USES_CONVERSION;
 	picShowPageAtt.picName = A2W(picNameStr.c_str());
 
 	pos = htmlSrc.find(siteInfo.picShowPageKey.picUrlKey, picNameR);
-	size_t picUrlL = htmlSrc.find(siteInfo.picShowPageKey.picUrlL, pos);
-	size_t picUrlR = htmlSrc.find(siteInfo.picShowPageKey.picUrlR, picUrlL);
+	int picUrlL = htmlSrc.find(siteInfo.picShowPageKey.picUrlL, pos);
 	picUrlL += siteInfo.picShowPageKey.picUrlL.length();
+	int picUrlR = htmlSrc.find(siteInfo.picShowPageKey.picUrlR, picUrlL);
 	picUrlR += siteInfo.picShowPageKey.picUrlR.length();
+	if (picUrlL == -1 || picUrlR == -1)
+		return picShowPageAtt;
+
 	picShowPageAtt.picUrl = htmlSrc.substr(picUrlL, picUrlR - picUrlL);
 
 	// 处理获得的图片url

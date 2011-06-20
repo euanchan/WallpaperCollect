@@ -63,6 +63,7 @@ string CWebServer::ColPageSourceHtml( const string& pageUrl )
 	}
 
 	//////////////////////////////////////////////////////////////////////////
+/*
 	wchar szPath[MAX_PATH] = {0};
 	CString strPath;
 	::GetModuleFileName(NULL,szPath,sizeof(szPath));
@@ -77,6 +78,7 @@ string CWebServer::ColPageSourceHtml( const string& pageUrl )
 		data.WriteString(htmlWStr);
 		data.Close();
 	}
+*/
 	//////////////////////////////////////////////////////////////////////////
 
 	return htmlStr;
@@ -91,6 +93,12 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 	wstring wUrl = A2W(url.c_str());
 	CInternetSession netSess;
 	CHttpFile *pHttpFile = NULL;
+
+	// 文件存在
+	if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(filePath.c_str()))
+	{
+		return false;
+	}
 	try
 	{
 		DWORD dwFlag = INTERNET_FLAG_TRANSFER_BINARY|INTERNET_FLAG_DONT_CACHE|INTERNET_FLAG_RELOAD;
@@ -128,6 +136,11 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 			pHttpFile->Close();
 			delete pHttpFile;
 			pHttpFile = NULL;
+		}
+		// 若文件写到一半，删除文件
+		if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(filePath.c_str()))
+		{
+			DeleteFile(filePath.c_str());
 		}
 	}
 	netSess.Close();

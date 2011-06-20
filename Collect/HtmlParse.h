@@ -10,7 +10,8 @@ public:
 	~CHtmlParse(void);
 	void ResetSrc(const string& htmlSource);
 
-	TPaginationAttri GetNextPageUrl(const TSiteInfo& siteInfo);
+	// 解析htmlSource，根据siteInfo关键词获取页面相关信息
+	TPaginationAttri GetPageIndexInfo(const TSiteInfo& siteInfo);
 
 	// 解析包含多个 pageLevel2 url的网页源码  pageLevel3
 	TPackagePageAttri GetLevel2PageUrls(const TSiteInfo& siteInfo);

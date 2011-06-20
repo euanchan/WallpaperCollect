@@ -29,13 +29,13 @@
 				</Level3PageKey>
 				<PaginationKey>
 						<divKey>pagination</divKey>
-						<indexKey>a href</indexKey>
+						<indexKey>href</indexKey>
 						<indexL>&quot;></indexL>
 						<indexR>&lt;/a></indexR>
 						<currentKey>current</currentKey>
 						<currentL>&quot;></currentL>
-						<currentR>&lt;/a></currentR>						
-				</PageInfo>
+						<currentR>&lt;/span></currentR>						
+				</PaginationKey>
 		</WallpaperSite>
 
 </WallpaperCollection>

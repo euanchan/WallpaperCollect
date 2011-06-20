@@ -2,11 +2,11 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Main"
-	ProjectGUID="{BEF9D054-2B0D-4E20-A403-F1F8B9C84DD1}"
-	RootNamespace="Main"
-	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
+	Name="Collect"
+	ProjectGUID="{F7C22D26-3FB6-416F-A085-83CE48CE5E4B}"
+	RootNamespace="Collect"
+	Keyword="MFCDLLProj"
+	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
 		<Platform
@@ -20,7 +20,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			UseOfMFC="2"
 			CharacterSet="1"
 			>
@@ -38,18 +38,19 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Collect"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
+				AdditionalIncludeDirectories="..\ThirdPart\tinyxml\include"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="1"
+				UsePrecompiledHeader="2"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -57,19 +58,20 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="2052"
+				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Collect.lib"
+				AdditionalDependencies="..\ThirdPart\tinyxml\lib\tinyxmld.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\bin"
+				ModuleDefinitionFile=".\Collect.def"
 				GenerateDebugInformation="true"
-				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
+				SubSystem="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -98,7 +100,7 @@
 			Name="Release|Win32"
 			OutputDirectory="..\bin"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
+			ConfigurationType="2"
 			UseOfMFC="2"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -117,15 +119,19 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Collect"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				Optimization="2"
+				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\ThirdPart\tinyxml\include"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL"
 				RuntimeLibrary="2"
+				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -133,21 +139,22 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="2052"
+				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Collect.lib"
+				AdditionalDependencies="..\ThirdPart\tinyxml\lib\tinyxml.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\bin"
+				ModuleDefinitionFile=".\Collect.def"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -182,11 +189,39 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Src\Main.cpp"
+				RelativePath=".\Collect.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Src\stdafx.cpp"
+				RelativePath=".\Collect.def"
+				>
+			</File>
+			<File
+				RelativePath=".\ComDef.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\File.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HtmlParse.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Log.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MyMacro.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PathInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -205,6 +240,18 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\Tool.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WallpaperCollect.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WebServer.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Í·ÎÄ¼þ"
@@ -212,15 +259,55 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Src\Main.h"
+				RelativePath=".\Collect.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Src\Resource.h"
+				RelativePath=".\ComDef.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Src\stdafx.h"
+				RelativePath=".\File.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HtmlParse.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Log.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MyMacro.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PathInfo.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\targetver.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Tool.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WallpaperCollect.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WebServer.h"
 				>
 			</File>
 		</Filter>
@@ -230,12 +317,16 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\Src\Main.rc"
+				RelativePath=".\Collect.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\res\Collect.rc2"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\Src\ReadMe.txt"
+			RelativePath=".\ReadMe.txt"
 			>
 		</File>
 	</Files>

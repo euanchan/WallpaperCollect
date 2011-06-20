@@ -91,6 +91,7 @@ public:
 // 上一页、下一页关键词信息
 class TPaginationKey
 {
+public:
 	string divKey;
 	string indexKey;
 	string indexL;
@@ -103,7 +104,8 @@ class TPaginationKey
 class TPaginationAttri
 {
 public:
-	string curLevelUrlBase;
+	TPaginationAttri():minPage(1), maxPage(1), curPage(1){}
+	string pageUrlBase;
 	string extentStr;
 	size_t minPage;
 	size_t curPage;
