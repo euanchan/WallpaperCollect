@@ -21,4 +21,5 @@ public:
 	string ColPageSourceHtml(const string& pageUrl);
 
 	bool DownLoadFile(const string& url, const wstring& filePath);
+	
 };

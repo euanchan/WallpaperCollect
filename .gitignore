@@ -18,5 +18,6 @@ syntax: glob
 *.lib
 *.exe
 *.dep
+*.data
 Cache
 Log

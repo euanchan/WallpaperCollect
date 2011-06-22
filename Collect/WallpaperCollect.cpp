@@ -1,9 +1,10 @@
 // PaperCol.cpp : 定义 DLL 应用程序的入口点。
 //
 
-#include  <atlbase.h>
-
 #include "stdafx.h"
+
+#define WallpaperCollect_EXPORTS
+
 #include "WallpaperCollect.h"
 #include "WebServer.h"
 #include "HtmlParse.h"
@@ -31,7 +32,6 @@ string keyArr[][6] =
 	}
 };
 
-#define WallpaperCollect_EXPORTS
 
 
 CWallpaperCollect::CWallpaperCollect(void)
@@ -50,6 +50,7 @@ CWallpaperCollect::CWallpaperCollect(void)
 
 CWallpaperCollect::~CWallpaperCollect(void)
 {
+	gPathInfo.SaveUrlMap();
 }
 
 bool CWallpaperCollect::LoadConfigFile()
@@ -298,6 +299,7 @@ bool CWallpaperCollect::ColFromPackagePages(const string& pageUrl, const wstring
 			ColFromPackagePage(url, rootPath);
 		}
 	}
+	return true;
 }
 
 // 分析页面内容，每取得包含(level2)页面后，调用ColFromPicListPage处理
@@ -328,6 +330,7 @@ bool CWallpaperCollect::ColFromPackagePage(const string& pageUrl, const wstring&
 	{
 		ColFromPicListPage(packagePageAtt.urlArr[i], curSaveDir);
 	}
+	return true;
 }
 
 // 分析页面内容，每取得包含单张壁纸(level1)的页面后，调用ColFromPicViewPage处理
@@ -335,6 +338,8 @@ bool CWallpaperCollect::ColFromPackagePage(const string& pageUrl, const wstring&
 bool CWallpaperCollect::ColFromPicListPage( const string& pageUrl, const wstring& rootPath )
 {
 	if (!pCurSite) return false;
+	if (gPathInfo.pageLoaded(pageUrl)) 
+		return false;
 
 	// 获取网页源代码
 	CWebServer webServ;
@@ -358,6 +363,9 @@ bool CWallpaperCollect::ColFromPicListPage( const string& pageUrl, const wstring
 	{
 		ColFromPicViewPage(picsShowPageArr.urlArr[i], curSaveDir);
 	}
+
+	// 当前辑的壁纸已下载，存入url，下次遇到相同url时不再解析
+	gPathInfo.InsertUrlToFile(pageUrl); 
 	return false;
 }
 
