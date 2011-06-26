@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "HtmlParse.h"
 #include "Tool.h"
-#include  <atlbase.h>
+#include <atlbase.h>
+#include <atlstr.h>
 
 CHtmlParse::CHtmlParse(const string& htmlSource)
 : htmlSrc(htmlSource)
@@ -17,6 +18,66 @@ void CHtmlParse::ResetSrc(const string& htmlSource)
 	htmlSrc = htmlSource;
 }
 
+//////////////////////////////////////////////////////////////////////////
+/*
+// destCity:
+	d.add(1, 0,'风光','');
+	d.add(31,1,'风光其他','/details/index/31');
+*/
+TChannelAttri CHtmlParse::GetChannelInfo(const TSiteInfo& siteInfo)
+{
+	TChannelAttri channelAtt;
+	channelAtt.siteName = siteInfo.siteName;
+	vector<string> infoVec;  // 分离出 31,1,'风光其他','/details/index/31'
+	int pos = 0;
+	while ((pos = htmlSrc.find("add(", pos)) != -1)
+	{
+		pos += 4;
+		int rPos = htmlSrc.find(")", pos);
+		infoVec.push_back(htmlSrc.substr(pos, rPos - pos));
+		pos = rPos;
+	}
+	
+	vector<TChannelStrInfo> channelVec;
+	for (int i = 0; i < infoVec.size(); i++)
+	{
+		char *info = const_cast<char*>(infoVec[i].c_str());
+		char *key = ",\'";
+		char *token = strtok(info, key);
+		token = strtok(NULL, key);
+		TChannelStrInfo channelInfo;
+		channelInfo.num = atoi(token);
+		token = strtok(NULL, key);
+		channelInfo.channelName = token ? token : "";
+		token = strtok(NULL, key);
+		channelInfo.channelUrl = token ? token : "";
+		channelVec.push_back(channelInfo);
+	}
+
+	for (int i = 0; i < channelVec.size(); i++)
+	{
+		if (channelVec[i].num == 0)
+		{
+			TChannelNode node;
+			node.first = channelVec[i].channelName;
+			channelAtt.tree.push_back(node);
+		}
+		else if (channelVec[i].num > 0)
+		{
+			int index = channelVec[i].num;
+			ASSERT(index <= channelAtt.tree.size());
+			TChannelNode *node = &channelAtt.tree[index - 1];
+			TChannelNodeChild child;
+			child.first = channelVec[i].channelName;
+			string url = siteInfo.mainUrl + channelVec[i].channelUrl;
+			child.second = url;
+			node->second.push_back(child);
+		}
+	}
+
+	return channelAtt;
+}
+
 /*
 // destCity:
 	<div class="pagination"><a href="/details/index/152/5">上一页</a> 
@@ -27,7 +88,6 @@ void CHtmlParse::ResetSrc(const string& htmlSource)
 	<a href="/details/index/152/5">5</a> 
 	<span class="current">6</span> 
 	<span class="disabled">下一页</span></div>
-
 */
 // 获取当前页面的页码信息
 TPaginationAttri CHtmlParse::GetPageIndexInfo(const TSiteInfo& siteInfo)

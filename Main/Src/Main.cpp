@@ -5,6 +5,7 @@
 #include "Main.h"
 
 #include "WallpaperCollect.h"
+#include "ComDef.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -47,9 +48,11 @@ void test()
 	cachePath = szPath;
 
 	CWallpaperCollect wpCol;
+	TChannelAttri channelAtt;
 
 	wpCol.SetSite("http://www.deskcity.com/");
 	wpCol.SetSaveDir(cachePath);
+	wpCol.ColChannelTree(channelAtt);
 	wpCol.ColFromPackagePages("http://www.deskcity.com/details/index/152.html", cachePath);
 	wpCol.SetSaveDir(cachePath);
 	//wpCol.ColFromPicListPage("http://www.deskcity.com/details/picture/4074.html");

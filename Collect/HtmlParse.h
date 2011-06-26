@@ -10,6 +10,9 @@ public:
 	~CHtmlParse(void);
 	void ResetSrc(const string& htmlSource);
 
+	// 解析htmlSource, 获得频道列表信息
+	TChannelAttri GetChannelInfo(const TSiteInfo& siteInfo);
+
 	// 解析htmlSource，根据siteInfo关键词获取页面相关信息
 	TPaginationAttri GetPageIndexInfo(const TSiteInfo& siteInfo);
 

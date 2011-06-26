@@ -8,6 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main", "Main\Main.vcproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Collect", "Collect\Collect.vcproj", "{F7C22D26-3FB6-416F-A085-83CE48CE5E4B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main_WTL", "Main_WTL\Main_WTL.vcproj", "{24429507-2047-4AB4-91CF-4C8A9F883DDD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F7C22D26-3FB6-416F-A085-83CE48CE5E4B} = {F7C22D26-3FB6-416F-A085-83CE48CE5E4B}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -22,6 +27,10 @@ Global
 		{F7C22D26-3FB6-416F-A085-83CE48CE5E4B}.Debug|Win32.Build.0 = Debug|Win32
 		{F7C22D26-3FB6-416F-A085-83CE48CE5E4B}.Release|Win32.ActiveCfg = Release|Win32
 		{F7C22D26-3FB6-416F-A085-83CE48CE5E4B}.Release|Win32.Build.0 = Release|Win32
+		{24429507-2047-4AB4-91CF-4C8A9F883DDD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{24429507-2047-4AB4-91CF-4C8A9F883DDD}.Debug|Win32.Build.0 = Debug|Win32
+		{24429507-2047-4AB4-91CF-4C8A9F883DDD}.Release|Win32.ActiveCfg = Release|Win32
+		{24429507-2047-4AB4-91CF-4C8A9F883DDD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

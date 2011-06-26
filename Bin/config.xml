@@ -36,6 +36,11 @@
 						<currentL>&quot;></currentL>
 						<currentR>&lt;/span></currentR>						
 				</PaginationKey>
+				<ChannelKey>
+						<srcUrl>http://www.deskcity.com/javascripts/tuijian/public/jstree.js</srcUrl>
+						
+						<tableKey></tableKey>
+				</ChannelKey>
 		</WallpaperSite>
 
 </WallpaperCollection>

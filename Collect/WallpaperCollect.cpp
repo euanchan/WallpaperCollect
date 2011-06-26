@@ -103,6 +103,10 @@ bool CWallpaperCollect::LoadConfigFile()
 					{
 						InitPaginationKeyInfo(thdNode, siteInfo);
 					}
+					else if ("ChannelKey" == thdNodeStr)
+					{
+						InitChannelKeyInfo(thdNode, siteInfo);
+					}
 					else
 					{
 						;
@@ -228,6 +232,22 @@ void CWallpaperCollect::InitPaginationKeyInfo( TiXmlElement * thdNode, TSiteInfo
 	siteInfo.paginationKey = paginationKey;
 }
 
+void CWallpaperCollect::InitChannelKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo )
+{
+	TChannelKey channelKey;
+	TiXmlElement *curKeyElm = thdNode->FirstChildElement();
+	while (curKeyElm)
+	{
+		string childNode = curKeyElm->Value();
+		if ("srcUrl" == childNode)
+			channelKey.srcPageUrl = curKeyElm->GetText() ? curKeyElm->GetText() : "";
+
+		curKeyElm = curKeyElm->NextSiblingElement();
+	}
+	siteInfo.channelKey = channelKey;
+}
+
+//////////////////////////////////////////////////////////////////////////
 void CWallpaperCollect::SetSite( const string& url )
 {
 	siteUrl = url;
@@ -262,6 +282,22 @@ void CWallpaperCollect::SetSaveDir(const wstring& saveDir)
 
 	MakeSurePathExists(saveDir.c_str(), false);
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+// 获取频道信息，保存到TChannelAttri中
+bool CWallpaperCollect::ColChannelTree(TChannelAttri& channelInfo)
+{
+	if (!pCurSite) return false;
+
+	CWebServer webServ;
+	string pageHtml = webServ.ColPageSourceHtml(pCurSite->channelKey.srcPageUrl);
+
+	CHtmlParse parser(pageHtml);
+	channelInfo = parser.GetChannelInfo(*pCurSite);
+	return true;
+}
+
 
 // 查找是否页面中有上下页信息，若有对每个页面调用ColFromPackagePage()
 bool CWallpaperCollect::ColFromPackagePages(const string& pageUrl, const wstring& rootPath)

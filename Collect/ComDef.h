@@ -112,6 +112,44 @@ public:
 	size_t maxPage;
 };
 
+//////////////////////////////////////////////////////////////////////////
+// 频道目录 关键字
+class TChannelKey
+{
+public:
+	string srcPageUrl;
+};
+
+typedef pair<string, string> TChannelNodeChild;  // pair<name, url>
+typedef pair<string, vector<TChannelNodeChild> > TChannelNode;
+typedef vector<TChannelNode> TChannelTree;  // vector<pair<rootName, childVec> >
+// vector<pair<rootName, childTreeNodeVector>>
+class TChannelAttri
+{
+public:
+	string siteName;
+	TChannelTree tree;
+};
+class TChannelStrInfo
+{
+public:
+	int num;
+	string channelName;
+	string channelUrl;
+	TChannelStrInfo()
+		: num(0)
+	{		
+	}
+	TChannelStrInfo(const TChannelStrInfo& strInfo)
+	{
+		num = strInfo.num;
+		channelName = strInfo.channelName;
+		channelUrl  = strInfo.channelUrl;
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
+// 站点所有关键词信息
 class TSiteInfo
 {
 public:
@@ -119,6 +157,7 @@ public:
 	TPicsShowPageKey picsShowPageKey;
 	TPackagePageKey  packagePageKey;
 	TPaginationKey   paginationKey;
+	TChannelKey      channelKey;
 	//string nextChildKey;
 	string mainUrl;
 	string siteName;

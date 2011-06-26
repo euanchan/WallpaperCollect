@@ -39,9 +39,11 @@
 
 #include <string>
 #include <vector>
+#include <set>
 using std::wstring;
 using std::string;
 using std::vector;
+using std::pair;
 
 
 #include "MyMacro.h"
