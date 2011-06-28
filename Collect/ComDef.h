@@ -148,6 +148,16 @@ public:
 	}
 };
 
+class TThumbnailInfo
+{
+public:
+	int     index;          // 用于保存CImageList中的下标
+	string  displayName;    // 缩略图本地保存文件名
+	wstring thumbSavePath; // 缩略图本地保存路径
+	string  thumbUrl;       // 缩略图图片url
+	string  linkUrl;        // 缩略图所指向level2页面的url
+};
+
 //////////////////////////////////////////////////////////////////////////
 // 站点所有关键词信息
 class TSiteInfo
@@ -164,6 +174,20 @@ public:
 };
 
 typedef vector<TSiteInfo> TSiteList;
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 
 typedef struct _ZMTIME
 {

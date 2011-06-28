@@ -1,6 +1,7 @@
 #pragma once
 
-class CChannelTreeCtrl : public CWindowImpl<CChannelTreeCtrl, CTreeViewCtrlEx>
+class CChannelTreeCtrl : 
+	public CWindowImpl<CChannelTreeCtrl, CTreeViewCtrlEx>
 {
 public:
 	//enum { IDD = IDC_CHANNEL_TREE };
@@ -15,9 +16,6 @@ public:
 public: 
 	BEGIN_MSG_MAP(CChannelTreeCtrl)    
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRBtnClicked)
-// 		MSG_WM_CONTEXTMENU(OnContextMenu) 
-// 		NOTIFY_CODE_HANDLER(TVN_ITEMEXPANDING,OnItemExpanding) 
-// 		REFLECTED_NOTIFY_CODE_HANDLER_EX(TVN_ITEMEXPANDING,   OnItemExpanding2) 
  		DEFAULT_REFLECTION_HANDLER() 
 	END_MSG_MAP() 
 

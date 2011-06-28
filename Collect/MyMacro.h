@@ -24,7 +24,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-void*& GetPtrByName( const char* aName );
+__declspec(dllexport) void*& GetPtrByName( const char* aName );
 
 #define MakeObjPtrFun( name, fun ) \
 	inline void*& fun() \

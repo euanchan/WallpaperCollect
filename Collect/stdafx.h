@@ -36,6 +36,7 @@
 #include <afxcmn.h>                     // MFC 对 Windows 公共控件的支持
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
+//////////////////////////////////////////////////////////////////////////
 
 #include <string>
 #include <vector>
@@ -45,9 +46,9 @@ using std::string;
 using std::vector;
 using std::pair;
 
-
 #include "MyMacro.h"
 #include "ComDef.h"
+
 
 #pragma warning(disable: 4018)
 #pragma warning(disable: 4244)

@@ -44,7 +44,7 @@ struct htraits
 typedef hash_set<string, htraits> TStrHashSet;
 
 
-class CPathInfo
+class __declspec(dllexport) CPathInfo
 {
 public:
 	CPathInfo();

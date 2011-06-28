@@ -15,6 +15,8 @@
 #define IDC_BTN_CHANGE_DIR              1005
 #define IDC_BTN_P                       1006
 #define IDC_BTN_PAUSE                   1006
+#define IDC_LIST1                       1010
+#define IDC_LIST_PIC                    1010
 #define ID_Menu                         32775
 #define Download                        32776
 #define ID_Download                     32777
@@ -27,7 +29,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        202
 #define _APS_NEXT_COMMAND_VALUE         32780
-#define _APS_NEXT_CONTROL_VALUE         1007
+#define _APS_NEXT_CONTROL_VALUE         1011
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

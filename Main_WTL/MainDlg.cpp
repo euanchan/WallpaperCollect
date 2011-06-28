@@ -41,6 +41,10 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	channelTree.SubclassWindow(GetDlgItem(IDC_CHANNEL_TREE));
 	channelTree.InitWithChannelAtt(channelAtt);
 
+	//
+	picWallView.Attach(GetDlgItem(IDC_LIST_PICS));
+	picWallView.InitWithPageUrl("Test");
+
 	// Menu
 	menu.Attach(LoadMenu( _Module.GetResourceInstance(),MAKEINTRESOURCE(IDR_MENU_CHANNEL)));
 	SetMenu(menu);

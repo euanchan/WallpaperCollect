@@ -207,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PicWallView.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -236,7 +240,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ImageListBox.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MainDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PicWallView.h"
 				>
 			</File>
 			<File

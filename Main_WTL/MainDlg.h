@@ -5,6 +5,7 @@
 #pragma once
 
 #include "ChannelTree.h"
+#include "PicWallView.h"
 #include "WallpaperCollect.h"
 
 class CMainDlg : public CDialogImpl<CMainDlg>
@@ -39,7 +40,9 @@ public:
 
 private: 
 	CMenu menu;
-	CChannelTreeCtrl channelTree;
+	CChannelTreeCtrl channelTree; 
+	CPicWallView     picWallView;
+
 	CWallpaperCollect wpCol;
 	TChannelAttri channelAtt;
 };
