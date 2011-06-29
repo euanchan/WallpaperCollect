@@ -68,11 +68,12 @@ CPicWallView::CPicWallView(const wstring &cacheFilePath/* = _T("")*/)
 {
 	if (cacheFilePath.length() < 2)
 	{
-		cachePathRoot = gPathInfo.ModulePath();
+		cachePathRoot = gPathInfo->ModulePath();
 		cachePathRoot.append(_T("\\Cache\\Thumbnail"));
 	}
 	else
 		cachePathRoot = cacheFilePath;
+	//SetWindowLong(GWL_STYLE, GetWindowLong(GWL_STYLE) | LVS_ICON);
 }
 
 CPicWallView::~CPicWallView(void)
@@ -89,31 +90,37 @@ LRESULT CPicWallView::OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 bool CPicWallView::InitWithPageUrl(const string &pageUrl)
 {
 	thumbnailInfoList.erase(thumbnailInfoList.begin(), thumbnailInfoList.end());
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 40; i++)
 	{
-		TThumbnailInfo info;
+		TCollectInfo info;
 		info.index = i;
-		info.displayName = "ËõÂÔÍ¼1111";
-		info.thumbSavePath = _T("H:\\Í¼Æ¬\\Temp\\20110612122327.jpg");
+		info.displayName = _T("ËõÂÔÍ¼1111");
+		wstring path = gPathInfo->ModulePath();
+		path.append(_T("\\Cache\\Thumbnail\\001\\4074.jpg"));
+		info.thumbSavePath = path;
 		info.linkUrl = "deskcity.com/index/100";
 		thumbnailInfoList.push_back(info);
 	}
+
+	InitWithImgInfoList();
 	return true;
 }
 
 bool CPicWallView::InitWithImgInfoList()
 {
-	vector<TThumbnailInfo>::iterator iter = thumbnailInfoList.begin();
+	vector<TCollectInfo>::iterator iter = thumbnailInfoList.begin();
 	if (imgList)
 	{
 		imgList->Destroy();
-		imgList = new CImageList();
 	}
-	imgList->SetImageCount(thumbnailInfoList.size());
+	imgList = new CImageList();
+	imgList->Create(160, 100, TRUE | ILC_COLOR32, thumbnailInfoList.size(), 5);
+	this->SetImageList(imgList->m_hImageList, LVSIL_NORMAL);
 	for (; iter != thumbnailInfoList.end(); ++iter)
 	{
 		HBITMAP bm = LoadImageFile(iter->thumbSavePath);
-		if (imgList->Add(bm, (HBITMAP)NULL) == -1)
+		int i = imgList->Add(bm, (HBITMAP)NULL);
+		if (i == -1)
 		{
 			printf("Load image file \"%s\" failed!", iter->thumbSavePath);
 		}

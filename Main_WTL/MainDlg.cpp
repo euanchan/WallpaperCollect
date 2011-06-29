@@ -42,8 +42,8 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	channelTree.InitWithChannelAtt(channelAtt);
 
 	//
-	picWallView.Attach(GetDlgItem(IDC_LIST_PICS));
-	picWallView.InitWithPageUrl("Test");
+	//picWallView.Create(m_hWnd);
+	picWallView.SubclassWindow(GetDlgItem(IDC_LIST_PIC));
 
 	// Menu
 	menu.Attach(LoadMenu( _Module.GetResourceInstance(),MAKEINTRESOURCE(IDR_MENU_CHANNEL)));
@@ -95,6 +95,19 @@ LRESULT CMainDlg::OnDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	{
 		string url = (char*)(item.GetData());
 		wpCol.ColFromPackagePages(url, _T("F:\\"));
+	}
+
+	return 0;
+}
+
+LRESULT CMainDlg::OnPassValue(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	switch (wParam)
+	{
+	case MSG_W_COLLECT_URL:
+		string url = (char*)lParam;
+		picWallView.InitWithPageUrl(url.c_str());
+		break;
 	}
 
 	return 0;

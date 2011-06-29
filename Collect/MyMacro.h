@@ -24,13 +24,13 @@
 
 
 //////////////////////////////////////////////////////////////////////////
-__declspec(dllexport) void*& GetPtrByName( const char* aName );
-
-#define MakeObjPtrFun( name, fun ) \
-	inline void*& fun() \
-{ \
-	static void*& ptr = GetPtrByName( #name ); \
-	return ptr; \
-}
+// __declspec(dllexport) void*& GetPtrByName( const char* aName );
+// 
+// #define MakeObjPtrFun( name, fun ) \
+// 	inline void*& fun() \
+// { \
+// 	static void*& ptr = GetPtrByName( #name ); \
+// 	return ptr; \
+// }
 
 #endif

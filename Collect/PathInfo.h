@@ -47,22 +47,26 @@ typedef hash_set<string, htraits> TStrHashSet;
 class __declspec(dllexport) CPathInfo
 {
 public:
-	CPathInfo();
-	virtual ~CPathInfo();
-
+	static CPathInfo* GetInstance();
 	void InitPathInfo();   // 初始化程序路径
 	void LoadUrlMap();     // 从本地文件加载已加载的url到hashmap
 	void SaveUrlMap();     // 保存已加载url的hashmap到本地文件
 	void InsertUrlToFile(const string& url);     // 将url存入hashmap中
 	bool pageLoaded(const string& url); // 判断当前url是否已处理
 	const wchar_t* ModulePath();
+protected:
+	CPathInfo();
+	virtual ~CPathInfo();
 
+private:
+	static CPathInfo *instance;
 	wstring modulePath;
 };
 
 //本地路径对象
-MakeObjPtrFun( CPathInfo, GetObjPtr_ZMPathInfo )
-#define gPathInfoPtr ((CPathInfo*&)GetObjPtr_ZMPathInfo())
-#define gPathInfo (*(CPathInfo*&)GetObjPtr_ZMPathInfo())
+#define gPathInfo CPathInfo::GetInstance()
+// MakeObjPtrFun( CPathInfo, GetObjPtr_ZMPathInfo )
+// #define gPathInfoPtr ((CPathInfo*&)GetObjPtr_ZMPathInfo())
+// #define gPathInfo (*(CPathInfo*&)GetObjPtr_ZMPathInfo())
 
 #endif

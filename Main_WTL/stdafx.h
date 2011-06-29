@@ -32,7 +32,9 @@ extern CAppModule _Module;
   #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
+#define MSG_PASS_VALUE 0x0501
 
+#define MSG_W_COLLECT_URL  1
 
 #include <string>
 #include <vector>

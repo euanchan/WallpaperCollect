@@ -156,20 +156,41 @@ TPackagePageAttri CHtmlParse::GetLevel2PageUrls(const TSiteInfo& siteInfo)
 	pos = namePosR;
 	while ((pos = htmlSrc.find(pCurKey->urlKey, pos)) != -1)
 	{
+		TCollectInfo info;
+		
+		// ∫œº≠¡¥Ω”
 		int urlPosL = htmlSrc.find(pCurKey->urlL, pos);
 		urlPosL += pCurKey->urlL.length();
 		int urlPosR = htmlSrc.find(pCurKey->urlR, urlPosL);
-
 		if (urlPosR == -1 || urlPosL == (pCurKey->urlL.length() - 1)) 
 			break;
+		string linkUrl = htmlSrc.substr(urlPosL, urlPosR - urlPosL);
+		info.linkUrl = siteInfo.mainUrl + linkUrl;   // ∫œº≠“≥√Ê¡¥Ω”
 
-		pos = urlPosR;
+		// Àı¬‘Õºœ‘ æ√˚
+		int thumbNameL = htmlSrc.find(pCurKey->thumbnailNameL, urlPosR);
+		thumbNameL += pCurKey->thumbnailNameL.length();
+		int thumbNameR = htmlSrc.find(pCurKey->thumbnailNameR, thumbNameL);
+		if (thumbNameR == -1 || thumbNameL == (pCurKey->thumbnailNameL.length() - 1))
+			break;
+		string thumbName = htmlSrc.substr(thumbNameL, thumbNameR - thumbNameL);
+		USES_CONVERSION;
+		info.displayName = A2W(thumbName.c_str());  // Àı¬‘Õºœ‘ æ√˚
 
-		// ≤π≥‰url
-		string urlStr = htmlSrc.substr(urlPosL, urlPosR - urlPosL);
-		urlStr.insert(0, siteInfo.mainUrl.c_str());
+		// Àı¬‘ÕºÕº∆¨¡¥Ω”
+		int thumbUrlL = htmlSrc.find(pCurKey->thumbnailUrlL, thumbNameR);
+		thumbUrlL += pCurKey->thumbnailUrlL.length();
+		int thumbUrlR = htmlSrc.find(pCurKey->thumbnailUrlR, thumbUrlL);
+		if (thumbUrlR == -1 || thumbUrlL == (pCurKey->thumbnailUrlL.length() - 1))
+			break;
+		thumbUrlR += pCurKey->thumbnailUrlR.length();
+		string thumbUrl = htmlSrc.substr(thumbUrlL, thumbUrlR - thumbUrlL);
+		info.thumbUrl = siteInfo.mainUrl + thumbUrl;  // Àı¬‘ÕºÕº∆¨¡¥Ω”
+		info.index = packagePageAtt.collectInfoVec.size();
 
-		packagePageAtt.urlArr.push_back(urlStr);
+		packagePageAtt.collectInfoVec.push_back(info);
+		pos = thumbUrlR;
+		// packagePageAtt.albumsInfo.push_back(urlStr);
 	}
 	return packagePageAtt;
 }
