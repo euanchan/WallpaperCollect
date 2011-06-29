@@ -157,7 +157,7 @@ void CLogXml::AddLogA(const char* strNewLog)
 //////////////////////////////////////////////////////////////////////////
 DbLog::DbLog( const wchar_t *aFileName /*= NULL*/ )
 {
-	iFilePath = gPathInfo.ModulePath();
+	iFilePath = gPathInfo->ModulePath();
 
 	iFilePath += aFileName;
 

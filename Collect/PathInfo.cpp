@@ -2,12 +2,13 @@
 #include "PathInfo.h"
 TStrHashSet urlHashSet;
 
-CPathInfo::CPathInfo()
+CPathInfo* CPathInfo::instance = NULL;
+
+CPathInfo* CPathInfo::GetInstance()
 {
-	modulePath = _T("");
-}
-CPathInfo::~CPathInfo()
-{
+	if (!instance)
+		instance = new CPathInfo();
+	return instance;
 }
 
 wstring GetModulePath()
@@ -21,9 +22,17 @@ wstring GetModulePath()
 	return path;
 }
 
-void CPathInfo::InitPathInfo()
+CPathInfo::CPathInfo()
 {
 	modulePath = GetModulePath();
+}
+CPathInfo::~CPathInfo()
+{
+}
+
+
+void CPathInfo::InitPathInfo()
+{
 	LoadUrlMap();
 }
 

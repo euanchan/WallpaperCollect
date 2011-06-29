@@ -69,6 +69,16 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
+class TCollectInfo
+{
+public:
+	int     index;          // 用于保存CImageList中的下标
+	wstring displayName;    // 缩略图本地保存文件名
+	wstring thumbSavePath;  // 缩略图本地保存路径
+	string  thumbUrl;       // 缩略图图片url
+	string  linkUrl;        // 缩略图所指向level2页面的url
+};
+
 // 包含多个pageLevel2页面链接的网页(pageLevel3)关键字信息
 class TPackagePageKey
 {
@@ -79,12 +89,16 @@ public:
 	string urlKey;   // 壁纸辑页面链接关键字
 	string urlL;
 	string urlR;
+	string thumbnailUrlL;  // 缩略图图片链接
+	string thumbnailUrlR; 
+	string thumbnailNameL; 
+	string thumbnailNameR; 
 };
 class TPackagePageAttri
 {
 public:
 	wstring name;
-	vector<string> urlArr;
+	vector<TCollectInfo> collectInfoVec;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -146,16 +160,6 @@ public:
 		channelName = strInfo.channelName;
 		channelUrl  = strInfo.channelUrl;
 	}
-};
-
-class TThumbnailInfo
-{
-public:
-	int     index;          // 用于保存CImageList中的下标
-	string  displayName;    // 缩略图本地保存文件名
-	wstring thumbSavePath; // 缩略图本地保存路径
-	string  thumbUrl;       // 缩略图图片url
-	string  linkUrl;        // 缩略图所指向level2页面的url
 };
 
 //////////////////////////////////////////////////////////////////////////

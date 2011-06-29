@@ -26,10 +26,17 @@ public:
 	// 获取频道信息，保存到TChannelAttri中
 	bool ColChannelTree(TChannelAttri& channelInfo);
 
+	// 除不马上下载外，功能同ColFromPackagePages
+	bool GetPackagePagesInfo(const string& pageUrl,  TPackagePageAttri& collectInfo);
+	// 除不马上下载外，功能同ColFromPackagePage
+	bool GetPackagePageInfo(const string& pageUrl,  TPackagePageAttri& collectInfo);
+
 	// 从一个合集(包含多个level2链接)页面获取壁纸, 如http://www.deskcity.com/details/index/152.html
 	bool ColFromPackagePage(const string& pageUrl, const wstring& rootPath);
 	// 若分为多页，全部获取
 	bool ColFromPackagePages(const string& pageUrl, const wstring& rootPath);
+
+	bool GetPaginationInfo(const string &pageUrl, TPaginationAttri& paginationInfo);
 
 	// 从一个多壁纸展示(包含多个level1链接)页面(level2)获取壁纸， 如http://www.deskcity.com/details/picture/4074.html
 	bool ColFromPicListPage(const string& pageUrl, const wstring& rootPath);

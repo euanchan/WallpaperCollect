@@ -23,7 +23,6 @@ BOOL CChannelTreeCtrl::SubclassWindow( HWND hWnd )
 	return CWindowImpl::SubclassWindow( hWnd );
 }
 
-
 LRESULT CChannelTreeCtrl::OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	POINT point; 
@@ -47,6 +46,24 @@ LRESULT CChannelTreeCtrl::OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	return true;
 }
 
+LRESULT CChannelTreeCtrl::OnLBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	POINT point; 
+	GetCursorPos(&point); 
+	ScreenToClient(&point);
+	UINT iflags;
+	HTREEITEM selItem = HitTest(point, &iflags);	
+	if (selItem == NULL || !GetItemState(selItem, TVIF_CHILDREN))
+		return false;
+
+	SelectItem(selItem);
+
+	DWORD_PTR pt = GetItemData(selItem);
+	SendMessage(MSG_PASS_VALUE, MSG_W_COLLECT_URL, (LPARAM)pt);
+
+	return true;
+}
+
 bool CChannelTreeCtrl::InitWithChannelAtt(const TChannelAttri& channelAtt)
 {
 	TChannelTree::const_iterator iter = channelAtt.tree.begin();
@@ -54,7 +71,7 @@ bool CChannelTreeCtrl::InitWithChannelAtt(const TChannelAttri& channelAtt)
 	for (; iter != channelAtt.tree.end(); iter++)
 	{
 		HTREEITEM node = InsertNodeItem(iter->first, "", root);
-		for (int j = 0; j < iter->second.size(); j++)
+		for (size_t j = 0; j < iter->second.size(); j++)
 		{
 			InsertNodeItem(iter->second[j].first, iter->second[j].second, node);
 		}

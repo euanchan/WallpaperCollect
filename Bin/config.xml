@@ -24,8 +24,12 @@
 						<packageNameL>&lt;title></packageNameL>
 						<packageNameR>&lt;/title></packageNameR>
 						<packageUrlKey>class=&quot;img</packageUrlKey>
+						<thumbnailUrlL>src=&quot;</thumbnailUrlL>
+						<thumbnailUrlR>.jpg</thumbnailUrlR>
 						<packageUrlL>href='</packageUrlL>
 						<packageUrlR>'</packageUrlR>
+						<thumbnailNameL>alt=&quot;</thumbnailNameL>
+						<thumbnailNameR>&quot;</thumbnailNameR>
 				</Level3PageKey>
 				<PaginationKey>
 						<divKey>pagination</divKey>

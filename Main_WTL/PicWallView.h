@@ -27,5 +27,5 @@ private:
 // 	string pageUrl;
 	wstring cachePathRoot;   // 临时文件存放根目录
 
-	vector<TThumbnailInfo> thumbnailInfoList;
+	vector<TCollectInfo> thumbnailInfoList;
 };

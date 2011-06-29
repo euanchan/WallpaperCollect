@@ -21,7 +21,7 @@ public:
 		COMMAND_HANDLER(IDC_BTN_CHANGE_DIR, BN_CLICKED, OnBnClickedBtnChangeDir)
 		COMMAND_HANDLER(IDC_BTN_PAUSE, BN_CLICKED, OnBnClickedBtnPause)
 		COMMAND_ID_HANDLER(ID_Download_CHANNEL, OnDownload)
-		//CHAIN_MSG_MAP_MEMBER(menu)
+		MESSAGE_HANDLER(MSG_PASS_VALUE, OnPassValue)
 		REFLECT_NOTIFICATIONS() 
 	END_MSG_MAP()
 
@@ -37,6 +37,7 @@ public:
 	LRESULT OnBnClickedBtnChangeDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnBnClickedBtnPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnPassValue(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 private: 
 	CMenu menu;

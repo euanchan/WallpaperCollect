@@ -52,7 +52,7 @@ void test()
 
 	wpCol.SetSite("http://www.deskcity.com/");
 	wpCol.SetSaveDir(cachePath);
-	wpCol.ColChannelTree(channelAtt);
+	//wpCol.ColChannelTree(channelAtt);
 	wpCol.ColFromPackagePages("http://www.deskcity.com/details/index/152.html", cachePath);
 	wpCol.SetSaveDir(cachePath);
 	//wpCol.ColFromPicListPage("http://www.deskcity.com/details/picture/4074.html");

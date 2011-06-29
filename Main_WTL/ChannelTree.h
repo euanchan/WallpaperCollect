@@ -16,10 +16,13 @@ public:
 public: 
 	BEGIN_MSG_MAP(CChannelTreeCtrl)    
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRBtnClicked)
+		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLBtnClicked)
  		DEFAULT_REFLECTION_HANDLER() 
 	END_MSG_MAP() 
 
 	LRESULT OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnLBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
 
 private:
 	HTREEITEM InsertNodeItem(const string& node, const string& value, const HTREEITEM &parent);

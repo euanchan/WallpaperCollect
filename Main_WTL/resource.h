@@ -15,7 +15,6 @@
 #define IDC_BTN_CHANGE_DIR              1005
 #define IDC_BTN_P                       1006
 #define IDC_BTN_PAUSE                   1006
-#define IDC_LIST1                       1010
 #define IDC_LIST_PIC                    1010
 #define ID_Menu                         32775
 #define Download                        32776
