@@ -7,6 +7,7 @@
 #include "ChannelTree.h"
 #include "PicWallView.h"
 #include "WallpaperCollect.h"
+#include "Net.h"
 
 class CMainDlg : public CDialogImpl<CMainDlg>
 {
@@ -47,6 +48,7 @@ private:
 	CPicWallView     picWallView;
 
 	CWallpaperCollect wpCol;
+	CNet              net;
 	TChannelInfo *channelAtt;
 	vector<TPackagePageInfo*> collectInfoVec;
 

@@ -7,7 +7,7 @@ HBITMAP LoadImageFile(const wstring& fileName)
 	// Use IPicture stuff to use JPG / GIF files
 	IPicture* p;
 	IStream* s;
-	IPersistStream* ps;
+	//IPersistStream* ps;
 	HGLOBAL hG;
 	void* pp;
 	FILE* fp;
@@ -63,17 +63,9 @@ HBITMAP LoadImageFile(const wstring& fileName)
 }
 
 //////////////////////////////////////////////////////////////////////////
-CPicWallView::CPicWallView(const wstring &cacheFilePath/* = _T("")*/)
+CPicWallView::CPicWallView()
 : imgList(NULL)
 {
-	if (cacheFilePath.length() < 2)
-	{
-		cachePathRoot = gPathInfo->ModulePath();
-		cachePathRoot.append(_T("\\Cache\\Thumbnail"));
-	}
-	else
-		cachePathRoot = cacheFilePath;
-	//SetWindowLong(GWL_STYLE, GetWindowLong(GWL_STYLE) | LVS_ICON);
 }
 
 CPicWallView::~CPicWallView(void)
@@ -91,15 +83,8 @@ bool CPicWallView::InitWithCollectInfo( const TPackagePageInfo *packagePageInfo 
 {
 	thumbnailInfoList.erase(thumbnailInfoList.begin(), thumbnailInfoList.end());
 	size_t size = packagePageInfo->collectInfoVec.size();
-	for (int i = 0; i < size; i++)
+	for (size_t i = 0; i < size; i++)
 	{
-// 		TCollectInfo info;
-// 		info.index = i;
-// 		info.displayName = _T("ËõÂÔÍ¼1111");
-// 		wstring path = gPathInfo->ModulePath();
-// 		path.append(_T("\\Cache\\Thumbnail\\001\\4074.jpg"));
-// 		info.thumbSavePath = path;
-// 		info.linkUrl = collectInfo->collectInfoVec[i].linkUrl; // "deskcity.com/index/100";
 		TCollectInfo* collectInfo = const_cast<TCollectInfo*>(&packagePageInfo->collectInfoVec[i]);
 		thumbnailInfoList.push_back(static_cast<TCollectInfo *const&>(collectInfo));
 	}

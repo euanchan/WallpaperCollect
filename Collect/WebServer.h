@@ -18,8 +18,10 @@ public:
 // 	std::wstring GetWebPage(const std::wstring& sUrl);
 // 
 	// 获取HTML页面源码
-	string ColPageSourceHtml(const string& pageUrl);
+	bool ColPageSourceHtml(const string& pageUrl, string &htmlSrc);
 
 	bool DownLoadFile(const string& url, const wstring& filePath);
 	
+private:
+
 };

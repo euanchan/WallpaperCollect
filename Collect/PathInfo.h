@@ -11,7 +11,7 @@ struct htraits
 	// comparisons
 	bool operator()(const string& lhs,const string& rhs) const 
 	{
-		return !(lhs.compare(rhs) == 0); //注意这里的逻辑
+		return !(lhs.compare(rhs) == 0); 
 	}
 	// hashing function
 	size_t operator()(const string& key) const 
@@ -25,22 +25,6 @@ struct htraits
 	static const size_t bucket_size = 10u;
 	static const size_t min_buckets = 20u;
 };
-// struct str_hash
-// {
-// 	const static size_t bucket_size = 4;
-// 	const static size_t min_buckets = 8;
-// 	size_t operator()(const string& str) const
-// 	{
-// 		unsigned long __h = 0;
-// 		for (size_t i = 0 ; i < str.size() ; i ++)
-// 			__h = 5*__h + str[i];
-// 		return size_t(__h);
-// 	}
-// 	bool operator()(const string& s1, const string& s2) {
-// 		return (s1.compare(s2) == 0);
-// 	}   
-// };
-
 typedef hash_set<string, htraits> TStrHashSet;
 
 
@@ -52,8 +36,12 @@ public:
 	void LoadUrlMap();     // 从本地文件加载已加载的url到hashmap
 	void SaveUrlMap();     // 保存已加载url的hashmap到本地文件
 	void InsertUrlToFile(const string& url);     // 将url存入hashmap中
-	bool pageLoaded(const string& url); // 判断当前url是否已处理
-	const wchar_t* ModulePath();
+	bool PageLoaded(const string& url); // 判断当前url是否已处理
+	wstring ModulePath();
+	wstring CachePath();
+	wstring ThumbnailCachePath();
+	wstring GetSavePathRoot();
+	void SetSavePathRoot(const wstring& path);
 protected:
 	CPathInfo();
 	virtual ~CPathInfo();
@@ -61,6 +49,9 @@ protected:
 private:
 	static CPathInfo *instance;
 	wstring modulePath;
+	wstring savePathRoot;
+	wstring cachePath;
+	wstring thumbnailCachePath;
 };
 
 //本地路径对象

@@ -5,7 +5,7 @@ class CPicWallView :
 {
 public:
 	// 默认位于程序所在目录的Cache\Thumbnail文件夹下
-	CPicWallView(const wstring &cacheFilePath = _T(""));
+	CPicWallView();
 	virtual ~CPicWallView(void);
 
 	BEGIN_MSG_MAP(CChannelTreeCtrl)    
@@ -20,10 +20,8 @@ public:
 
 private:
 	bool InitWithImgInfoList();
+
 private:
 	CImageList *imgList;      // 
-
-	wstring cachePathRoot;   // 临时文件存放根目录
-
 	vector<TCollectInfo*> thumbnailInfoList;
 };

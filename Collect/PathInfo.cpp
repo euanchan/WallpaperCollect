@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PathInfo.h"
+#include "Tool.h"
 TStrHashSet urlHashSet;
 
 CPathInfo* CPathInfo::instance = NULL;
@@ -25,6 +26,11 @@ wstring GetModulePath()
 CPathInfo::CPathInfo()
 {
 	modulePath = GetModulePath();
+	cachePath = modulePath + _T("\\cache\\");
+	thumbnailCachePath = cachePath + _T("thumbnail\\");
+	savePathRoot = modulePath + _T("\\wallpaper\\");
+	MakeSurePathExists(thumbnailCachePath.c_str(), false);
+	MakeSurePathExists(savePathRoot.c_str(), false);
 }
 CPathInfo::~CPathInfo()
 {
@@ -36,9 +42,19 @@ void CPathInfo::InitPathInfo()
 	LoadUrlMap();
 }
 
-const wchar_t* CPathInfo::ModulePath()
+wstring CPathInfo::ModulePath()
 {
-	return modulePath.c_str();
+	return modulePath;
+}
+
+wstring CPathInfo::CachePath()
+{
+	return cachePath;
+}
+
+wstring CPathInfo::ThumbnailCachePath()
+{
+	return thumbnailCachePath;
 }
 
 void CPathInfo::LoadUrlMap()     // 从本地文件加载已加载的url到hashmap
@@ -81,9 +97,21 @@ void CPathInfo::InsertUrlToFile(const string& url) // 将url存入hashmap中
 	urlHashSet.insert(url);
 }
 
-bool CPathInfo::pageLoaded(const string& url)  // 
+bool CPathInfo::PageLoaded(const string& url)  // 
 {
 	TStrHashSet::const_iterator iter = urlHashSet.begin();
 	iter = urlHashSet.find(url);
 	return iter != urlHashSet.end();
+}
+
+
+wstring CPathInfo::GetSavePathRoot()
+{
+	return savePathRoot;
+}
+
+void CPathInfo::SetSavePathRoot(const wstring &path)
+{
+	savePathRoot = path;
+	MakeSurePathExists(savePathRoot.c_str(), false);
 }

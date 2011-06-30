@@ -41,20 +41,16 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 void test()
 {
-	wchar_t szPath[MAX_PATH] = {0};
-	wstring cachePath;
-	::GetModuleFileName(NULL, szPath, sizeof(szPath));
-	wcscpy(wcsrchr(szPath, '\\'), _T("\\Cache\\"));
-	cachePath = szPath;
-
 	CWallpaperCollect wpCol;
 	TChannelInfo channelAtt;
 
+	wstring cachePath = gPathInfo->CachePath();
+
 	wpCol.SetSite("http://www.deskcity.com/");
-	wpCol.SetSaveDir(cachePath);
+	//wpCol.SetSaveDir(cachePath);
 	//wpCol.ColChannelTree(channelAtt);
 	wpCol.ColFromPackagePages("http://www.deskcity.com/details/index/152.html", cachePath);
-	wpCol.SetSaveDir(cachePath);
+	//wpCol.SetSaveDir(cachePath);
 	//wpCol.ColFromPicListPage("http://www.deskcity.com/details/picture/4074.html");
 	//wpCol.ColFromPicViewPage("http://www.deskcity.com/details/show/4074/83985.html");
 

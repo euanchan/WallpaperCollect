@@ -7,6 +7,7 @@
 
 #include "WallpaperCollect.h"
 #include "WebServer.h"
+#include "Net.h"
 #include "HtmlParse.h"
 #include "tinyxml.h"
 #include "Log.h"
@@ -41,6 +42,7 @@ CWallpaperCollect::CWallpaperCollect(void)
 		Log.Init(L"log");
 		LoadConfigFile();
 	}
+	net = new CNet();
 }
 
 CWallpaperCollect::~CWallpaperCollect(void)
@@ -254,12 +256,8 @@ void CWallpaperCollect::InitChannelKeyInfo( TiXmlElement * thdNode, TSiteInfo &s
 //////////////////////////////////////////////////////////////////////////
 void CWallpaperCollect::SetSite( const string& url )
 {
-	siteUrl = url;
-	if ((*siteUrl.rbegin()) != '/')
-		this->siteUrl.append("/");
-
 	// 根据url中的信息在sitelist中找到匹配站点信息
-	pCurSite = NULL;
+	curSiteInfo = NULL;
 
 	string siteName = url;
 	size_t posL = siteName.find("www.");
@@ -272,76 +270,93 @@ void CWallpaperCollect::SetSite( const string& url )
 	{
 		if (0 == strcmp(siteName.c_str(), gSiteList[i].siteName.c_str()))
 		{
-			pCurSite = &gSiteList[i];
+			curSiteInfo = &gSiteList[i];
 			break;
 		}
 	}
 }
-
-void CWallpaperCollect::SetSaveDir(const wstring& saveDir)
-{
-	this->saveDir = saveDir;
-	if ((*saveDir.rbegin()) != '\\')
-		this->saveDir.append(_T("\\"));
-
-	MakeSurePathExists(saveDir.c_str(), false);
-}
+// 
+// void CWallpaperCollect::SetSaveDir(const wstring& saveDir)
+// {
+// 	this->saveDir = saveDir;
+// 	if ((*saveDir.rbegin()) != '\\')
+// 		this->saveDir.append(_T("\\"));
+// 
+// 	MakeSurePathExists(saveDir.c_str(), false);
+// }
 
 //////////////////////////////////////////////////////////////////////////
 
 // 获取频道信息，保存到TChannelAttri中
 bool CWallpaperCollect::ColChannelTree(TChannelInfo* channelInfo)
 {
-	if (!pCurSite) return false;
+	if (!curSiteInfo) return false;
 
 	CWebServer webServ;
-	string pageHtml = webServ.ColPageSourceHtml(pCurSite->channelKey.srcPageUrl);
+	string pageHtml;
+	if (!webServ.ColPageSourceHtml(curSiteInfo->channelKey.srcPageUrl, pageHtml))
+		return false;
 
 	CHtmlParse parser(pageHtml);
-	return parser.GetChannelInfo(*pCurSite, channelInfo);
+	return parser.GetChannelInfo(*curSiteInfo, channelInfo);
 }
 
 // 除不马上下载外，功能同ColFromPackagePages
 bool CWallpaperCollect::GetPackagePagesInfo( const string& pageUrl, TPackagePageInfo* collectInfo )
 {
+	bool ret = false;
 	TPaginationInfo paginationInfo;
 	if (!GetPaginationInfo(pageUrl, paginationInfo))
 	{
-		GetPackagePageInfo(pageUrl, collectInfo);
+		ret = GetPackagePageInfo(pageUrl, collectInfo);
 	}
 	
 	if (paginationInfo.maxPage <= 1)
-		GetPackagePageInfo(pageUrl, collectInfo);
+		ret = GetPackagePageInfo(pageUrl, collectInfo);
 	else
 	{
-		GetPackagePageInfo(paginationInfo.pageUrlBase, collectInfo);
+		ret = GetPackagePageInfo(paginationInfo.pageUrlBase, collectInfo);
 		for (int i = 2; i < paginationInfo.maxPage; i++)
 		{
 			char indexStr[4];
 			itoa(i, indexStr, 10);
 			string url = paginationInfo.pageUrlBase + "/" + indexStr;
-			GetPackagePageInfo(url, collectInfo);
+			ret = GetPackagePageInfo(url, collectInfo);
 		}
 	}
-	return true;
+	return ret;
 }
 
 // 除不马上下载外，功能同ColFromPackagePage
 bool CWallpaperCollect::GetPackagePageInfo( const string& pageUrl, TPackagePageInfo* collectInfo )
 {
-	if (!pCurSite) return false;
+	if (!curSiteInfo) return false;
 
 	// 获取网页源码
 	CWebServer webServ;
-	string pageHtml = webServ.ColPageSourceHtml(pageUrl);
+	string pageHtml;
+	if (!webServ.ColPageSourceHtml(pageUrl, pageHtml))
+		return false;
 
 	// 解析得到level2页面的url，保存
 	CHtmlParse parser(pageHtml);
-	if (!parser.GetLevel2PageUrls(*pCurSite, collectInfo))
+	if (!parser.GetLevel2PageUrls(*curSiteInfo, collectInfo))
 	{
 		delete collectInfo;
 		collectInfo = NULL;
 		return false;
+	}
+	else
+	{   // 初始化缩略图保存路径
+		wstring pathRoot = gPathInfo->CachePath() + _T("thumbnail\\");
+		vector<TCollectInfo>::iterator iter = collectInfo->collectInfoVec.begin();
+		for (; iter != collectInfo->collectInfoVec.end(); ++iter)
+		{
+			string thumbUrl = iter->thumbUrl.substr(iter->thumbUrl.rfind("/") + 1);
+			USES_CONVERSION;
+			wstring wThumbUrl = A2W(thumbUrl.c_str());
+			iter->thumbSavePath = pathRoot + wThumbUrl;
+		}
 	}
 	return true;
 }
@@ -372,15 +387,17 @@ bool CWallpaperCollect::ColFromPackagePages(const string& pageUrl, const wstring
 
 bool CWallpaperCollect::GetPaginationInfo(const string &pageUrl, TPaginationInfo& paginationInfo) 
 {
-	if (!pCurSite) return false;
+	if (!curSiteInfo) return false;
 
 	// 获取网页源码
 	CWebServer webServ;
-	string pageHtml = webServ.ColPageSourceHtml(pageUrl);
+	string pageHtml;
+	if (!webServ.ColPageSourceHtml(pageUrl, pageHtml))
+		return false;
 
 	// 解析判断是否包含上下页信息
 	CHtmlParse parser(pageHtml);
-	if (!parser.GetPageIndexInfo(*pCurSite, &paginationInfo))
+	if (!parser.GetPageIndexInfo(*curSiteInfo, &paginationInfo))
 		return false;
 
 	string separateStr;
@@ -420,18 +437,20 @@ bool CWallpaperCollect::ColFromPackagePage(const string& pageUrl, const wstring&
 // 如http://www.deskcity.com/details/picture/4074.html
 bool CWallpaperCollect::ColFromPicListPage( const string& pageUrl, const wstring& rootPath )
 {
-	if (!pCurSite) return false;
-	if (gPathInfo->pageLoaded(pageUrl)) 
+	if (!curSiteInfo) return false;
+	if (gPathInfo->PageLoaded(pageUrl)) 
 		return false;
 
 	// 获取网页源代码
 	CWebServer webServ;
-	string pageHtml = webServ.ColPageSourceHtml(pageUrl);
+	string pageHtml;
+	if (!webServ.ColPageSourceHtml(pageUrl, pageHtml))
+		return false;
 
 	// 解析得到显示壁纸页面的url，存入数组
 	CHtmlParse parser(pageHtml);
 	TPicsShowPageInfo picsShowPageArr;
-	if (!parser.GetLevel1PageUrls(*pCurSite, &picsShowPageArr))
+	if (!parser.GetLevel1PageUrls(*curSiteInfo, &picsShowPageArr))
 		return false;
 
 	if (picsShowPageArr.name.length() <= 1)
@@ -458,29 +477,33 @@ bool CWallpaperCollect::ColFromPicListPage( const string& pageUrl, const wstring
 // 如http://www.deskcity.com/details/show/4074/83985.html
 bool CWallpaperCollect::ColFromPicViewPage( const string& pageUrl, const wstring& rootPath)
 {
-	if (!pCurSite) return false;
+	if (!curSiteInfo) return false;
 
 	// 获取网页源代码
 	CWebServer webServ;
-	string pageHtml = webServ.ColPageSourceHtml(pageUrl);
+	string pageHtml;
+	if (!webServ.ColPageSourceHtml(pageUrl, pageHtml))
+		return false;
 
 	// 解析获得壁纸的链接、壁纸相关信息
 	CHtmlParse parser(pageHtml);
 	TPicShowPageInfo picShowPageAttri;
-	if (!parser.GetWallpaperImgUrl(*pCurSite, &picShowPageAttri))
+	if (!parser.GetWallpaperImgUrl(*curSiteInfo, &picShowPageAttri))
 		return false;
 	if (picShowPageAttri.picName.length() <= 1 ||
 		picShowPageAttri.picUrl.length() <= 1)
 		return false;
 
 	USES_CONVERSION;
-	wchar *picNameExt = A2W(pCurSite->picShowPageKey.picUrlR.c_str());
+	wchar *picNameExt = A2W(curSiteInfo->picShowPageKey.picUrlR.c_str());
 	wstring filePath = rootPath + picShowPageAttri.picName + picNameExt;
 
 	// TODO:处理图片已存在
 
 	// 下载图片保存到指定目录
-	webServ.DownLoadFile(picShowPageAttri.picUrl, filePath);
+	net->AddTask(picShowPageAttri.picUrl, filePath);
+
+	// webServ.DownLoadFile(picShowPageAttri.picUrl, filePath);
 
 	return true;
 }

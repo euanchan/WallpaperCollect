@@ -217,7 +217,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Net.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PathInfo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RawCriSection.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\RawThread.cpp"
 				>
 			</File>
 			<File
@@ -283,7 +295,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Net.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PathInfo.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RawCriSection.h"
+				>
+			</File>
+			<File
+				RelativePath=".\RawThread.h"
 				>
 			</File>
 			<File

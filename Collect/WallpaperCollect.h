@@ -13,6 +13,7 @@ using std::string;
 class TiXmlElement;
 class TSiteInfo;
 class TChannelInfo;
+class CNet;
 class WallpaperCollect_API CWallpaperCollect
 {
 public:
@@ -20,7 +21,7 @@ public:
 	~CWallpaperCollect(void);
 
 	void SetSite(const string& url);
-	void SetSaveDir(const wstring& saveDir);
+// 	void SetSaveDir(const wstring& saveDir);
 	// bool ParseAndCollect(const char* url);
 
 	// 获取频道信息，保存到TChannelAttri中
@@ -54,10 +55,7 @@ private:
 	void InitChannelKeyInfo   ( TiXmlElement * thdNode, TSiteInfo &siteInfo );
 
 private:
-// 	CWebServer* webServ;
-// 	CHtmlParse* parser;
-	string     siteUrl;  // 主域名
-	wstring     saveDir;  // 壁纸保存路径
-	TSiteInfo* pCurSite;  // 设置siteUrl后更新
+	CNet*      net;
+	TSiteInfo* curSiteInfo;  // 设置siteUrl后更新
 };
 #endif

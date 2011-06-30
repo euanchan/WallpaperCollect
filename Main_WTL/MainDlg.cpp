@@ -6,37 +6,33 @@
 #include "resource.h"
 
 #include "MainDlg.h"
+#include "PathInfo.h"
 
 void CMainDlg::Init()
 {
 	channelAtt = new TChannelInfo();
+
+	//wstring cachePath = gPathInfo->CachePath();
+	wpCol.SetSite("http://www.deskcity.com/");
+	wpCol.ColChannelTree(channelAtt);
 }
 
 void CMainDlg::Release()
 {
 	delete channelAtt;
+	
+	size_t size = collectInfoVec.size();
+	while (size-- > 0)
+	{
+		delete collectInfoVec[0];
+		collectInfoVec.erase(collectInfoVec.begin());
+	}
 }
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// ³õÊ¼»¯ÆµµÀÊ÷
-	wchar_t szPath[MAX_PATH] = {0};
-	wstring cachePath;
-	::GetModuleFileName(NULL, szPath, sizeof(szPath));
-	wcscpy(wcsrchr(szPath, '\\'), _T("\\Cache\\"));
-	cachePath = szPath;
-
-
-	// Init
 	Init();
-	
-	wpCol.SetSite("http://www.deskcity.com/");
-	wpCol.SetSaveDir(cachePath);
-	wpCol.ColChannelTree(channelAtt);
-	//wpCol.ColFromPackagePages("http://www.deskcity.com/details/index/152.html", cachePath);
-	//wpCol.SetSaveDir(cachePath);
-
-
 
 	//////////////////////////////////////////////////////////////////////////
 	// center the dialog on the screen
@@ -50,12 +46,12 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 	SetIcon(hIconSmall, FALSE);
 
+	//////////////////////////////////////////////////////////////////////////
 	// channelTree
 	channelTree.SubclassWindow(GetDlgItem(IDC_CHANNEL_TREE));
 	channelTree.InitWithChannelAtt(channelAtt);
 
-	//
-	//picWallView.Create(m_hWnd);
+	// 
 	picWallView.SubclassWindow(GetDlgItem(IDC_LIST_PIC));
 
 	// Menu
@@ -107,7 +103,15 @@ LRESULT CMainDlg::OnDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	if (ptr)
 	{
 		string url = (char*)(item.GetData());
-		wpCol.ColFromPackagePages(url, _T("F:\\"));
+		wchar lpStr[MAX_PATH];
+		memset(lpStr, 0, MAX_PATH);
+		item.GetText((LPTSTR)lpStr, MAX_PATH);
+		wstring rootPath = gPathInfo->GetSavePathRoot();
+		USES_CONVERSION;
+		wstring tmp(lpStr);
+		rootPath.append(tmp);
+		rootPath.append(_T("\\"));
+		wpCol.ColFromPackagePages(url, rootPath);
 	}
 
 	return 0;
@@ -140,6 +144,19 @@ LRESULT CMainDlg::OnTvnSelchangedChannelTree(int /*idCtrl*/, LPNMHDR pNMHDR, BOO
 	{
 		collectInfoVec.push_back(collectInfo);
 		picWallView.InitWithCollectInfo(collectInfo);
+		net.Start();
+	}
+	else
+	{
+		delete collectInfo;
+		return 0;
+	}
+
+	// Add thumbnail to download task
+	vector<TCollectInfo>::iterator iter = collectInfo->collectInfoVec.begin();
+	for (; iter != collectInfo->collectInfoVec.end(); ++iter)
+	{
+		net.AddTask(iter->thumbUrl, iter->thumbSavePath);
 	}
 
 	return 0;

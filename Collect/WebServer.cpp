@@ -1,6 +1,3 @@
-
-#include  <atlbase.h>
-
 #include "stdafx.h"
 #include "WebServer.h"
 #include "Tool.h"
@@ -21,10 +18,9 @@ END_MESSAGE_MAP()
 
 
 
-string CWebServer::ColPageSourceHtml( const string& pageUrl )
+bool CWebServer::ColPageSourceHtml( const string& pageUrl, string& htmlStr)
 {
 	CString htmlWStr;
-	string htmlStr;
 	USES_CONVERSION;
 	CString theUrl = A2W(pageUrl.c_str());
 	CInternetSession session;
@@ -38,7 +34,7 @@ string CWebServer::ColPageSourceHtml( const string& pageUrl )
 	{
 		file = NULL; 
 		m_pException->Delete();
-		return FALSE;
+		return false;
 	}
 
 	if (file)
@@ -65,10 +61,7 @@ string CWebServer::ColPageSourceHtml( const string& pageUrl )
 	//////////////////////////////////////////////////////////////////////////
 /*
 	wchar szPath[MAX_PATH] = {0};
-	CString strPath;
-	::GetModuleFileName(NULL,szPath,sizeof(szPath));
-	wcscpy(wcsrchr(szPath, _T('\\')), _T("\\Cache\\1.html"));
-	strPath = szPath;
+	CString strPath = gPathInfo::CachePath() + _T("1.html");
 
 	CStdioFile data;
 	if (data.Open(strPath, CFile::modeCreate | CFile::modeWrite | 
@@ -81,7 +74,7 @@ string CWebServer::ColPageSourceHtml( const string& pageUrl )
 */
 	//////////////////////////////////////////////////////////////////////////
 
-	return htmlStr;
+	return true;
 }
 
 
@@ -142,7 +135,10 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 		{
 			DeleteFile(filePath.c_str());
 		}
+		ret = false;
 	}
 	netSess.Close();
 	return ret;
 }
+
+//////////////////////////////////////////////////////////////////////////
