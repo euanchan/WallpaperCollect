@@ -87,19 +87,21 @@ LRESULT CPicWallView::OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return 0;
 }
 
-bool CPicWallView::InitWithPageUrl(const string &pageUrl)
+bool CPicWallView::InitWithCollectInfo( const TPackagePageInfo *packagePageInfo )
 {
 	thumbnailInfoList.erase(thumbnailInfoList.begin(), thumbnailInfoList.end());
-	for (int i = 0; i < 40; i++)
+	size_t size = packagePageInfo->collectInfoVec.size();
+	for (int i = 0; i < size; i++)
 	{
-		TCollectInfo info;
-		info.index = i;
-		info.displayName = _T("ËõÂÔÍ¼1111");
-		wstring path = gPathInfo->ModulePath();
-		path.append(_T("\\Cache\\Thumbnail\\001\\4074.jpg"));
-		info.thumbSavePath = path;
-		info.linkUrl = "deskcity.com/index/100";
-		thumbnailInfoList.push_back(info);
+// 		TCollectInfo info;
+// 		info.index = i;
+// 		info.displayName = _T("ËõÂÔÍ¼1111");
+// 		wstring path = gPathInfo->ModulePath();
+// 		path.append(_T("\\Cache\\Thumbnail\\001\\4074.jpg"));
+// 		info.thumbSavePath = path;
+// 		info.linkUrl = collectInfo->collectInfoVec[i].linkUrl; // "deskcity.com/index/100";
+		TCollectInfo* collectInfo = const_cast<TCollectInfo*>(&packagePageInfo->collectInfoVec[i]);
+		thumbnailInfoList.push_back(static_cast<TCollectInfo *const&>(collectInfo));
 	}
 
 	InitWithImgInfoList();
@@ -108,7 +110,11 @@ bool CPicWallView::InitWithPageUrl(const string &pageUrl)
 
 bool CPicWallView::InitWithImgInfoList()
 {
-	vector<TCollectInfo>::iterator iter = thumbnailInfoList.begin();
+	int count = GetItemCount();
+	while (count-- > 0)
+		DeleteItem(0);
+
+	vector<TCollectInfo*>::iterator iter = thumbnailInfoList.begin();
 	if (imgList)
 	{
 		imgList->Destroy();
@@ -118,13 +124,13 @@ bool CPicWallView::InitWithImgInfoList()
 	this->SetImageList(imgList->m_hImageList, LVSIL_NORMAL);
 	for (; iter != thumbnailInfoList.end(); ++iter)
 	{
-		HBITMAP bm = LoadImageFile(iter->thumbSavePath);
+		HBITMAP bm = LoadImageFile((*iter)->thumbSavePath);
 		int i = imgList->Add(bm, (HBITMAP)NULL);
 		if (i == -1)
 		{
-			printf("Load image file \"%s\" failed!", iter->thumbSavePath);
+			printf("Load image file \"%s\" failed!", (*iter)->thumbSavePath);
 		}
-		InsertItem(iter->index, (LPCTSTR)iter->displayName.c_str(), iter->index);
+		InsertItem((*iter)->index, (LPCTSTR)(*iter)->displayName.c_str(), (*iter)->index);
 	}
 	return true;
 }

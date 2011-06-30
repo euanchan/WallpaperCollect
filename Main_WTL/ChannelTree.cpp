@@ -30,9 +30,8 @@ LRESULT CChannelTreeCtrl::OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ScreenToClient(&point);
 	UINT iflags;
 	HTREEITEM selItem = HitTest(point, &iflags);	
-	if (selItem == NULL || !GetItemState(selItem, TVIF_CHILDREN))
+	if (selItem == NULL || GetItemData(selItem) == 0)
 		return false;
-
 
 	SelectItem(selItem);
 	
@@ -46,29 +45,11 @@ LRESULT CChannelTreeCtrl::OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	return true;
 }
 
-LRESULT CChannelTreeCtrl::OnLBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+bool CChannelTreeCtrl::InitWithChannelAtt(const TChannelInfo* channelAtt)
 {
-	POINT point; 
-	GetCursorPos(&point); 
-	ScreenToClient(&point);
-	UINT iflags;
-	HTREEITEM selItem = HitTest(point, &iflags);	
-	if (selItem == NULL || !GetItemState(selItem, TVIF_CHILDREN))
-		return false;
-
-	SelectItem(selItem);
-
-	DWORD_PTR pt = GetItemData(selItem);
-	SendMessage(MSG_PASS_VALUE, MSG_W_COLLECT_URL, (LPARAM)pt);
-
-	return true;
-}
-
-bool CChannelTreeCtrl::InitWithChannelAtt(const TChannelAttri& channelAtt)
-{
-	TChannelTree::const_iterator iter = channelAtt.tree.begin();
-	HTREEITEM root = InsertRootItem(channelAtt.siteName);
-	for (; iter != channelAtt.tree.end(); iter++)
+	TChannelTree::const_iterator iter = channelAtt->tree.begin();
+	HTREEITEM root = InsertRootItem(channelAtt->siteName);
+	for (; iter != channelAtt->tree.end(); iter++)
 	{
 		HTREEITEM node = InsertNodeItem(iter->first, "", root);
 		for (size_t j = 0; j < iter->second.size(); j++)
@@ -85,15 +66,14 @@ HTREEITEM CChannelTreeCtrl::InsertNodeItem( const string& node, const string& va
 	ZeroMemory( &tvis, sizeof(TV_INSERTSTRUCT) );
 	tvis.hParent		= parent;
 	tvis.hInsertAfter	= TVI_LAST;
-	tvis.item.mask		= TVIF_TEXT;	
+	tvis.item.mask		= TVIF_TEXT | TVIF_PARAM | TVIF_HANDLE | TVIF_HANDLE;	
 
 	CStringW wstr = node.c_str();
 	tvis.item.pszText	= (LPWSTR)wstr.GetString();
-	tvis.item.cChildren = 1;
-	tvis.item.lParam = (LPARAM)value.c_str();
+	tvis.item.cChildren = 0;
+	tvis.item.lParam = value.length() > 2 ? (DWORD)value.c_str() : 0;
+
 	HTREEITEM hItem = InsertItem( &tvis );
-	if (value.length() > 3)
-		SetItemState(hItem, TVIF_CHILDREN, TVIF_CHILDREN);
 	return hItem;
 }
 
@@ -108,6 +88,7 @@ HTREEITEM CChannelTreeCtrl::InsertRootItem(const string& node)
 	CStringW wstr = node.c_str();
 	tvis.item.pszText	= (LPWSTR)wstr.GetString();
  	tvis.item.cChildren = 1;
+	tvis.item.lParam = 0;
 	HTREEITEM hItem = InsertItem( &tvis );
  	SetItemState(hItem, TVIS_EXPANDED, TVIS_EXPANDED);
 	

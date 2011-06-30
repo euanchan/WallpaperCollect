@@ -24,10 +24,9 @@ void CHtmlParse::ResetSrc(const string& htmlSource)
 	d.add(1, 0,'风光','');
 	d.add(31,1,'风光其他','/details/index/31');
 */
-TChannelAttri CHtmlParse::GetChannelInfo(const TSiteInfo& siteInfo)
+bool CHtmlParse::GetChannelInfo(const TSiteInfo& siteInfo, TChannelInfo* channelInfo)
 {
-	TChannelAttri channelAtt;
-	channelAtt.siteName = siteInfo.siteName;
+	channelInfo->siteName = siteInfo.siteName;
 	vector<string> infoVec;  // 分离出 31,1,'风光其他','/details/index/31'
 	int pos = 0;
 	while ((pos = htmlSrc.find("add(", pos)) != -1)
@@ -60,13 +59,13 @@ TChannelAttri CHtmlParse::GetChannelInfo(const TSiteInfo& siteInfo)
 		{
 			TChannelNode node;
 			node.first = channelVec[i].channelName;
-			channelAtt.tree.push_back(node);
+			channelInfo->tree.push_back(node);
 		}
 		else if (channelVec[i].num > 0)
 		{
 			int index = channelVec[i].num;
-			ASSERT(index <= channelAtt.tree.size());
-			TChannelNode *node = &channelAtt.tree[index - 1];
+			ASSERT(index <= channelInfo->tree.size());
+			TChannelNode *node = &channelInfo->tree[index - 1];
 			TChannelNodeChild child;
 			child.first = channelVec[i].channelName;
 			string url = siteInfo.mainUrl + channelVec[i].channelUrl;
@@ -75,7 +74,7 @@ TChannelAttri CHtmlParse::GetChannelInfo(const TSiteInfo& siteInfo)
 		}
 	}
 
-	return channelAtt;
+	return true;
 }
 
 /*
@@ -90,14 +89,14 @@ TChannelAttri CHtmlParse::GetChannelInfo(const TSiteInfo& siteInfo)
 	<span class="disabled">下一页</span></div>
 */
 // 获取当前页面的页码信息
-TPaginationAttri CHtmlParse::GetPageIndexInfo(const TSiteInfo& siteInfo)
+bool CHtmlParse::GetPageIndexInfo(const TSiteInfo& siteInfo, TPaginationInfo *paginationInfo)
 {
 	TPaginationKey *pCurKey = const_cast<TPaginationKey *>(&siteInfo.paginationKey);
-	TPaginationAttri pages;
+
 	int divBegPos = htmlSrc.find(pCurKey->divKey);
 	int divEndPos = htmlSrc.find("/div>", divBegPos);
 	if (divBegPos == -1 || divEndPos == -1)
-		return pages;
+		return false;
 	
 	string paginationStr = htmlSrc.substr(divBegPos, divEndPos - divBegPos);
 
@@ -115,8 +114,8 @@ TPaginationAttri CHtmlParse::GetPageIndexInfo(const TSiteInfo& siteInfo)
 
 		string pageIndexStr = paginationStr.substr(pageIndexPosL, pageIndexPosR - pageIndexPosL);
 		int pageIndex = atoi(pageIndexStr.c_str());
-		if (pageIndex > pages.maxPage)
-			pages.maxPage = pageIndex;
+		if (pageIndex > paginationInfo->maxPage)
+			paginationInfo->maxPage = pageIndex;
 	}
 	pos = paginationStr.find(pCurKey->currentKey);
 	int curIndexPosL = paginationStr.find(pCurKey->currentL, pos);
@@ -124,21 +123,17 @@ TPaginationAttri CHtmlParse::GetPageIndexInfo(const TSiteInfo& siteInfo)
 	int curIndexPosR = paginationStr.find(pCurKey->currentR, curIndexPosL);
 
 	if (curIndexPosR == -1 || curIndexPosL == (pCurKey->currentL.length() - 1))
-		return pages;
-
+		return false;
 
 	string curIndexStr = paginationStr.substr(curIndexPosL, curIndexPosR - curIndexPosL);
-	pages.curPage = atoi(curIndexStr.c_str());
+	paginationInfo->curPage = atoi(curIndexStr.c_str());
 
-	return pages;
+	return true;
 }
 
-TPackagePageAttri CHtmlParse::GetLevel2PageUrls(const TSiteInfo& siteInfo)
+bool CHtmlParse::GetLevel2PageUrls(const TSiteInfo& siteInfo, TPackagePageInfo *packagePageInfo)
 {
 	TPackagePageKey *pCurKey = const_cast<TPackagePageKey *>(&siteInfo.packagePageKey);
-	//pCurKey->Log(siteInfo.siteName);
-
-	TPackagePageAttri packagePageAtt;
 
 	int pos = htmlSrc.find(pCurKey->nameKey);
 	int namePosL = htmlSrc.find(pCurKey->nameL, pos);
@@ -146,12 +141,12 @@ TPackagePageAttri CHtmlParse::GetLevel2PageUrls(const TSiteInfo& siteInfo)
 	int namePosR = htmlSrc.find(pCurKey->nameR, namePosL);
 
 	if (namePosR == -1 || namePosL == (pCurKey->nameL.length() - 1))
-		return packagePageAtt;
+		return false;
 
 
 	string packageNameStr = htmlSrc.substr(namePosL, namePosR - namePosL);
 	USES_CONVERSION;
-	packagePageAtt.name = A2W(packageNameStr.c_str());
+	packagePageInfo->name = A2W(packageNameStr.c_str());
 
 	pos = namePosR;
 	while ((pos = htmlSrc.find(pCurKey->urlKey, pos)) != -1)
@@ -186,22 +181,20 @@ TPackagePageAttri CHtmlParse::GetLevel2PageUrls(const TSiteInfo& siteInfo)
 		thumbUrlR += pCurKey->thumbnailUrlR.length();
 		string thumbUrl = htmlSrc.substr(thumbUrlL, thumbUrlR - thumbUrlL);
 		info.thumbUrl = siteInfo.mainUrl + thumbUrl;  // 缩略图图片链接
-		info.index = packagePageAtt.collectInfoVec.size();
+		info.index = packagePageInfo->collectInfoVec.size();
 
-		packagePageAtt.collectInfoVec.push_back(info);
+		packagePageInfo->collectInfoVec.push_back(info);
 		pos = thumbUrlR;
 		// packagePageAtt.albumsInfo.push_back(urlStr);
 	}
-	return packagePageAtt;
+	return true;
 }
 
 
-TPicsShowPageAttri CHtmlParse::GetLevel1PageUrls(const TSiteInfo& siteInfo)
+bool CHtmlParse::GetLevel1PageUrls(const TSiteInfo& siteInfo, TPicsShowPageInfo* picsShowPageInfo)
 {
 	TPicsShowPageKey *pCurKey = const_cast<TPicsShowPageKey *>(&siteInfo.picsShowPageKey);
 	pCurKey->Log(siteInfo.siteName);
-
-	TPicsShowPageAttri picsShowPageAtt;
 
 	int pos = htmlSrc.find(pCurKey->nameKey);
 	int namePosL = htmlSrc.find(pCurKey->nameL, pos);
@@ -209,11 +202,11 @@ TPicsShowPageAttri CHtmlParse::GetLevel1PageUrls(const TSiteInfo& siteInfo)
 	int namePosR = htmlSrc.find(pCurKey->nameR, namePosL);
 
 	if (namePosR == -1 || namePosL == (pCurKey->nameL.length() - 1))
-		return picsShowPageAtt;
+		return false;
 
 	string packageNameStr = htmlSrc.substr(namePosL, namePosR - namePosL);
 	USES_CONVERSION;
-	picsShowPageAtt.name = A2W(packageNameStr.c_str());
+	picsShowPageInfo->name = A2W(packageNameStr.c_str());
 
 	pos = namePosR;
 	while ((pos = htmlSrc.find(pCurKey->urlKey, pos)) != -1)
@@ -231,17 +224,15 @@ TPicsShowPageAttri CHtmlParse::GetLevel1PageUrls(const TSiteInfo& siteInfo)
 		string urlStr = htmlSrc.substr(urlPosL, urlPosR - urlPosL);
 		urlStr.insert(0, siteInfo.mainUrl.c_str());
 
-		picsShowPageAtt.urlArr.push_back(urlStr);
+		picsShowPageInfo->urlArr.push_back(urlStr);
 	}
-	return picsShowPageAtt;
+	return true;
 }
 
-TPicShowPageAttri CHtmlParse::GetWallpaperImgUrl( const TSiteInfo& siteInfo )
+bool CHtmlParse::GetWallpaperImgUrl( const TSiteInfo& siteInfo, TPicShowPageInfo* picShowPageInfo)
 {
 	TPicShowPageKey *pCurKey = const_cast<TPicShowPageKey *>(&siteInfo.picShowPageKey);
 	pCurKey->Log(siteInfo.siteName);
-
-	TPicShowPageAttri picShowPageAtt;
 
 	int pos = htmlSrc.find(pCurKey->picNameKey);
 	int picNameL = htmlSrc.find(pCurKey->picNameL, pos);
@@ -250,11 +241,11 @@ TPicShowPageAttri CHtmlParse::GetWallpaperImgUrl( const TSiteInfo& siteInfo )
 	int picNameR = htmlSrc.find(pCurKey->picNameR, picNameL);
 
 	if (picNameR == -1 || picNameL == (pCurKey->picNameL.length() - 1))
-		return picShowPageAtt;
+		return false;
 
 	string picNameStr = htmlSrc.substr(picNameL, picNameR - picNameL);
 	USES_CONVERSION;
-	picShowPageAtt.picName = A2W(picNameStr.c_str());
+	picShowPageInfo->picName = A2W(picNameStr.c_str());
 
 	pos = htmlSrc.find(pCurKey->picUrlKey, picNameR);
 	int picUrlL = htmlSrc.find(pCurKey->picUrlL, pos);
@@ -262,14 +253,14 @@ TPicShowPageAttri CHtmlParse::GetWallpaperImgUrl( const TSiteInfo& siteInfo )
 	int picUrlR = htmlSrc.find(pCurKey->picUrlR, picUrlL);
 
 	if (picUrlR == -1 || (picUrlL == pCurKey->picUrlL.length() - 1))
-		return picShowPageAtt;
+		return false;
 
 	picUrlR += pCurKey->picUrlR.length();
 
-	picShowPageAtt.picUrl = htmlSrc.substr(picUrlL, picUrlR - picUrlL);
+	picShowPageInfo->picUrl = htmlSrc.substr(picUrlL, picUrlR - picUrlL);
 
 	// 处理获得的图片url
-	picShowPageAtt.picUrl.insert(0, siteInfo.mainUrl.c_str());
+	picShowPageInfo->picUrl.insert(0, siteInfo.mainUrl.c_str());
 
-	return picShowPageAtt;
+	return true;
 }

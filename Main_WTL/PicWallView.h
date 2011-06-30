@@ -16,16 +16,14 @@ public:
 	LRESULT OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 public:
-	bool InitWithPageUrl(const string &pageUrl);
+	bool InitWithCollectInfo(const TPackagePageInfo *packagePageInfo);
 
 private:
 	bool InitWithImgInfoList();
 private:
 	CImageList *imgList;      // 
 
-
-// 	string pageUrl;
 	wstring cachePathRoot;   // 临时文件存放根目录
 
-	vector<TCollectInfo> thumbnailInfoList;
+	vector<TCollectInfo*> thumbnailInfoList;
 };

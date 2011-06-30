@@ -48,7 +48,7 @@ void test()
 	cachePath = szPath;
 
 	CWallpaperCollect wpCol;
-	TChannelAttri channelAtt;
+	TChannelInfo channelAtt;
 
 	wpCol.SetSite("http://www.deskcity.com/");
 	wpCol.SetSaveDir(cachePath);

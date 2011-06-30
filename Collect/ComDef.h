@@ -24,7 +24,7 @@ enum SiteType
 };
 
 //////////////////////////////////////////////////////////////////////////
-class TPicShowPageAttri
+class TPicShowPageInfo
 {
 public:
 	wstring picName;
@@ -61,7 +61,7 @@ public:
 	void Log(const string& siteName) const;
 };
 
-class TPicsShowPageAttri
+class TPicsShowPageInfo
 {
 public:
 	wstring  name;  // 壁纸合集名称
@@ -94,10 +94,11 @@ public:
 	string thumbnailNameL; 
 	string thumbnailNameR; 
 };
-class TPackagePageAttri
+class TPackagePageInfo
 {
 public:
-	wstring name;
+	wstring name;      // 合集名称
+	string  url;       // 当前合集链接
 	vector<TCollectInfo> collectInfoVec;
 };
 
@@ -115,10 +116,10 @@ public:
 	string currentR;
 };
 
-class TPaginationAttri
+class TPaginationInfo
 {
 public:
-	TPaginationAttri():minPage(1), maxPage(1), curPage(1){}
+	TPaginationInfo():minPage(1), maxPage(1), curPage(1){}
 	string pageUrlBase;
 	string extentStr;
 	size_t minPage;
@@ -138,7 +139,7 @@ typedef pair<string, string> TChannelNodeChild;  // pair<name, url>
 typedef pair<string, vector<TChannelNodeChild> > TChannelNode;
 typedef vector<TChannelNode> TChannelTree;  // vector<pair<rootName, childVec> >
 // vector<pair<rootName, childTreeNodeVector>>
-class TChannelAttri
+class TChannelInfo
 {
 public:
 	string siteName;

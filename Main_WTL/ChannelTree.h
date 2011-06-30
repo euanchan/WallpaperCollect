@@ -12,16 +12,14 @@ public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	virtual BOOL SubclassWindow( HWND hWnd );
 
-	bool InitWithChannelAtt(const TChannelAttri& channelAtt);
+	bool InitWithChannelAtt(const TChannelInfo* channelAtt);
 public: 
 	BEGIN_MSG_MAP(CChannelTreeCtrl)    
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRBtnClicked)
-		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLBtnClicked)
- 		DEFAULT_REFLECTION_HANDLER() 
+ 		//DEFAULT_REFLECTION_HANDLER() 
 	END_MSG_MAP() 
 
 	LRESULT OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnLBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 
 private:

@@ -7,6 +7,16 @@
 
 #include "MainDlg.h"
 
+void CMainDlg::Init()
+{
+	channelAtt = new TChannelInfo();
+}
+
+void CMainDlg::Release()
+{
+	delete channelAtt;
+}
+
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// 初始化频道树
@@ -17,6 +27,9 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	cachePath = szPath;
 
 
+	// Init
+	Init();
+	
 	wpCol.SetSite("http://www.deskcity.com/");
 	wpCol.SetSaveDir(cachePath);
 	wpCol.ColChannelTree(channelAtt);
@@ -100,14 +113,33 @@ LRESULT CMainDlg::OnDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	return 0;
 }
 
-LRESULT CMainDlg::OnPassValue(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CMainDlg::OnTvnSelchangedChannelTree(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& bHandled)
 {
-	switch (wParam)
+	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+
+ 	if (pNMTreeView->itemNew.lParam == 0)
+ 		return 0;
+
+	HTREEITEM selItem = pNMTreeView->itemNew.hItem;
+	string url = (char*)pNMTreeView->itemNew.lParam;
+
+	// 查询是否本地已有缓存
+	for (int i = 0; i < collectInfoVec.size(); i++)
 	{
-	case MSG_W_COLLECT_URL:
-		string url = (char*)lParam;
-		picWallView.InitWithPageUrl(url.c_str());
-		break;
+		if (url == collectInfoVec[i]->url)
+		{
+			picWallView.InitWithCollectInfo(collectInfoVec[i]);
+			return 0;
+		}
+	}
+
+	// 
+	TPackagePageInfo *collectInfo = new TPackagePageInfo();
+	collectInfo->url = url;
+	if (wpCol.GetPackagePagesInfo(url, collectInfo))
+	{
+		collectInfoVec.push_back(collectInfo);
+		picWallView.InitWithCollectInfo(collectInfo);
 	}
 
 	return 0;

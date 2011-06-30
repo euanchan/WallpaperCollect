@@ -290,7 +290,7 @@ void CWallpaperCollect::SetSaveDir(const wstring& saveDir)
 //////////////////////////////////////////////////////////////////////////
 
 // 获取频道信息，保存到TChannelAttri中
-bool CWallpaperCollect::ColChannelTree(TChannelAttri& channelInfo)
+bool CWallpaperCollect::ColChannelTree(TChannelInfo* channelInfo)
 {
 	if (!pCurSite) return false;
 
@@ -298,16 +298,17 @@ bool CWallpaperCollect::ColChannelTree(TChannelAttri& channelInfo)
 	string pageHtml = webServ.ColPageSourceHtml(pCurSite->channelKey.srcPageUrl);
 
 	CHtmlParse parser(pageHtml);
-	channelInfo = parser.GetChannelInfo(*pCurSite);
-	return true;
+	return parser.GetChannelInfo(*pCurSite, channelInfo);
 }
 
 // 除不马上下载外，功能同ColFromPackagePages
-bool CWallpaperCollect::GetPackagePagesInfo( const string& pageUrl, TPackagePageAttri& collectInfo )
+bool CWallpaperCollect::GetPackagePagesInfo( const string& pageUrl, TPackagePageInfo* collectInfo )
 {
-	TPaginationAttri paginationInfo;
+	TPaginationInfo paginationInfo;
 	if (!GetPaginationInfo(pageUrl, paginationInfo))
-		return false;
+	{
+		GetPackagePageInfo(pageUrl, collectInfo);
+	}
 	
 	if (paginationInfo.maxPage <= 1)
 		GetPackagePageInfo(pageUrl, collectInfo);
@@ -326,7 +327,7 @@ bool CWallpaperCollect::GetPackagePagesInfo( const string& pageUrl, TPackagePage
 }
 
 // 除不马上下载外，功能同ColFromPackagePage
-bool CWallpaperCollect::GetPackagePageInfo( const string& pageUrl, TPackagePageAttri& collectInfo )
+bool CWallpaperCollect::GetPackagePageInfo( const string& pageUrl, TPackagePageInfo* collectInfo )
 {
 	if (!pCurSite) return false;
 
@@ -336,16 +337,19 @@ bool CWallpaperCollect::GetPackagePageInfo( const string& pageUrl, TPackagePageA
 
 	// 解析得到level2页面的url，保存
 	CHtmlParse parser(pageHtml);
-	collectInfo = parser.GetLevel2PageUrls(*pCurSite);
-	if (collectInfo.name.length() <= 1)
+	if (!parser.GetLevel2PageUrls(*pCurSite, collectInfo))
+	{
+		delete collectInfo;
+		collectInfo = NULL;
 		return false;
+	}
 	return true;
 }
 
 // 查找是否页面中有上下页信息，若有对每个页面调用ColFromPackagePage()
 bool CWallpaperCollect::ColFromPackagePages(const string& pageUrl, const wstring& rootPath)
 {
-	TPaginationAttri paginationInfo;
+	TPaginationInfo paginationInfo;
 	if (!GetPaginationInfo(pageUrl, paginationInfo))
 		return false;
 
@@ -366,7 +370,7 @@ bool CWallpaperCollect::ColFromPackagePages(const string& pageUrl, const wstring
 	return true;
 }
 
-bool CWallpaperCollect::GetPaginationInfo(const string &pageUrl, TPaginationAttri& paginationInfo) 
+bool CWallpaperCollect::GetPaginationInfo(const string &pageUrl, TPaginationInfo& paginationInfo) 
 {
 	if (!pCurSite) return false;
 
@@ -376,9 +380,9 @@ bool CWallpaperCollect::GetPaginationInfo(const string &pageUrl, TPaginationAttr
 
 	// 解析判断是否包含上下页信息
 	CHtmlParse parser(pageHtml);
-	paginationInfo = parser.GetPageIndexInfo(*pCurSite);
+	if (!parser.GetPageIndexInfo(*pCurSite, &paginationInfo))
+		return false;
 
-	// 
 	string separateStr;
 	if (paginationInfo.curPage > 1)
 		separateStr = "/";
@@ -394,8 +398,8 @@ bool CWallpaperCollect::GetPaginationInfo(const string &pageUrl, TPaginationAttr
 // 如http://www.deskcity.com/details/index/152.html
 bool CWallpaperCollect::ColFromPackagePage(const string& pageUrl, const wstring& rootPath)
 {
-	TPackagePageAttri collectInfo;
-	if (!GetPackagePageInfo(pageUrl, collectInfo))
+	TPackagePageInfo collectInfo;
+	if (!GetPackagePageInfo(pageUrl, &collectInfo))
 		return false;
 
 	// 解析得到合集名，设置壁纸保存文件夹名
@@ -426,8 +430,10 @@ bool CWallpaperCollect::ColFromPicListPage( const string& pageUrl, const wstring
 
 	// 解析得到显示壁纸页面的url，存入数组
 	CHtmlParse parser(pageHtml);
-	TPicsShowPageAttri picsShowPageArr;
-	picsShowPageArr = parser.GetLevel1PageUrls(*pCurSite);
+	TPicsShowPageInfo picsShowPageArr;
+	if (!parser.GetLevel1PageUrls(*pCurSite, &picsShowPageArr))
+		return false;
+
 	if (picsShowPageArr.name.length() <= 1)
 		return false;
 
@@ -460,8 +466,9 @@ bool CWallpaperCollect::ColFromPicViewPage( const string& pageUrl, const wstring
 
 	// 解析获得壁纸的链接、壁纸相关信息
 	CHtmlParse parser(pageHtml);
-	TPicShowPageAttri picShowPageAttri;
-	picShowPageAttri = parser.GetWallpaperImgUrl(*pCurSite);
+	TPicShowPageInfo picShowPageAttri;
+	if (!parser.GetWallpaperImgUrl(*pCurSite, &picShowPageAttri))
+		return false;
 	if (picShowPageAttri.picName.length() <= 1 ||
 		picShowPageAttri.picUrl.length() <= 1)
 		return false;
