@@ -157,10 +157,9 @@ void CLogXml::AddLogA(const char* strNewLog)
 //////////////////////////////////////////////////////////////////////////
 DbLog::DbLog( const wchar_t *aFileName /*= NULL*/ )
 {
-	iFilePath = gPathInfo->ModulePath();
-
+	iFilePath = gPathInfo->GetModulePath();
+	iFilePath += _T("\\");
 	iFilePath += aFileName;
-
 	iBuf[0] = '\0';
 }
 
@@ -179,17 +178,17 @@ void DbLog::Write(const char *aData, int aLen, EWritePos aPos /*= EPEnd*/ )
 	if( aData != NULL && aLen > 0 )
 	{
 		FileOp f;
-		if( f.open( iFilePath.c_str(), FileOp::ZM_OPEN_W_ALWAYS) )
+		if( f.open( iFilePath.c_str(), FileOp::E_OPEN_W_ALWAYS) )
 		{
-			if(aPos == EPEnd /*  &&f.GetLength() > gSystem.iLogSizeLimit */)
-			{
-				f.close();
-				if(FileOp::DelFile(iFilePath.c_str()))
-				{
-					Write(aData, aLen, EPBegin);
-				}
-				return;
-			}
+// 			if(aPos == EPEnd /*  &&f.GetLength() > gSystem.iLogSizeLimit */)
+// 			{
+// 				f.close();
+// 				if(FileOp::DelFile(iFilePath.c_str()))
+// 				{
+// 					Write(aData, aLen, EPBegin);
+// 				}
+// 				return;
+// 			}
 			f.seek(0, aPos);
 			f.write((int8*)aData, aLen);
 		}
@@ -217,7 +216,7 @@ DbLog& DbLog::operator<<(EType type)
 	{
 	case Time:
 		{
-			ZMTIME t = FileOp::ZMGetLocalTime();
+			TTime t = FileOp::GetLocalTime();
 			sprintf( iBuf + strlen(iBuf), "[%02d:%02d:%02d:%03d]", t.wHour, t.wMinute, t.wSecond, t.wMilliseconds );
 		}
 		break;

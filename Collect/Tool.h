@@ -18,3 +18,6 @@ unsigned int UCS2Length(const char *s, unsigned int len);
 unsigned int UCS2FromUTF8(const char *s, unsigned int len, wchar_t *tbuf, unsigned int tlen);
 unsigned int ascii_to_utf8(const char * pszASCII, unsigned int lenASCII, char * pszUTF8);
 int utf8_to_ascii(const char * pszUTF8, unsigned int lenUTF8, char * pszASCII);
+
+//获取系统当前时间
+TTime __declspec(dllexport) GetLocalTime(void);

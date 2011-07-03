@@ -17,6 +17,7 @@ bool CRawThread::Start( RawThreadFunc aFunc, void* aParam /*= NULL*/ )
 		iThreadFunc = aFunc;
 		iParam = aParam;
 		iHandle = ::CreateThread( NULL, 0, ThreadProc, this, 0, &iID );
+		tTestLog("[" << (long)this << "]" << " Create Thread: " << (long)iHandle);
 	}
 	return iHandle != NULL;
 }
@@ -32,6 +33,7 @@ void CRawThread::Stop()
 {
 	if( iHandle )
 	{
+		tTestLog("[" << (long)this << "]" << " TerminateThread " << (long)iHandle);
 		::TerminateThread( iHandle, 0 );
 		iHandle = NULL;
 	}

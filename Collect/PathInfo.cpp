@@ -1,117 +1,229 @@
 #include "stdafx.h"
 #include "PathInfo.h"
 #include "Tool.h"
-TStrHashSet urlHashSet;
 
 CPathInfo* CPathInfo::instance = NULL;
 
 CPathInfo* CPathInfo::GetInstance()
 {
 	if (!instance)
+	{
 		instance = new CPathInfo();
+		instance->LoadFinishedPicsPageUrl();
+		instance->LoadTaskedPicsPageUrl();
+	}
 	return instance;
 }
 
-wstring GetModulePath()
+void CPathInfo::ReleaseInstance()
 {
-	wstring path;
-	wchar_t pPath[MAX_PATH] = {0};
-	GetModuleFileName(NULL, pPath, MAX_PATH);
-	wcscpy(wcsrchr(pPath, '\\'), _T("\0"));
+	instance->SaveTaskedPicsPageUrl();
+	instance->SaveFinishedPicsPageUrl();
 
-	path = pPath;
-	return path;
+	wstring iniFilePath = modulePath + _T("\\config.ini");
+	::WritePrivateProfileString(_T("wallpaper"), _T("savepathRoot"), 
+		savePathRoot.c_str(), iniFilePath.c_str());
+	SAFE_DELETE(instance);
 }
 
 CPathInfo::CPathInfo()
 {
-	modulePath = GetModulePath();
+	wchar_t pPath[MAX_PATH] = {0};
+	GetModuleFileName(NULL, pPath, MAX_PATH);
+	wcscpy(wcsrchr(pPath, '\\'), _T("\0"));
+	modulePath = pPath;
+
+
 	cachePath = modulePath + _T("\\cache\\");
 	thumbnailCachePath = cachePath + _T("thumbnail\\");
 	savePathRoot = modulePath + _T("\\wallpaper\\");
+
+	// 
+	wstring iniFilePath = modulePath + _T("\\config.ini");
+	wchar buf[1024];
+	::GetPrivateProfileString(_T("wallpaper"), _T("savepathRoot"), savePathRoot.c_str(), 
+		buf, 1024, iniFilePath.c_str());
+	savePathRoot = buf;
+
 	MakeSurePathExists(thumbnailCachePath.c_str(), false);
 	MakeSurePathExists(savePathRoot.c_str(), false);
 }
+
 CPathInfo::~CPathInfo()
 {
 }
 
-
 void CPathInfo::InitPathInfo()
 {
-	LoadUrlMap();
 }
 
-wstring CPathInfo::ModulePath()
+const wchar_t* CPathInfo::GetModulePath()
 {
-	return modulePath;
+	return modulePath.c_str();
 }
 
-wstring CPathInfo::CachePath()
+const wchar_t* CPathInfo::GetCachePath()
 {
-	return cachePath;
+	return cachePath.c_str();
 }
 
-wstring CPathInfo::ThumbnailCachePath()
+const wchar_t* CPathInfo::GetThumbnailCachePath()
 {
-	return thumbnailCachePath;
+	return thumbnailCachePath.c_str();
 }
 
-void CPathInfo::LoadUrlMap()     // 从本地文件加载已加载的url到hashmap
+const wchar_t* CPathInfo::GetSavePathRoot()
 {
-	wstring filePath = modulePath + _T("\\loadedUrl.data");
-
-	FILE *file = _wfopen(filePath.c_str(), _T("r"));
-	if (file != NULL)
-	{
-		char line[128]; /* or other suitable maximum line size */
-		while (fgets(line, sizeof(line), file) != NULL) /* read a line */
-		{
-			if (strlen(line) > 1)
-				urlHashSet.insert(line);
-		}
-		fclose(file);
-	}
-}
-
-void CPathInfo::SaveUrlMap()  // 保存已加载url的hashmap到本地文件
-{
-	wstring filePath = modulePath + _T("\\loadedUrl.data");
-	TStrHashSet::iterator iter = urlHashSet.begin();
-	CFile file;
-	if (file.Open(filePath.c_str(), CFile::modeCreate | CFile::modeWrite))
-	{
-		while (iter != urlHashSet.end())
-		{
-			string url = *iter;
-			file.Write(url.c_str(), url.length());
-			file.Write("\n", 1);
-			iter++;
-		}
-		file.Close();
-	}
-}
-
-void CPathInfo::InsertUrlToFile(const string& url) // 将url存入hashmap中
-{
-	urlHashSet.insert(url);
-}
-
-bool CPathInfo::PageLoaded(const string& url)  // 
-{
-	TStrHashSet::const_iterator iter = urlHashSet.begin();
-	iter = urlHashSet.find(url);
-	return iter != urlHashSet.end();
-}
-
-
-wstring CPathInfo::GetSavePathRoot()
-{
-	return savePathRoot;
+	return savePathRoot.c_str();
 }
 
 void CPathInfo::SetSavePathRoot(const wstring &path)
 {
 	savePathRoot = path;
 	MakeSurePathExists(savePathRoot.c_str(), false);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void CPathInfo::LoadTaskedPicsPageUrl()
+{
+	wstring filePath = modulePath + _T("\\taskedPUrl.data");
+	DoLoadHashSet(taskedUrlList, filePath);
+}
+
+void CPathInfo::SaveTaskedPicsPageUrl()
+{
+	wstring filePath = modulePath + _T("\\taskedPUrl.data");
+	DoSaveHashSet(taskedUrlList, filePath);
+}
+
+void CPathInfo::LoadFinishedPicsPageUrl()
+{
+	wstring filePath = modulePath + _T("\\finishedPUrl.data");
+	DoLoadHashSet(finishedPackageUrlList, filePath);
+}
+
+void CPathInfo::SaveFinishedPicsPageUrl()  
+{
+	wstring filePath = modulePath + _T("\\finishedPUrl.data");
+	DoSaveHashSet(finishedPackageUrlList, filePath);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+void CPathInfo::DoLoadHashSet(TStrHashSet& strList, wstring filePath)
+{
+	int readCount = 0;
+	FILE *file = _wfopen(filePath.c_str(), _T("r"));
+	if (file != NULL)
+	{
+		char line[MAX_PATH]; /* or other suitable maximum line size */
+		memset(line, 0, MAX_PATH);
+		while (fgets(line, sizeof(line), file) != NULL) /* read a line */
+		{
+			int len = strlen(line);
+			if (len > 1 && len < MAX_PATH)
+			{
+				line[len - 1] = '\0';
+				strList.insert(line);
+				readCount++;
+			}
+		}
+		fclose(file);
+	}
+	tTestLog("[" << (long)this << "] Load " << readCount << " url From " << filePath.c_str());
+}
+
+void CPathInfo::DoSaveHashSet(TStrHashSet& strList, wstring filePath)
+{
+	if (strList.size() == 0) return;
+
+	int count = 0;
+	TStrHashSet::iterator iter = strList.begin();
+	CFile file;
+	if (file.Open(filePath.c_str(), CFile::modeCreate | CFile::modeWrite))
+	{
+		while (iter != strList.end())
+		{
+			string url = *iter;
+			file.Write(url.c_str(), url.length());
+			file.Write("\n", 1);
+			iter++;
+			count++;
+		}
+		file.Close();
+	}
+	tTestLog("[" << (long)this << "] Save " << count << " url To " << filePath.c_str());
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+// 加载未完成的任务到taskVec中
+void CPathInfo::LoadUnfinishedPicTask(vector<TPicTaskInfo>& taskVec)
+{
+	wstring filePath = modulePath + _T("\\unFinishedTask.data");
+
+	int readCount = 0;
+	FILE *file = _wfopen(filePath.c_str(), _T("r"));
+	if (file == NULL)
+	{
+		tTestLog("[" << (long)this << "] failed to open \"" << filePath.c_str() << "\"");
+		return;
+	}
+
+	char line[MAX_PATH]; 
+	memset(line, 0, MAX_PATH);
+	while (fgets(line, sizeof(line), file) != NULL) /* read a line */
+	{
+		int len = strlen(line);
+		if (len > 1 && len < MAX_PATH)
+		{
+			if (line[len - 1] == '\n')
+				line[len - 1] = '\0';
+			string url = line;
+			if (fgets(line, sizeof(line), file) != NULL)
+			{
+				USES_CONVERSION;
+				wchar *wstr = A2W(line);
+				int wlen = wcslen(wstr);
+				if (wlen > 1 && wlen < MAX_PATH)
+				{
+					if (wstr[wlen - 1] == '\n')
+						wstr[wlen - 1] = '\0';
+					wstring savePath = wstr;
+					taskVec.push_back(make_pair(url, savePath));
+				}
+			}
+			readCount++;
+		}
+	}
+	fclose(file);
+
+	tTestLog("[" << (long)this << "] Load " << readCount << " url From unFinishedTask.data");
+}
+
+void CPathInfo::SaveUnfinishedPicTask(vector<TPicTaskInfo>& taskVec)
+{
+	wstring filePath = modulePath + _T("\\unFinishedTask.data");
+	int count = 0;
+	vector<TPicTaskInfo>::iterator iter = taskVec.begin();
+	CFile file;
+	if (file.Open(filePath.c_str(), CFile::modeCreate | CFile::modeWrite))
+	{
+		while (iter != taskVec.end())
+		{
+			string url = iter->first;
+			wstring savePath = iter->second;
+			USES_CONVERSION;
+			string saveP = W2A(savePath.c_str());
+			file.Write(url.c_str(), url.length());
+			file.Write("\n", 1);
+			file.Write(saveP.c_str(), saveP.length());
+			file.Write("\n", 1);
+			iter++;
+			count++;
+		}
+		file.Close();
+	}
+	tTestLog("[" << (long)this << "] Save " << count << " url To unFinishedTask.data");
 }

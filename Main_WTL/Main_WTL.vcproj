@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="Main_WTL"
+	Name="Wallpaper"
 	ProjectGUID="{24429507-2047-4AB4-91CF-4C8A9F883DDD}"
 	RootNamespace="Main_WTL"
 	TargetFrameworkVersion="196613"
@@ -50,7 +50,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\Collect"
+				AdditionalIncludeDirectories="..\Collect;..\ThirdPart\tinyxml\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;_DEBUG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\Collect"
+				AdditionalIncludeDirectories="..\Collect; ..\ThirdPart\tinyxml\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;STRICT;NDEBUG"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"

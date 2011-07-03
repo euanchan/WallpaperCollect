@@ -4,6 +4,8 @@
 
 IMPLEMENT_DYNAMIC(CWebServer, CWnd)
 
+extern HWND gWindowHandle;
+
 CWebServer::CWebServer(void)
 {
 	afxCurrentAppName = _T("WallpaperCollect.dll");
@@ -32,6 +34,7 @@ bool CWebServer::ColPageSourceHtml( const string& pageUrl, string& htmlStr)
 	}
 	catch (CInternetException* m_pException)
 	{
+		tTestLog("ColPageSourceHtml:   " << pageUrl.c_str() << "  Failed!");
 		file = NULL; 
 		m_pException->Delete();
 		return false;
@@ -90,12 +93,32 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 	// 文件存在
 	if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(filePath.c_str()))
 	{
-		return false;
+		return true;
 	}
 	try
 	{
+		// 获取文件名
+		size_t pos = filePath.rfind(_T("\\")) + 1;
+		CString fileName = filePath.substr(pos).c_str();
+		UpdateCurPicName((WPARAM)fileName.GetBuffer());
+
+		tTestLog("[" << (long)this << "]" << url.c_str() << " DownLoading ……");
+		tTestLog("[" << (long)this << "]" << " Save As " << filePath.c_str());
+
 		DWORD dwFlag = INTERNET_FLAG_TRANSFER_BINARY|INTERNET_FLAG_DONT_CACHE|INTERNET_FLAG_RELOAD;
 		pHttpFile = (CHttpFile *)netSess.OpenURL(wUrl.c_str(), 1, dwFlag);
+
+		// 获取文件大小
+		LONGLONG fileSize = 0;
+		LONGLONG readedSz = 0;
+		CString queryinfo;
+		pHttpFile->QueryInfo(HTTP_QUERY_STATUS_CODE, queryinfo);
+		if(queryinfo == "200") 
+		{ 
+			pHttpFile-> QueryInfo(HTTP_QUERY_CONTENT_LENGTH, queryinfo);
+			fileSize = _wtoi64(queryinfo);
+		}
+
 		if (NULL != pHttpFile)
 		{
 			DWORD bufSize = 1024;
@@ -110,6 +133,14 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 				{
 					readCount = pHttpFile->Read(buf, bufSize);
 					file.Write(buf, readCount);
+					readedSz += readCount;
+
+					// TODO: 缩略图判断方式
+					UpdateProgress(readedSz, fileSize);
+					if (fileSize < 50000 && readedSz == fileSize)
+					{
+						NotifyThumbnailDownload((WPARAM)url.c_str(), (LPARAM)filePath.c_str());
+					}
 					if (readCount < bufSize)
 						break;
 				}
@@ -120,9 +151,14 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 			delete pHttpFile;
 			pHttpFile = NULL;
 		}
+		else
+		{
+			tTestLog("DownLoadFile: " << url.c_str() << "  Failed! null");
+		}
 	}
 	catch (...)
 	{
+		tTestLog("DownLoadFile:   " << url.c_str() << "  Failed!");
 		//AfxMessageBox(_T("Download File failed"));
 		if(NULL != pHttpFile)
 		{
@@ -142,3 +178,32 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 }
 
 //////////////////////////////////////////////////////////////////////////
+
+bool CWebServer::UpdateProgress(LONGLONG index, LONGLONG total)
+{
+	if (gWindowHandle && total > 0)
+	{
+		int pos = (float)index / (float)total * 100;
+		::PostMessage(gWindowHandle, MSG_UPDATE_CUR_PIC_PROCESS, pos, 0); 
+
+		return true;
+	}
+	return false;
+}
+
+bool CWebServer::UpdateCurPicName(WPARAM wstrPt)
+{
+	if (gWindowHandle && wstrPt)
+	{
+		::PostMessage(gWindowHandle, MSG_UPDATE_CUR_PIC_NAME, wstrPt, 0); 
+		return true;
+	}
+	return false;	
+}
+
+bool CWebServer::NotifyThumbnailDownload(WPARAM urlPt, LPARAM savePathPt)
+{
+	// 缩略图下载完成，发送消息更新图片列表
+	::PostMessage(gWindowHandle, MSG_THUMBNAIL_PIC_FINISHED, urlPt, savePathPt);
+	return true;
+}

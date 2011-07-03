@@ -21,6 +21,9 @@ public:
 	bool ColPageSourceHtml(const string& pageUrl, string &htmlSrc);
 
 	bool DownLoadFile(const string& url, const wstring& filePath);
+	bool UpdateProgress(LONGLONG index, LONGLONG total);
+	bool UpdateCurPicName(WPARAM wstrPt);
+	bool NotifyThumbnailDownload(WPARAM urlPt, LPARAM savePathPt);
 	
 private:
 

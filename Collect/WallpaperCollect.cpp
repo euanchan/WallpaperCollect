@@ -14,8 +14,25 @@
 #include "Tool.h"
 #include "PathInfo.h"
 
+
+HANDLE ghNetEvent = CreateEvent(NULL, false, false, _T("NetWaitForEvent"));
+HANDLE ghWpCollEvent = CreateEvent(NULL, false, false, _T("WPCollWaitForEvent"));
+HWND gWindowHandle = NULL;
+
+bool SetWallpaperCollectEvent()
+{
+	bool ret1 = SetEvent(ghNetEvent);
+	bool ret2 = SetEvent(ghWpCollEvent);
+	return ret1 && ret2;
+}
+
+void SetMsgRecvWindowH(HWND windowHandle)
+{
+	gWindowHandle = windowHandle;
+}
+
 TSiteList gSiteList;
-CLogXml Log;
+CLogXml gLog;
 bool bGlobalValueInit = false;
 string keyArr[][6] = 
 {
@@ -35,19 +52,26 @@ string keyArr[][6] =
 
 
 
-CWallpaperCollect::CWallpaperCollect(void)
+CWallpaperCollect::CWallpaperCollect()
+: onWork(false)
 {
 	if (!bGlobalValueInit)
 	{
-		Log.Init(L"log");
+		gLog.Init(L"log");
 		LoadConfigFile();
+		gPathInfo->GetInstance();  // 初始化gPathInfo
 	}
 	net = new CNet();
+	net->LoadUnfinishedTask();
+	rawCrisection.Create();
 }
 
 CWallpaperCollect::~CWallpaperCollect(void)
 {
-	gPathInfo->SaveUrlMap();
+	net->SaveUnfinishedTask();      // 保存未完成的下载列表
+	gPathInfo->ReleaseInstance();   // 调用保存已下载任务列表
+	delete net;
+	rawCrisection.Close();
 }
 
 bool CWallpaperCollect::LoadConfigFile()
@@ -112,7 +136,7 @@ bool CWallpaperCollect::LoadConfigFile()
 				}
 
 				gSiteList.push_back(siteInfo);
-				Log.AddLog(siteInfo.siteName.c_str());
+				gLog.AddLog(siteInfo.siteName.c_str());
 			}
 			else  // strcmp(strNodeV.c_str(), "WallpaperSite") != 0
 			{
@@ -121,7 +145,7 @@ bool CWallpaperCollect::LoadConfigFile()
 			secNode = root->NextSiblingElement();
 		}
 		bGlobalValueInit = true;
-		Log.Save();
+		gLog.Save();
 	}
 	return true;
 }
@@ -254,7 +278,7 @@ void CWallpaperCollect::InitChannelKeyInfo( TiXmlElement * thdNode, TSiteInfo &s
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CWallpaperCollect::SetSite( const string& url )
+void CWallpaperCollect::SetSite( const char* url )
 {
 	// 根据url中的信息在sitelist中找到匹配站点信息
 	curSiteInfo = NULL;
@@ -310,20 +334,23 @@ bool CWallpaperCollect::GetPackagePagesInfo( const string& pageUrl, TPackagePage
 	{
 		ret = GetPackagePageInfo(pageUrl, collectInfo);
 	}
-	
-	if (paginationInfo.maxPage <= 1)
-		ret = GetPackagePageInfo(pageUrl, collectInfo);
 	else
 	{
-		ret = GetPackagePageInfo(paginationInfo.pageUrlBase, collectInfo);
-		for (int i = 2; i < paginationInfo.maxPage; i++)
+		if (paginationInfo.maxPage <= 1)
+			ret = GetPackagePageInfo(pageUrl, collectInfo);
+		else
 		{
-			char indexStr[4];
-			itoa(i, indexStr, 10);
-			string url = paginationInfo.pageUrlBase + "/" + indexStr;
-			ret = GetPackagePageInfo(url, collectInfo);
+			ret = GetPackagePageInfo(paginationInfo.pageUrlBase, collectInfo);
+			for (int i = 2; i < paginationInfo.maxPage; i++)
+			{
+				char indexStr[4];
+				itoa(i, indexStr, 10);
+				string url = paginationInfo.pageUrlBase + "/" + indexStr;
+				ret = GetPackagePageInfo(url, collectInfo);
+			}
 		}
 	}
+	
 	return ret;
 }
 
@@ -342,13 +369,16 @@ bool CWallpaperCollect::GetPackagePageInfo( const string& pageUrl, TPackagePageI
 	CHtmlParse parser(pageHtml);
 	if (!parser.GetLevel2PageUrls(*curSiteInfo, collectInfo))
 	{
+		tTestLog("[" << (long)this << "]" << " GetPackagePageInfo.GetLevel2PageUrls__failed!");
+		tTestLog("Failed url:" << pageUrl.c_str());
 		delete collectInfo;
 		collectInfo = NULL;
 		return false;
 	}
 	else
 	{   // 初始化缩略图保存路径
-		wstring pathRoot = gPathInfo->CachePath() + _T("thumbnail\\");
+		wstring pathRoot = gPathInfo->GetCachePath();
+		pathRoot.append(_T("thumbnail\\"));
 		vector<TCollectInfo>::iterator iter = collectInfo->collectInfoVec.begin();
 		for (; iter != collectInfo->collectInfoVec.end(); ++iter)
 		{
@@ -366,7 +396,7 @@ bool CWallpaperCollect::ColFromPackagePages(const string& pageUrl, const wstring
 {
 	TPaginationInfo paginationInfo;
 	if (!GetPaginationInfo(pageUrl, paginationInfo))
-		return false;
+		return ColFromPackagePage(pageUrl, rootPath);
 
 	// 解析得到
 	if (paginationInfo.maxPage <= 1)
@@ -417,7 +447,11 @@ bool CWallpaperCollect::ColFromPackagePage(const string& pageUrl, const wstring&
 {
 	TPackagePageInfo collectInfo;
 	if (!GetPackagePageInfo(pageUrl, &collectInfo))
+	{
+		tTestLog("[" << (long)this << "]" << " ColFromPackagePage.GetPackagePageInfo__failed!");
+		tTestLog("Failed url: " << pageUrl.c_str());
 		return false;
+	}
 
 	// 解析得到合集名，设置壁纸保存文件夹名
 	collectInfo.name = splitFirstString(collectInfo.name);
@@ -438,7 +472,9 @@ bool CWallpaperCollect::ColFromPackagePage(const string& pageUrl, const wstring&
 bool CWallpaperCollect::ColFromPicListPage( const string& pageUrl, const wstring& rootPath )
 {
 	if (!curSiteInfo) return false;
-	if (gPathInfo->PageLoaded(pageUrl)) 
+
+	// 当前页面所有壁纸都已下载
+	if (gPathInfo->CurPicsPageUrlFinished(pageUrl))
 		return false;
 
 	// 获取网页源代码
@@ -449,27 +485,62 @@ bool CWallpaperCollect::ColFromPicListPage( const string& pageUrl, const wstring
 
 	// 解析得到显示壁纸页面的url，存入数组
 	CHtmlParse parser(pageHtml);
-	TPicsShowPageInfo picsShowPageArr;
-	if (!parser.GetLevel1PageUrls(*curSiteInfo, &picsShowPageArr))
-		return false;
-
-	if (picsShowPageArr.name.length() <= 1)
-		return false;
-
-	// 解析TPicsShowPageAttri::name,设置壁纸保存文件夹名
-	picsShowPageArr.name = splitFirstString(picsShowPageArr.name);
-	wstring curSaveDir = rootPath + picsShowPageArr.name + _T("\\");
-	MakeSurePathExists(curSaveDir.c_str(), false);
-	
-	// 调用ColFromPicViewPage下载图片
-	size_t count = picsShowPageArr.urlArr.size();
-	for (size_t i = 0; i < count; i++)
+	TPicsShowPageInfo picsPageInfo;
+	if (!parser.GetLevel1PageUrls(*curSiteInfo, &picsPageInfo))
 	{
-		ColFromPicViewPage(picsShowPageArr.urlArr[i], curSaveDir);
+		tTestLog("[" << (long)this << "]" << "ColFromPicListPage.GetLevel1PageUrls__failed!");
+		tTestLog("Failed url: " << pageUrl.c_str());
+		return false;
 	}
 
-	// 当前辑的壁纸已下载，存入url，下次遇到相同url时不再解析
-	gPathInfo->InsertUrlToFile(pageUrl); 
+	if (picsPageInfo.name.length() <= 1)
+		return false;
+
+	// 上一次程序运行时已添加下载，判断是否已下载完成
+	if (gPathInfo->CurPicsPageUrlTasked(pageUrl))
+	{
+		bool finished = true;
+		vector<string>::iterator iter = picsPageInfo.urlArr.begin();
+		for (; iter != picsPageInfo.urlArr.end(); ++iter)
+		{
+			TPicShowPageInfo picPageInfo;
+			wstring savePath;
+			if (!GetPicViewPageInfo(*iter, rootPath, picPageInfo, savePath))
+				continue;
+
+			if (INVALID_FILE_ATTRIBUTES == GetFileAttributes(savePath.c_str()))
+			{
+				finished = false;
+				net->AddTask(picPageInfo.picUrl, savePath);
+			}
+		}
+		// 已全部下载完成
+		if (finished)
+		{
+			gPathInfo->EraserTaskedPicsPageUrl(pageUrl);
+			gPathInfo->InsertFinishedPicsPageUrl(pageUrl);
+		}
+		return false;
+	}
+//	else
+// 	{
+// 
+// 	}
+
+	// 解析TPicsShowPageAttri::name,设置壁纸保存文件夹名
+	// picsShowPageArr.name = splitFirstString(picsShowPageArr.name);
+	// wstring curSaveDir = rootPath + picsShowPageArr.name + _T("\\");
+	// MakeSurePathExists(rootPath.c_str(), false);
+	
+	// 调用ColFromPicViewPage下载图片
+	size_t count = picsPageInfo.urlArr.size();
+	for (size_t i = 0; i < count; i++)
+	{
+		ColFromPicViewPage(picsPageInfo.urlArr[i], rootPath);
+	}
+
+	// 当前辑的壁纸已添加到下载任务，存入url，下次遇到相同url时检测是否已完成下载
+	gPathInfo->InsertTaskedPicsPageUrl(pageUrl); 
 	return false;
 }
 
@@ -479,6 +550,27 @@ bool CWallpaperCollect::ColFromPicViewPage( const string& pageUrl, const wstring
 {
 	if (!curSiteInfo) return false;
 
+	TPicShowPageInfo picPageInfo;
+	wstring savePath;
+	if (!GetPicViewPageInfo(pageUrl, rootPath, picPageInfo, savePath))
+		return false;
+
+	// 文件已存在
+	if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(savePath.c_str()))
+		return true;
+
+	// 下载图片保存到指定目录
+	net->AddTask(picPageInfo.picUrl, savePath);
+
+	return true;
+}
+
+// 
+bool CWallpaperCollect::GetPicViewPageInfo(const string& pageUrl, 
+										   const wstring& rootPath, 
+										   TPicShowPageInfo& picPageInfo, 
+										   wstring& savePath)
+{
 	// 获取网页源代码
 	CWebServer webServ;
 	string pageHtml;
@@ -487,23 +579,100 @@ bool CWallpaperCollect::ColFromPicViewPage( const string& pageUrl, const wstring
 
 	// 解析获得壁纸的链接、壁纸相关信息
 	CHtmlParse parser(pageHtml);
-	TPicShowPageInfo picShowPageAttri;
-	if (!parser.GetWallpaperImgUrl(*curSiteInfo, &picShowPageAttri))
+	if (!parser.GetWallpaperImgUrl(*curSiteInfo, &picPageInfo))
+	{
+		tTestLog("[" << (long)this << "]" << " ColFromPicViewPage.GetWallpaperImgUrl__failed!");
+		tTestLog("Failed url :" << pageUrl.c_str());
 		return false;
-	if (picShowPageAttri.picName.length() <= 1 ||
-		picShowPageAttri.picUrl.length() <= 1)
+	}
+
+	if (picPageInfo.picName.length() <= 1 ||
+		picPageInfo.picUrl.length() <= 1)
 		return false;
 
 	USES_CONVERSION;
 	wchar *picNameExt = A2W(curSiteInfo->picShowPageKey.picUrlR.c_str());
-	wstring filePath = rootPath + picShowPageAttri.picName + picNameExt;
-
-	// TODO:处理图片已存在
-
-	// 下载图片保存到指定目录
-	net->AddTask(picShowPageAttri.picUrl, filePath);
-
-	// webServ.DownLoadFile(picShowPageAttri.picUrl, filePath);
-
+	savePath = rootPath + picPageInfo.picName + picNameExt;
 	return true;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+
+void CWallpaperCollect::ThreadFunc( void* aParam )
+{
+	CWallpaperCollect *wpColl = (CWallpaperCollect*)aParam;
+	wpColl->DoWork();
+}
+
+void CWallpaperCollect::StartDownload()
+{
+	if (!onWork)
+	{
+// 		tTestLog("[" << (long)this << "]" << " CWallpaperCollect::StartDownload.");
+		onWork = true;
+		rawThread.Stop();
+		rawThread.Start(ThreadFunc, this);
+		net->Start();
+	}
+}
+void CWallpaperCollect::StopDownload()
+{
+	if (onWork)
+		onWork = false;
+}
+
+void CWallpaperCollect::AddTask(const string& url, const wstring& savePath, ECmdType type)
+{
+	rawCrisection.Wait();
+
+	iter = taskInfoVec.begin();
+	for (; iter != taskInfoVec.end(); ++iter)
+	{
+		if (url == iter->url)
+		{
+			rawCrisection.Signal();
+			return;
+		}
+	}
+	TCollectTaskInfo task;
+	task.url = url;
+	task.savePath = savePath;
+	task.cmdType = type;
+	taskInfoVec.push_back(task);
+
+	rawCrisection.Signal();
+}
+
+void CWallpaperCollect::DoWork()
+{
+// 	tTestLog("[" << (long)this << "]" << "CWallpaperCollect::DoWork begin.");
+	while (onWork)
+	{
+		tTestLog("CWallpaperCollect::taskInfoVec.size() == " << (int)taskInfoVec.size());
+		if (taskInfoVec.size() > 0)
+		{
+			TCollectTaskInfo task = *taskInfoVec.begin();
+			if (task.cmdType == ECmdColPackagePages)
+			{
+				ColFromPackagePages(task.url, task.savePath);
+			}
+			else if (task.cmdType == ECmdColPicListPage)
+			{
+				ColFromPicListPage(task.url, task.savePath);
+			}
+			rawCrisection.Wait();
+			iter = taskInfoVec.erase(taskInfoVec.begin());
+			rawCrisection.Signal();
+		}
+		else
+		{
+			tTestLog("wait for wpCollect Event beg __");
+			// 将等待的CNet下载线程激活
+			SetEvent(ghNetEvent);
+
+			int i = WaitForSingleObject(ghWpCollEvent, INFINITE);
+			tTestLog("wait for wpCollect event end __" << i);
+		}
+	}
 }

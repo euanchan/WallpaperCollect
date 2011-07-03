@@ -204,3 +204,20 @@ int utf8_to_ascii(const char * pszUTF8, unsigned int lenUTF8, char * pszASCII)
 	delete [] pszUCS2;
 	return nbByte;
 }
+
+TTime GetLocalTime(void)	
+{
+	SYSTEMTIME systemtime;
+	TTime time;
+	::GetLocalTime(&systemtime);
+
+	time.wYear	= systemtime.wYear;
+	time.wMonth	= (uint8)systemtime.wMonth;
+	time.wDay	= (uint8)systemtime.wDay;
+	time.wHour	= (uint8)systemtime.wHour;
+	time.wMinute	= (uint8)systemtime.wMinute;
+	time.wSecond	= (uint8)systemtime.wSecond;
+	time.wMilliseconds = systemtime.wMilliseconds;
+
+	return time;
+}

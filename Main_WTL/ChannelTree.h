@@ -16,7 +16,7 @@ public:
 public: 
 	BEGIN_MSG_MAP(CChannelTreeCtrl)    
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRBtnClicked)
- 		//DEFAULT_REFLECTION_HANDLER() 
+ 		DEFAULT_REFLECTION_HANDLER() 
 	END_MSG_MAP() 
 
 	LRESULT OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

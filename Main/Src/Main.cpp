@@ -6,6 +6,7 @@
 
 #include "WallpaperCollect.h"
 #include "ComDef.h"
+#include "PathInfo.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -44,7 +45,7 @@ void test()
 	CWallpaperCollect wpCol;
 	TChannelInfo channelAtt;
 
-	wstring cachePath = gPathInfo->CachePath();
+	wstring cachePath = gPathInfo->GetCachePath();
 
 	wpCol.SetSite("http://www.deskcity.com/");
 	//wpCol.SetSaveDir(cachePath);

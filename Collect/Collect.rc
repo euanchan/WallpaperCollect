@@ -83,13 +83,13 @@ BEGIN
 	BEGIN
         BLOCK "080403a8"
 		BEGIN
-            VALUE "CompanyName", "TODO: <公司名>"
-            VALUE "FileDescription", "TODO: <文件说明>"
+            VALUE "CompanyName", "euan1022@gmail.com"
+            VALUE "FileDescription", "壁纸下载组件"
 			VALUE "FileVersion",     "1.0.0.1"
 			VALUE "InternalName",    "Collect.dll"
-            VALUE "LegalCopyright", "TODO: (C) <公司名>。保留所有权利。"
+            VALUE "LegalCopyright", "Euan.C 保留所有权利。"
 			VALUE "OriginalFilename","Collect.dll"
-            VALUE "ProductName", "TODO: <产品名>"
+            VALUE "ProductName", "壁纸采集组件"
 			VALUE "ProductVersion",  "1.0.0.1"
 		END
 	END

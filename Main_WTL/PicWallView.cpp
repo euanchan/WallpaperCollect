@@ -2,6 +2,7 @@
 #include "PicWallView.h"
 #include "PathInfo.h"
 
+// 加载图片文件到HBITMAP
 HBITMAP LoadImageFile(const wstring& fileName)
 {
 	// Use IPicture stuff to use JPG / GIF files
@@ -74,13 +75,9 @@ CPicWallView::~CPicWallView(void)
 		imgList->Destroy();
 }
 
-LRESULT CPicWallView::OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	return 0;
-}
-
 bool CPicWallView::InitWithCollectInfo( const TPackagePageInfo *packagePageInfo )
 {
+	collectName = packagePageInfo->name;
 	thumbnailInfoList.erase(thumbnailInfoList.begin(), thumbnailInfoList.end());
 	size_t size = packagePageInfo->collectInfoVec.size();
 	for (size_t i = 0; i < size; i++)
@@ -95,6 +92,8 @@ bool CPicWallView::InitWithCollectInfo( const TPackagePageInfo *packagePageInfo 
 
 bool CPicWallView::InitWithImgInfoList()
 {
+	SetRedraw(false);
+
 	int count = GetItemCount();
 	while (count-- > 0)
 		DeleteItem(0);
@@ -105,6 +104,7 @@ bool CPicWallView::InitWithImgInfoList()
 		imgList->Destroy();
 	}
 	imgList = new CImageList();
+	// TODO: 分辨率
 	imgList->Create(160, 100, TRUE | ILC_COLOR32, thumbnailInfoList.size(), 5);
 	this->SetImageList(imgList->m_hImageList, LVSIL_NORMAL);
 	for (; iter != thumbnailInfoList.end(); ++iter)
@@ -113,9 +113,38 @@ bool CPicWallView::InitWithImgInfoList()
 		int i = imgList->Add(bm, (HBITMAP)NULL);
 		if (i == -1)
 		{
-			printf("Load image file \"%s\" failed!", (*iter)->thumbSavePath);
+			;
 		}
-		InsertItem((*iter)->index, (LPCTSTR)(*iter)->displayName.c_str(), (*iter)->index);
+		// 已下载辑不再显示
+		if (gPathInfo->CurPicsPageUrlFinished((*iter)->linkUrl))
+			continue;
+
+		InsertItem(LVIF_TEXT|LVIF_IMAGE|LVIF_PARAM, (*iter)->index, 
+			(LPCTSTR)(*iter)->displayName.c_str(), 0, 0, (*iter)->index, (LPARAM)(*iter));
+	}
+
+	SetRedraw(true);
+	Invalidate();
+	UpdateWindow();
+
+	return true;
+}
+
+bool CPicWallView::UpdateItem(const string& thumbnailUrl)
+{
+	int i = 0;
+	// TODO: 刷新有问题，需要修改
+	vector<TCollectInfo*>::iterator iter = thumbnailInfoList.begin();
+	for (; iter != thumbnailInfoList.end(); ++iter, ++i)
+	{
+		if ((*iter)->thumbUrl == thumbnailUrl)
+		{
+			HBITMAP bm = LoadImageFile((*iter)->thumbSavePath);
+			if (imgList->Add(bm, (HBITMAP)NULL))
+				SetImageList(imgList->m_hImageList, LVSIL_NORMAL);
+			RedrawItems(i, i);
+			break;
+		}
 	}
 	return true;
 }

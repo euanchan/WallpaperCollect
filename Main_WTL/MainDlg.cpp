@@ -8,13 +8,22 @@
 #include "MainDlg.h"
 #include "PathInfo.h"
 
+
 void CMainDlg::Init()
 {
+	SetMsgRecvWindowH(this->m_hWnd);
+
 	channelAtt = new TChannelInfo();
 
 	//wstring cachePath = gPathInfo->CachePath();
 	wpCol.SetSite("http://www.deskcity.com/");
 	wpCol.ColChannelTree(channelAtt);
+
+	TTime t = GetLocalTime();	
+	char pOut[128] = {0};
+	sprintf( pOut, "--------------------[%d-%02d-%02d]--------------", 
+		t.wYear, t.wMonth, t.wDay );
+	tTestLog( pOut );
 }
 
 void CMainDlg::Release()
@@ -45,7 +54,9 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
 		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 	SetIcon(hIconSmall, FALSE);
-
+	
+	dlgBkBrush.CreateSolidBrush(DLG_BK_COLOR);    // 
+		
 	//////////////////////////////////////////////////////////////////////////
 	// channelTree
 	channelTree.SubclassWindow(GetDlgItem(IDC_CHANNEL_TREE));
@@ -53,10 +64,24 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	// 
 	picWallView.SubclassWindow(GetDlgItem(IDC_LIST_PIC));
+	picWallView.SetExtendedListViewStyle(LVS_EX_CHECKBOXES);
 
 	// Menu
-	menu.Attach(LoadMenu( _Module.GetResourceInstance(),MAKEINTRESOURCE(IDR_MENU_CHANNEL)));
-	SetMenu(menu);
+	menuChannelTree.Attach(LoadMenu( _Module.GetResourceInstance(),MAKEINTRESOURCE(IDR_MENU_CHANNEL)));
+
+	// Edit Ctrl
+	savePathEdit.Attach(GetDlgItem(IDC_EDIT_SAVEDIR));
+
+	// Progress bar
+	progressTotal.Attach(GetDlgItem(IDC_PROGRESS_TOTAL));
+	progressTotal.SetRange(0, 100);
+	progressCur.Attach(GetDlgItem(IDC_PROGRESS_CUR));
+	progressCur.SetRange(0, 100);
+
+	// SavePath
+	wstring str = gPathInfo->GetSavePathRoot();
+	savePathRoot = str.c_str();
+	DoDataExchange(false);
 
 	return TRUE;
 }
@@ -68,55 +93,52 @@ LRESULT CMainDlg::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	return 0;
 }
 
-// LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-// {
-// 	// TODO: Add validation code 
-// 	EndDialog(wID);
-// 	return 0;
-// }
-// 
-// LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-// {
-// 	EndDialog(wID);
-// 	return 0;
-// }
+LRESULT CMainDlg::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	EndDialog(0);
+	return 0;
+}
 
+// 修改壁纸保存根路径
 LRESULT CMainDlg::OnBnClickedBtnChangeDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	// TODO: 在此添加控件通知处理程序代码
+	BROWSEINFO bi;
+	wchar Buffer[MAX_PATH];
+	bi.hwndOwner = NULL;
+	bi.pidlRoot =NULL;    
+	bi.pszDisplayName = Buffer;
+	bi.lpszTitle = _T("修改接收路径");
+	bi.ulFlags = BIF_NEWDIALOGSTYLE | BIF_EDITBOX;
+	bi.lpfn = NULL;
+	bi.iImage = IDR_MAINFRAME;
+	LPITEMIDLIST pIDList = SHBrowseForFolder(&bi);
+	if(pIDList)
+	{
+		SHGetPathFromIDList(pIDList, Buffer);
+		savePathRoot = Buffer;
+		gPathInfo->SetSavePathRoot(savePathRoot.GetString());
+		
+		// TODO: 移动已下载文件夹
+
+		DoDataExchange(false);
+	}
+	LPMALLOC lpMalloc;
+	if(FAILED(SHGetMalloc(&lpMalloc))) return 0;
+
+	lpMalloc->Free(pIDList);
+	lpMalloc->Release();
+
+	RefreshControl(IDC_EDIT_SAVEDIR);
 
 	return 0;
 }
 
 LRESULT CMainDlg::OnBnClickedBtnPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	// TODO: 在此添加控件通知处理程序代码
-
 	return 0;
 }
 
-LRESULT CMainDlg::OnDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	// TODO: 在此添加命令处理程序代码
-	CTreeItem item = channelTree.GetSelectedItem();
-	DWORD_PTR ptr = (DWORD_PTR)item.GetData();
-	if (ptr)
-	{
-		string url = (char*)(item.GetData());
-		wchar lpStr[MAX_PATH];
-		memset(lpStr, 0, MAX_PATH);
-		item.GetText((LPTSTR)lpStr, MAX_PATH);
-		wstring rootPath = gPathInfo->GetSavePathRoot();
-		USES_CONVERSION;
-		wstring tmp(lpStr);
-		rootPath.append(tmp);
-		rootPath.append(_T("\\"));
-		wpCol.ColFromPackagePages(url, rootPath);
-	}
-
-	return 0;
-}
-
+// 选中新的树节点，更新辑列表
 LRESULT CMainDlg::OnTvnSelchangedChannelTree(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& bHandled)
 {
 	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
@@ -144,7 +166,7 @@ LRESULT CMainDlg::OnTvnSelchangedChannelTree(int /*idCtrl*/, LPNMHDR pNMHDR, BOO
 	{
 		collectInfoVec.push_back(collectInfo);
 		picWallView.InitWithCollectInfo(collectInfo);
-		net.Start();
+		netThumbnail.Start();
 	}
 	else
 	{
@@ -156,8 +178,225 @@ LRESULT CMainDlg::OnTvnSelchangedChannelTree(int /*idCtrl*/, LPNMHDR pNMHDR, BOO
 	vector<TCollectInfo>::iterator iter = collectInfo->collectInfoVec.begin();
 	for (; iter != collectInfo->collectInfoVec.end(); ++iter)
 	{
-		net.AddTask(iter->thumbUrl, iter->thumbSavePath);
+		// TODO: 改为 hash表加快查询
+		if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(iter->thumbSavePath.c_str()))
+			continue;
+		netThumbnail.AddTask(iter->thumbUrl, iter->thumbSavePath);
+		SetWallpaperCollectEvent();
 	}
 
 	return 0;
+}
+
+// 修改选中状态
+LRESULT CMainDlg::OnNMClickListPic(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
+{
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	if(pNMListView->iItem != -1)
+	{
+		bool checked = picWallView.GetCheckState(pNMListView->iItem);
+		picWallView.SetCheckState(pNMListView->iItem, checked ? false : true);
+	}
+
+	return 0;
+}
+
+// 弹出下载菜单
+LRESULT CMainDlg::OnNMRclickListPic(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
+{
+	NM_LISTVIEW* pNMListView = (NM_LISTVIEW*)pNMHDR;
+	POINT point = pNMListView->ptAction; 
+	GetCursorPos(&point); 
+	ScreenToClient(&point);
+	CMenu menu;
+	if(pNMListView->iItem != -1)  
+	{
+		if (menu.LoadMenu(IDR_MENU_LIST_IN))
+		{
+			CMenuHandle menuH = menu.GetSubMenu(0);
+			ClientToScreen(&point);
+			menuH.TrackPopupMenu(TPM_RIGHTBUTTON, point.x, point.y, this->m_hWnd);
+		}
+	}
+	else
+	{
+		if (menu.LoadMenu(IDR_MENU_LIST_OUT))
+		{
+			CMenuHandle menuH = menu.GetSubMenu(0);
+			ClientToScreen(&point);
+			
+			menuH.TrackPopupMenu(TPM_RIGHTBUTTON, point.x, point.y, this->m_hWnd);
+		}
+	}
+	return 0;
+}
+
+// 下载当前辑
+LRESULT CMainDlg::OnDownloadPackage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	wstring savePath = GetSavePathByChannelTreeState();
+
+	// Get Item Data.
+	int index = picWallView.GetHotItem();
+	if (index == -1)
+		return 0;
+	TCollectInfo* pInfo = (TCollectInfo*)picWallView.GetItemData(index);
+	tTestLog("Add Task:" << pInfo->linkUrl.c_str() << "  ---  " << pInfo->displayName.c_str());
+	wpCol.AddTask(pInfo->linkUrl, savePath, ECmdColPicListPage);
+	wpCol.StartDownload();
+	bool ret = SetWallpaperCollectEvent();
+	picWallView.DeleteItem(index);
+
+	return 0;
+}
+
+// 下载所有选中辑
+LRESULT CMainDlg::OnDownloadSelectPackage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	size_t itemCount = picWallView.GetItemCount();
+	wstring savePath = GetSavePathByChannelTreeState();
+
+	for (size_t i = 0; i < itemCount; i++)
+	{
+		if (picWallView.GetCheckState(i))
+		{
+			TCollectInfo* pInfo = (TCollectInfo*)picWallView.GetItemData(i);
+			wpCol.AddTask(pInfo->linkUrl, savePath, ECmdColPicListPage);
+			picWallView.DeleteItem(i);
+		}
+	}
+	wpCol.StartDownload();
+	SetWallpaperCollectEvent();
+
+	return 0;
+}
+
+// 下载整个合集
+LRESULT CMainDlg::OnDownloadCollect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	// TODO: 在此添加命令处理程序代码
+	CTreeItem item = channelTree.GetSelectedItem();
+	DWORD_PTR ptr = (DWORD_PTR)item.GetData();
+	if (!ptr) return 0;
+
+	string url = (char*)(item.GetData());
+	wchar lpStr[MAX_PATH];
+	memset(lpStr, 0, MAX_PATH);
+	item.GetParent().GetText((LPTSTR)lpStr, MAX_PATH);
+	wcscat(lpStr, _T("\\"));
+	wstring rootPath = gPathInfo->GetSavePathRoot();
+	rootPath.append(lpStr);
+
+	// 调用非主线程方法下载
+	wpCol.AddTask(url, rootPath, ECmdColPackagePages);
+	wpCol.StartDownload();
+	SetWallpaperCollectEvent();
+	return 0;
+}
+
+LRESULT CMainDlg::OnSelectAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	size_t itemCount = picWallView.GetItemCount();
+	for (size_t i = 0; i < itemCount; i++)
+	{
+		picWallView.SetCheckState(i, true);
+	}
+
+	return 0;
+}
+
+LRESULT CMainDlg::OnSelectInvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	size_t itemCount = picWallView.GetItemCount();
+	for (size_t i = 0; i < itemCount; i++)
+	{
+		bool checked = picWallView.GetCheckState(i);
+		picWallView.SetCheckState(i, checked ? false : true);
+	}
+
+	return 0;
+}
+
+wstring CMainDlg::GetSavePathByChannelTreeState()
+{
+	wstring path = gPathInfo->GetSavePathRoot();
+
+	CTreeItem item = channelTree.GetSelectedItem();
+	if (item.GetData() == 0)  // 当前选中为根节点
+	{
+		// TODO: 选中其他节点时需要从其他地方获取保存路径
+		// TODO: 根据 picWallView.collectName 在channelTree中找到父节点
+		MessageBox(_T("TODO: 路径未定义，保存到根目录的'unknown'目录下"));
+		path.append(_T("unknown\\"));
+		return path;
+	}
+	else
+	{
+		wchar lpStr[MAX_PATH];
+		memset(lpStr, 0, MAX_PATH);
+		item.GetParent().GetText((LPTSTR)lpStr, MAX_PATH);
+		wcscat(lpStr, _T("\\"));
+		path.append(lpStr);
+		item.GetText((LPTSTR)lpStr, MAX_PATH);
+		wcscat(lpStr, _T("\\"));
+		path.append(lpStr);
+		return path;
+	}
+}
+
+LRESULT CMainDlg::OnUpdateTotalProgress(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	progressTotal.SetPos((float)wParam / (float)lParam * 100);
+
+	CString str;
+	str.Format(_T("%d / %d"), wParam, lParam);
+	GetDlgItem(IDC_PROGRESS_TOTAL_TXT).SetWindowText(str);
+	RefreshControl(IDC_PROGRESS_TOTAL_TXT);
+
+	return 0;
+}
+
+LRESULT CMainDlg::OnUpdateCurProgress(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	progressCur.SetPos(wParam);
+	return 0;
+}
+
+LRESULT CMainDlg::OnUpdateCurPicName(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	CString str = (wchar*)wParam;
+	GetDlgItem(IDC_CUR_PIC_NAME).SetWindowText(str);
+	RefreshControl(IDC_CUR_PIC_NAME);
+	return 0;
+}
+
+LRESULT CMainDlg::ONNotifyThumbPicFinished(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	string url = (char*)wParam;
+	picWallView.UpdateItem(url);
+	return 0;
+}
+
+LRESULT CMainDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	// 设置static控件透明
+	SetBkMode((HDC)wParam, TRANSPARENT);
+
+	// return a null brush so image behind static isn't erased
+	return (LRESULT)::GetStockObject(NULL_BRUSH);
+}
+
+LRESULT CMainDlg::OnCtlColorDlg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	
+	return (LRESULT)(HGDIOBJ)dlgBkBrush;  
+}
+
+void CMainDlg::RefreshControl(UINT uCtlID)
+{
+	RECT rc;
+	GetDlgItem(uCtlID).GetWindowRect(&rc);   
+	ScreenToClient(&rc);     
+	InvalidateRect(&rc); 
 }

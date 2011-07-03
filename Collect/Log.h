@@ -26,7 +26,7 @@ public:
 
 #define DB_BUF_SIZE 1024
 
-class DbLog
+class __declspec(dllexport) DbLog
 {
 public:
 	enum EType

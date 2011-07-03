@@ -18,6 +18,11 @@ typedef unsigned __int64	uint64;
 typedef wchar_t				wchar;
 
 
+#define MSG_UPDATE_TASK_LIST_PROCESS 0x0601  // wParam为已下载数，lParam为总任务数
+#define MSG_UPDATE_CUR_PIC_PROCESS   0x0602  // wParam为百分比分子
+#define MSG_UPDATE_CUR_PIC_NAME      0x0603  // 更新当前下载图片名称,wParm为字符串指针
+#define MSG_THUMBNAIL_PIC_FINISHED   0x0604  // 缩略图下载完成
+
 enum SiteType
 {
 	kSiteDeskCity
@@ -173,7 +178,6 @@ public:
 	TPackagePageKey  packagePageKey;
 	TPaginationKey   paginationKey;
 	TChannelKey      channelKey;
-	//string nextChildKey;
 	string mainUrl;
 	string siteName;
 };
@@ -187,18 +191,18 @@ typedef vector<TSiteInfo> TSiteList;
 
 
 
-
-
+// 壁纸链接、壁纸保存路径信息
+typedef pair<string, wstring> TPicTaskInfo;
 
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-typedef struct _ZMTIME
+typedef struct _TTIME
 {
-	_ZMTIME()
+	_TTIME()
 	{
-		memset(this,0,sizeof(_ZMTIME));
+		memset(this,0,sizeof(_TTIME));
 	}
 	uint16 wYear;						//[0--]
 	uint8 wMonth;						//[1--12]
@@ -207,7 +211,7 @@ typedef struct _ZMTIME
 	uint8 wMinute;						//[0--59]
 	uint8 wSecond;						//[0--59]
 	uint16 wMilliseconds;				//[0--999]
-}ZMTIME,*LPZMTIME;
+}TTime,*LPTTIME;
 
 
 

@@ -48,6 +48,7 @@ using std::pair;
 
 #include "MyMacro.h"
 #include "ComDef.h"
+#include "Log.h"
 
 
 #pragma warning(disable: 4018)

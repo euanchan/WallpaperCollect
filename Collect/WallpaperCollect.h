@@ -14,13 +14,40 @@ class TiXmlElement;
 class TSiteInfo;
 class TChannelInfo;
 class CNet;
+
+#include "RawThread.h"
+#include "RawCriSection.h"
+
+enum ECmdType
+{
+	ECmdColPackagePages,  // 调用ColFromPackagePages()
+	ECmdColPicListPage    // 调用ColFromPicListPage()
+};
+
+typedef struct  
+{
+	string url;
+	wstring savePath;
+	ECmdType cmdType;
+}TCollectTaskInfo;
+
+extern HANDLE ghNetEvent;
+extern HANDLE ghWpCollEvent;
+extern HWND   gWindowHandle;
+
+// 将hNetEvent、hWpCollEvent设为有信号状态
+__declspec(dllexport) bool SetWallpaperCollectEvent();
+
+// 若需要从Collect.dll中发送消息，传入接收消息的窗口句柄
+__declspec(dllexport) void SetMsgRecvWindowH(HWND windowHandle);
+
 class WallpaperCollect_API CWallpaperCollect
 {
 public:
-	CWallpaperCollect(void);
+	CWallpaperCollect();
 	~CWallpaperCollect(void);
 
-	void SetSite(const string& url);
+	void SetSite(const char* url);
 // 	void SetSaveDir(const wstring& saveDir);
 	// bool ParseAndCollect(const char* url);
 
@@ -42,8 +69,20 @@ public:
 	// 从一个多壁纸展示(包含多个level1链接)页面(level2)获取壁纸， 如http://www.deskcity.com/details/picture/4074.html
 	bool ColFromPicListPage(const string& pageUrl, const wstring& rootPath);
 
+
+	//////////////////////////////////////////////////////////////////////////
+	bool GetPicViewPageInfo(const string& pageUrl, const wstring& rootPath, TPicShowPageInfo& picPageInfo, wstring& savePath);
+
 	// 从一个包含单张完整壁纸的页面(level1)获取壁纸，如http://www.deskcity.com/details/show/4074/83985.html
 	bool ColFromPicViewPage(const string& pageUrl, const wstring& rootPath);
+
+
+public:
+	//////////////////////////////////////////////////////////////////////////
+	// 在新建的线程中添加下载任务
+	void AddTask(const string& url, const wstring& savePath, ECmdType type);
+	void StartDownload();
+	void StopDownload();
 
 private:
 	bool LoadConfigFile();
@@ -57,5 +96,17 @@ private:
 private:
 	CNet*      net;
 	TSiteInfo* curSiteInfo;  // 设置siteUrl后更新
+
+private:
+	//////////////////////////////////////////////////////////////////////////
+	static void ThreadFunc( void* aParam );
+	void DoWork();
+
+	vector<TCollectTaskInfo> taskInfoVec;
+	vector<TCollectTaskInfo>::iterator iter;
+
+	bool onWork;
+	CRawThread    rawThread;
+	CRawCriSection rawCrisection;
 };
 #endif

@@ -34,6 +34,25 @@ BEGIN
     END
 END
 
+IDR_MENU_LIST_IN MENU 
+BEGIN
+    POPUP "辑"
+    BEGIN
+        MENUITEM "下载当前辑",                       ID_DOWNLOAD_PICS
+    END
+END
+
+IDR_MENU_LIST_OUT MENU 
+BEGIN
+    POPUP "列表菜单"
+    BEGIN
+        MENUITEM "下载当前辑",                       ID_DOWNLOAD_PICS
+        MENUITEM "下载已选辑",                       ID_DOWNLOAD_SEL
+        MENUITEM "选择全部",                        ID_SELECT_ALL
+        MENUITEM "反选",                          ID_SELECT_INVERT
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -55,7 +74,7 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
+#pragma code_page(936)
 #endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
@@ -103,29 +122,32 @@ CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,130,81,50,14
-    CTEXT           "Main_WTL Application v1.0\n\n(c) Copyright 2011",IDC_STATIC,25,57,78,32
+    CTEXT           "Wallpaper Application v1.0\n\n(c) Copyright 2011",IDC_STATIC,25,57,78,32
     ICON            IDR_MAINFRAME,IDC_STATIC,55,26,18,20
     GROUPBOX        "",IDC_STATIC,7,7,115,88
 END
 
-IDD_MAINDLG DIALOGEX 0, 0, 537, 384
+IDD_MAINDLG DIALOGEX 0, 0, 569, 384
 STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU
 CAPTION "Wallpaper"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     CONTROL         "",IDC_CHANNEL_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | WS_BORDER | WS_HSCROLL | WS_TABSTOP,14,16,81,349
-    GROUPBOX        "",IDC_STATIC,10,8,90,364
-    GROUPBOX        "",IDC_STATIC,103,7,423,272
-    EDITTEXT        IDC_EDIT_SAVEDIR,113,320,199,17,ES_AUTOHSCROLL | ES_READONLY
-    CONTROL         "",IDC_PROGRESS_CUR,"msctls_progress32",WS_BORDER,369,324,145,10
-    CONTROL         "",IDC_PROGRESS_TOTAL,"msctls_progress32",WS_BORDER,369,342,145,16
-    PUSHBUTTON      "Change",IDC_BTN_CHANGE_DIR,319,317,32,20
-    GROUPBOX        "",IDC_STATIC,359,278,167,93
-    PUSHBUTTON      "Pause",IDC_BTN_PAUSE,464,291,43,18
-    GROUPBOX        "",IDC_STATIC,103,278,253,94
-    LTEXT           "Download Progress:",IDC_STATIC,373,295,67,8
-    LTEXT           "Wallpaper Save Path:",IDC_STATIC,113,298,85,8
-    CONTROL         "",IDC_LIST_PIC,"SysListView32",LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,109,19,412,254
+    GROUPBOX        "",IDC_STATIC,10,3,90,374
+    GROUPBOX        "",IDC_STATIC,103,2,458,290
+    EDITTEXT        IDC_EDIT_SAVEDIR,112,319,203,17,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
+    CONTROL         "",IDC_PROGRESS_CUR,"msctls_progress32",WS_BORDER,381,330,171,10
+    CONTROL         "",IDC_PROGRESS_TOTAL,"msctls_progress32",WS_BORDER,381,356,171,16
+    PUSHBUTTON      "Change",IDC_BTN_CHANGE_DIR,326,315,36,23
+    GROUPBOX        "",IDC_STATIC,374,290,188,87
+    PUSHBUTTON      "Pause",IDC_BTN_PAUSE,513,302,43,18,WS_DISABLED
+    GROUPBOX        "",IDC_STATIC,103,291,267,86
+    LTEXT           "Download Progress:",IDC_STATIC,384,302,67,8
+    LTEXT           "Wallpaper Save Path:",IDC_STATIC,114,305,85,8
+    CONTROL         "",IDC_LIST_PIC,"SysListView32",LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,109,10,447,277
+    LTEXT           "",IDC_CUR_PIC_NAME,384,317,125,8
+    LTEXT           "by:Euan     euan1022@gmail.com",IDC_STATIC,119,355,135,8,WS_DISABLED
+    CONTROL         "",IDC_PROGRESS_TOTAL_TXT,"Static",SS_CENTER | WS_GROUP | 0x20,436,346,61,8,WS_EX_TRANSPARENT
 END
 
 
@@ -148,7 +170,7 @@ BEGIN
     IDD_MAINDLG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 530
+        RIGHTMARGIN, 562
         TOPMARGIN, 7
         BOTTOMMARGIN, 377
     END
@@ -202,12 +224,12 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription", "Main_WTL Module"
+            VALUE "FileDescription", "壁纸下载工具"
             VALUE "FileVersion", "1, 0, 0, 1"
-            VALUE "InternalName", "Main_WTL"
-            VALUE "LegalCopyright", "Copyright 2011"
-            VALUE "OriginalFilename", "Main_WTL.exe"
-            VALUE "ProductName", "Main_WTL Module"
+            VALUE "InternalName", "Wallpaper"
+            VALUE "LegalCopyright", "euan1022@gmail.com Copyright 2011"
+            VALUE "OriginalFilename", "Wallpaper.exe"
+            VALUE "ProductName", "Wallpaper Module"
             VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END

@@ -14,12 +14,12 @@ FileOp::~FileOp(void)
 }
 
 //获取文件修改时间:0 创建时间;1 访问时间;2 修改时间
-ZMTIME FileOp::ZMGetFileTime(uint8 type)		
+TTime FileOp::GetFileTime(uint8 type)		
 {
 	FILETIME filetime, localfiletime;
 	SYSTEMTIME systemtime;
-	ZMTIME zmtime;
-	memset(&zmtime, 0, sizeof(ZMTIME));
+	TTime zmtime;
+	memset(&zmtime, 0, sizeof(TTime));
 	if (0 == type)
 	{
 		::GetFileTime(m_pFILE, &filetime, NULL, NULL);
@@ -52,10 +52,10 @@ uint32 FileOp::GetTime(void)
 }
 
 //获取本地当前时间
-ZMTIME FileOp::ZMGetLocalTime(void)	
+TTime FileOp::GetLocalTime(void)	
 {
 	SYSTEMTIME systemtime;
-	ZMTIME zmtime;
+	TTime zmtime;
 	::GetLocalTime(&systemtime);
 		
 	zmtime.wYear	= systemtime.wYear;
@@ -81,34 +81,34 @@ BOOL FileOp::open(const wchar* pFileName,uint8 openMode,uint8 shareMode)
 	bool bBuildDirectory = false;
 	switch (openMode)			
 	{
-		case ZM_CREATE_W:	
+		case E_CREATE_W:	
 			openM = CREATE_ALWAYS;
 			accessM = GENERIC_WRITE;
 			bBuildDirectory = true;
 			break;
-		case ZM_OPEN_R_EXIST:
+		case E_OPEN_R_EXIST:
 			openM = OPEN_EXISTING;
 			accessM = GENERIC_READ;
 			break;
-		case ZM_OPEN_W_EXIST:
+		case E_OPEN_W_EXIST:
 			openM = OPEN_EXISTING;
 			accessM = GENERIC_WRITE;
 			break;
-		case ZM_OPEN_RW_EXIST:
+		case E_OPEN_RW_EXIST:
 			openM = OPEN_EXISTING;
 			accessM = GENERIC_READ|GENERIC_WRITE;
 			break;
-		case ZM_OPEN_R_ALWAYS:
+		case E_OPEN_R_ALWAYS:
 			openM = OPEN_ALWAYS;
 			accessM = GENERIC_READ;
 			bBuildDirectory = true;
 			break;
-		case ZM_OPEN_W_ALWAYS:
+		case E_OPEN_W_ALWAYS:
 			openM = OPEN_ALWAYS;
 			accessM = GENERIC_WRITE;
 			bBuildDirectory = true;
 			break;
-		case ZM_OPEN_RW_ALWAYS: 
+		case E_OPEN_RW_ALWAYS: 
 			openM = OPEN_ALWAYS;
 			accessM = GENERIC_READ | GENERIC_WRITE;
 			bBuildDirectory = true;
@@ -119,16 +119,16 @@ BOOL FileOp::open(const wchar* pFileName,uint8 openMode,uint8 shareMode)
 
 	switch(shareMode)
 	{
-		case ZM_SHARE_R:
+		case E_SHARE_R:
 			shareM = FILE_SHARE_READ;
 			break;
-		case ZM_SHARE_W:
+		case E_SHARE_W:
 			shareM = FILE_SHARE_WRITE ;
 			break;
-		case ZM_SHARE_RW:
+		case E_SHARE_RW:
 			shareM = FILE_SHARE_WRITE|FILE_SHARE_READ;
 			break;
-		case ZM_SHARE_NONE:	
+		case E_SHARE_NONE:	
 			shareM = 0;
 			break;		
 		default:
@@ -225,13 +225,13 @@ BOOL FileOp::seek(uint32 pos,uint8 from)
 	uint32 origin;
 	switch(from)
 	{
-		case ZMFILE_SEEK_BEGIN:
+		case FILE_SEEK_BEGIN:
 			origin = FILE_BEGIN ;
 			break;
-		case ZMFILE_SEEK_CURRENT:
+		case FILE_SEEK_CURRENT:
 			origin = FILE_CURRENT ;
 			break;
-		case ZMFILE_SEEK_END:
+		case FILE_SEEK_END:
 			origin = FILE_END;
 			break;
 		default:
