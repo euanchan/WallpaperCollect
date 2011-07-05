@@ -22,7 +22,7 @@ END_MESSAGE_MAP()
 
 bool CWebServer::ColPageSourceHtml( const string& pageUrl, string& htmlStr)
 {
-	CString htmlWStr;
+	//CString htmlWStr;
 	USES_CONVERSION;
 	CString theUrl = A2W(pageUrl.c_str());
 	CInternetSession session;
@@ -47,13 +47,14 @@ bool CWebServer::ColPageSourceHtml( const string& pageUrl, string& htmlStr)
 		{
 			htmlStr += recvBuf;
 		}
-		htmlWStr = htmlStr.c_str();  // 存储为本地文件时使用
+		//htmlWStr = htmlStr.c_str();  // 存储为本地文件时使用
 		int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, htmlStr.c_str(), -1, NULL, 0);
 		WCHAR *pUnicode = new WCHAR[unicodeLen + 1];
 		memset(pUnicode, 0, (unicodeLen + 1)*sizeof(wchar_t));
 
 		MultiByteToWideChar(CP_UTF8, 0, htmlStr.c_str(), -1, pUnicode, unicodeLen);
-		CString htmlWStrTmp = pUnicode; 
+		CString htmlWStrTmp = pUnicode;
+		htmlWStrTmp.MakeLower();
 		delete []pUnicode;
 		htmlStr = W2A(htmlWStrTmp);
 
@@ -91,6 +92,7 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 	CHttpFile *pHttpFile = NULL;
 
 	// 文件存在
+	MakeSurePathExists(filePath.c_str(), true);
 	if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(filePath.c_str()))
 	{
 		return true;

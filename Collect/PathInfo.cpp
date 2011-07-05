@@ -31,7 +31,7 @@ CPathInfo::CPathInfo()
 	wchar_t pPath[MAX_PATH] = {0};
 	GetModuleFileName(NULL, pPath, MAX_PATH);
 	wcscpy(wcsrchr(pPath, '\\'), _T("\0"));
-	modulePath = pPath;
+	modulePath.assign(pPath);
 
 
 	cachePath = modulePath + _T("\\cache\\");
@@ -44,6 +44,8 @@ CPathInfo::CPathInfo()
 	::GetPrivateProfileString(_T("wallpaper"), _T("savepathRoot"), savePathRoot.c_str(), 
 		buf, 1024, iniFilePath.c_str());
 	savePathRoot = buf;
+	if (savePathRoot[savePathRoot.length() - 1] != '\\')
+		savePathRoot.append(_T("\\"));
 
 	MakeSurePathExists(thumbnailCachePath.c_str(), false);
 	MakeSurePathExists(savePathRoot.c_str(), false);
@@ -80,6 +82,8 @@ const wchar_t* CPathInfo::GetSavePathRoot()
 void CPathInfo::SetSavePathRoot(const wstring &path)
 {
 	savePathRoot = path;
+	if (savePathRoot[savePathRoot.length() - 1] != '\\')
+		savePathRoot.append(_T("\\"));
 	MakeSurePathExists(savePathRoot.c_str(), false);
 }
 

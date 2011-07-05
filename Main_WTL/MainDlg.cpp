@@ -372,6 +372,7 @@ LRESULT CMainDlg::OnUpdateCurPicName(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPar
 
 LRESULT CMainDlg::ONNotifyThumbPicFinished(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// TODO: 需要处理字符串已释放。
 	string url = (char*)wParam;
 	picWallView.UpdateItem(url);
 	return 0;
