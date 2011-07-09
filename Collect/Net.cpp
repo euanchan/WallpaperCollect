@@ -17,6 +17,7 @@ CNet::CNet()
 
 CNet::~CNet()
 {
+	rawThread.Stop();
 	delete webServ;
 	taskInfoVec.erase(taskInfoVec.begin(), taskInfoVec.end());
 }
@@ -78,7 +79,6 @@ void CNet::AddTask(const string& url, const wstring& savePath)
 	// TODO: resume if pause.
 }
 
-
 void CNet::SaveUnfinishedTask()
 {
 	gPathInfo->SaveUnfinishedPicTask(taskInfoVec);
@@ -134,6 +134,7 @@ void CNet::DoWork()
 	}
 }
 
+// 根据全局的窗口句柄，发送UI更新信息。完成一轮任务后，归0
 bool CNet::UpdateProcess()
 {
 	if (gWindowHandle)

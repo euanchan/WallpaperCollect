@@ -605,18 +605,18 @@ void CWallpaperCollect::ThreadFunc( void* aParam )
 	wpColl->DoWork();
 }
 
-void CWallpaperCollect::StartDownload()
+void CWallpaperCollect::Start()
 {
 	if (!onWork)
 	{
-// 		tTestLog("[" << (long)this << "]" << " CWallpaperCollect::StartDownload.");
+// 		tTestLog("[" << (long)this << "]" << " CWallpaperCollect::Start.");
 		onWork = true;
 		rawThread.Stop();
 		rawThread.Start(ThreadFunc, this);
 		net->Start();
 	}
 }
-void CWallpaperCollect::StopDownload()
+void CWallpaperCollect::Stop()
 {
 	if (onWork)
 		onWork = false;

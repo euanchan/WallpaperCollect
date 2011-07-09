@@ -243,7 +243,7 @@ LRESULT CMainDlg::OnDownloadPackage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	TCollectInfo* pInfo = (TCollectInfo*)picWallView.GetItemData(index);
 	tTestLog("Add Task:" << pInfo->linkUrl.c_str() << "  ---  " << pInfo->displayName.c_str());
 	wpCol.AddTask(pInfo->linkUrl, savePath, ECmdColPicListPage);
-	wpCol.StartDownload();
+	wpCol.Start();
 	bool ret = SetWallpaperCollectEvent();
 	picWallView.DeleteItem(index);
 
@@ -265,7 +265,7 @@ LRESULT CMainDlg::OnDownloadSelectPackage(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 			picWallView.DeleteItem(i);
 		}
 	}
-	wpCol.StartDownload();
+	wpCol.Start();
 	SetWallpaperCollectEvent();
 
 	return 0;
@@ -289,7 +289,7 @@ LRESULT CMainDlg::OnDownloadCollect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 	// 调用非主线程方法下载
 	wpCol.AddTask(url, rootPath, ECmdColPackagePages);
-	wpCol.StartDownload();
+	wpCol.Start();
 	SetWallpaperCollectEvent();
 	return 0;
 }
@@ -346,7 +346,8 @@ wstring CMainDlg::GetSavePathByChannelTreeState()
 
 LRESULT CMainDlg::OnUpdateTotalProgress(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	progressTotal.SetPos((float)wParam / (float)lParam * 100);
+	if (progressTotal.m_hWnd)
+		progressTotal.SetPos((float)wParam / (float)lParam * 100);
 
 	CString str;
 	str.Format(_T("%d / %d"), wParam, lParam);
@@ -358,7 +359,8 @@ LRESULT CMainDlg::OnUpdateTotalProgress(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 
 LRESULT CMainDlg::OnUpdateCurProgress(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	progressCur.SetPos(wParam);
+	if (progressTotal.m_hWnd)
+		progressCur.SetPos(wParam);
 	return 0;
 }
 

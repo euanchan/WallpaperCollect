@@ -7,12 +7,20 @@ IMPLEMENT_DYNAMIC(CWebServer, CWnd)
 extern HWND gWindowHandle;
 
 CWebServer::CWebServer(void)
+: pfile(NULL)
 {
 	afxCurrentAppName = _T("WallpaperCollect.dll");
 }
 
 CWebServer::~CWebServer(void)
 {
+	if (pfile)
+	{
+		if (pfile->GetFileName().GetLength() > 2)
+			pfile->Close();
+		SAFE_DELETE(pfile);
+	}
+	_wunlink(curDownloadFile.c_str());
 }
 
 BEGIN_MESSAGE_MAP(CWebServer, CWnd)
@@ -92,6 +100,7 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 	CHttpFile *pHttpFile = NULL;
 
 	// 文件存在
+	curDownloadFile = filePath;
 	MakeSurePathExists(filePath.c_str(), true);
 	if (INVALID_FILE_ATTRIBUTES != GetFileAttributes(filePath.c_str()))
 	{
@@ -127,14 +136,15 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 			DWORD readCount = 0;
 			BYTE buf[1024];
 			int len = 0;
-			CFile file;
-			if (file.Open(filePath.c_str(), CFile::modeCreate | CFile::modeWrite | CFile::typeBinary))
+			if (!pfile) 
+				pfile = new CFile(); 
+			if (pfile->Open(filePath.c_str(), CFile::modeCreate | CFile::modeWrite | CFile::typeBinary))
 			{
 				memset(buf, 0, bufSize);
 				while (true)
 				{
 					readCount = pHttpFile->Read(buf, bufSize);
-					file.Write(buf, readCount);
+					pfile->Write(buf, readCount);
 					readedSz += readCount;
 
 					// TODO: 缩略图判断方式
@@ -146,7 +156,7 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 					if (readCount < bufSize)
 						break;
 				}
-				file.Close();
+				pfile->Close();
 				ret = true;
 			}
 			pHttpFile->Close();

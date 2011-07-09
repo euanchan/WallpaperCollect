@@ -26,5 +26,6 @@ public:
 	bool NotifyThumbnailDownload(WPARAM urlPt, LPARAM savePathPt);
 	
 private:
-
+	wstring curDownloadFile;
+	CFile  *pfile;
 };

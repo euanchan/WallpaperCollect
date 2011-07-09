@@ -14,8 +14,12 @@ public:
 	void Pause();
 	void Stop();
 	void AddTask(const string& url, const wstring& savePath);
+
+	// 保存未完成任务到本地
 	void SaveUnfinishedTask();
+	// 加载本地文件的未完成任务
 	void LoadUnfinishedTask();
+	// 发送消息到主线程，通知更新进度条
 	bool UpdateProcess();
 
 protected:

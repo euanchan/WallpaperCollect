@@ -64,6 +64,7 @@ public:
 	// 若分为多页，全部获取
 	bool ColFromPackagePages(const string& pageUrl, const wstring& rootPath);
 
+	// 根据页面获取分页信息
 	bool GetPaginationInfo(const string &pageUrl, TPaginationInfo& paginationInfo);
 
 	// 从一个多壁纸展示(包含多个level1链接)页面(level2)获取壁纸， 如http://www.deskcity.com/details/picture/4074.html
@@ -81,10 +82,11 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// 在新建的线程中添加下载任务
 	void AddTask(const string& url, const wstring& savePath, ECmdType type);
-	void StartDownload();
-	void StopDownload();
+	void Start();
+	void Stop();
 
 private:
+	// 加载本地配置文件
 	bool LoadConfigFile();
 
 	void InitLevel1PageKeyInfo( TiXmlElement * thdNode, TSiteInfo &siteInfo );
@@ -94,7 +96,7 @@ private:
 	void InitChannelKeyInfo   ( TiXmlElement * thdNode, TSiteInfo &siteInfo );
 
 private:
-	CNet*      net;
+	CNet*      net;          // AddTask解析完页面后实际下载壁纸的类
 	TSiteInfo* curSiteInfo;  // 设置siteUrl后更新
 
 private:
