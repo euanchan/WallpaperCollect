@@ -120,7 +120,7 @@ bool CPicWallView::InitWithImgInfoList()
 			continue;
 
 		InsertItem(LVIF_TEXT|LVIF_IMAGE|LVIF_PARAM, (*iter)->index, 
-			(LPCTSTR)(*iter)->displayName.c_str(), 0, 0, (*iter)->index, (LPARAM)(*iter));
+			(LPCTSTR)(*iter)->displayName.c_str(), 0, 0, i, (LPARAM)(*iter));
 	}
 
 	SetRedraw(true);
@@ -132,19 +132,39 @@ bool CPicWallView::InitWithImgInfoList()
 
 bool CPicWallView::UpdateItem(const string& thumbnailUrl)
 {
-	int i = 0;
+	// 需要处理因主线程忙于添加任务时，错过从下载线程返回的消息而未更新已下载的缩略图
+	// 主要使用indexFlag变量来同时更新上一次更新到这次更新的所有缩略图
+
+	static int indexFlag = 0;  // 每次更新itemindex时更新，更新
 	// TODO: 刷新有问题，需要修改
-	vector<TCollectInfo*>::iterator iter = thumbnailInfoList.begin();
-	for (; iter != thumbnailInfoList.end(); ++iter, ++i)
+	SetRedraw(false);
+	vector<TCollectInfo*>::iterator iter = thumbnailInfoList.begin() + indexFlag;
+	int itemIndex = indexFlag;
+	for (; iter != thumbnailInfoList.end(); ++iter, ++itemIndex)
 	{
-		if ((*iter)->thumbUrl == thumbnailUrl)
+		// 有错过的消息，存在多个需要更新的缩略图
+		HBITMAP bm = LoadImageFile((*iter)->thumbSavePath);
+		int imageIndex = imgList->Add(bm, (HBITMAP)NULL);
+		if (imageIndex != -1)
 		{
-			HBITMAP bm = LoadImageFile((*iter)->thumbSavePath);
-			if (imgList->Add(bm, (HBITMAP)NULL))
-				SetImageList(imgList->m_hImageList, LVSIL_NORMAL);
-			RedrawItems(i, i);
-			break;
+			tTestLog("<< item i: " << itemIndex << "   image index: " << imageIndex);
+			SetImageList(imgList->m_hImageList, LVSIL_NORMAL);
+			LPLVITEM pItem;
+			SetItem(itemIndex, 0, LVIF_TEXT|LVIF_IMAGE|LVIF_PARAM, 
+				(*iter)->displayName.c_str(), imageIndex, 0, 0, (LPARAM)(*iter));
 		}
+
+		// 更新完毕，退出
+		if ((*iter)->thumbUrl == thumbnailUrl)
+			break;
 	}
+
+	RedrawItems(indexFlag, itemIndex);
+	indexFlag = itemIndex;
+	if (indexFlag == GetItemCount())
+		indexFlag = 0;
+
+	SetRedraw(true);
+	Invalidate();
 	return true;
 }

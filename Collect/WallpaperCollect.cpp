@@ -341,7 +341,7 @@ bool CWallpaperCollect::GetPackagePagesInfo( const string& pageUrl, TPackagePage
 		else
 		{
 			ret = GetPackagePageInfo(paginationInfo.pageUrlBase, collectInfo);
-			for (int i = 2; i < paginationInfo.maxPage; i++)
+			for (int i = 2; i <= paginationInfo.maxPage; i++)
 			{
 				char indexStr[4];
 				itoa(i, indexStr, 10);
@@ -652,14 +652,14 @@ void CWallpaperCollect::DoWork()
 		tTestLog("CWallpaperCollect::taskInfoVec.size() == " << (int)taskInfoVec.size());
 		if (taskInfoVec.size() > 0)
 		{
-			TCollectTaskInfo task = *taskInfoVec.begin();
-			if (task.cmdType == ECmdColPackagePages)
+			vector<TCollectTaskInfo>::iterator i = taskInfoVec.begin();
+			if (i->cmdType == ECmdColPackagePages)
 			{
-				ColFromPackagePages(task.url, task.savePath);
+				ColFromPackagePages(i->url, i->savePath);
 			}
-			else if (task.cmdType == ECmdColPicListPage)
+			else if (i->cmdType == ECmdColPicListPage)
 			{
-				ColFromPicListPage(task.url, task.savePath);
+				ColFromPicListPage(i->url, i->savePath);
 			}
 			rawCrisection.Wait();
 			iter = taskInfoVec.erase(taskInfoVec.begin());

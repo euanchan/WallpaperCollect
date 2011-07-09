@@ -209,24 +209,19 @@ LRESULT CMainDlg::OnNMRclickListPic(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHan
 	GetCursorPos(&point); 
 	ScreenToClient(&point);
 	CMenu menu;
-	if(pNMListView->iItem != -1)  
+	if (menu.LoadMenu(IDR_MENU_LIST_OUT))
 	{
-		if (menu.LoadMenu(IDR_MENU_LIST_IN))
+		CMenuHandle menuH = menu.GetSubMenu(0);
+		ClientToScreen(&point);
+		if(pNMListView->iItem != -1)  
 		{
-			CMenuHandle menuH = menu.GetSubMenu(0);
-			ClientToScreen(&point);
-			menuH.TrackPopupMenu(TPM_RIGHTBUTTON, point.x, point.y, this->m_hWnd);
+			menu.EnableMenuItem(ID_DOWNLOAD_PICS, MF_ENABLED);
 		}
-	}
-	else
-	{
-		if (menu.LoadMenu(IDR_MENU_LIST_OUT))
+		else
 		{
-			CMenuHandle menuH = menu.GetSubMenu(0);
-			ClientToScreen(&point);
-			
-			menuH.TrackPopupMenu(TPM_RIGHTBUTTON, point.x, point.y, this->m_hWnd);
+			menu.EnableMenuItem(ID_DOWNLOAD_PICS, MF_DISABLED);
 		}
+		menuH.TrackPopupMenu(TPM_RIGHTBUTTON, point.x, point.y, this->m_hWnd);
 	}
 	return 0;
 }

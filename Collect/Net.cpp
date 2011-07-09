@@ -101,8 +101,8 @@ void CNet::DoWork()
 	{
 		if (taskInfoVec.size() > 0)
 		{
-			TPicTaskInfo info = *taskInfoVec.begin();
-			if (webServ->DownLoadFile(info.first, info.second))
+			vector<TPicTaskInfo>::iterator i = taskInfoVec.begin();
+			if (webServ->DownLoadFile(i->first, i->second))
 			{
 				failCount = 0;
 				rawCrisection.Wait();
@@ -117,6 +117,7 @@ void CNet::DoWork()
 				if (failCount++ > 2)
 				{
 					rawCrisection.Wait();
+					TPicTaskInfo info = *i;
 					iter = taskInfoVec.erase(taskInfoVec.begin());
 					taskInfoVec.push_back(info);
 					rawCrisection.Signal();

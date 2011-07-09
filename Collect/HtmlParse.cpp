@@ -178,6 +178,13 @@ bool CHtmlParse::GetLevel2PageUrls(const TSiteInfo& siteInfo, TPackagePageInfo *
 		int thumbUrlR = htmlSrc.find(pCurKey->thumbnailUrlR, thumbUrlL);
 		if (thumbUrlR == -1 || thumbUrlL == (pCurKey->thumbnailUrlL.length() - 1))
 			break;
+
+		// TODO: 不一定为jpg图片，处理PNG
+		if (thumbUrlR - thumbUrlL > 150)
+		{
+			thumbUrlR = htmlSrc.find(".png", thumbUrlL);
+		}
+
 		thumbUrlR += pCurKey->thumbnailUrlR.length();
 		string thumbUrl = htmlSrc.substr(thumbUrlL, thumbUrlR - thumbUrlL);
 		info.thumbUrl = siteInfo.mainUrl + thumbUrl;  // 缩略图图片链接
@@ -254,6 +261,12 @@ bool CHtmlParse::GetWallpaperImgUrl( const TSiteInfo& siteInfo, TPicShowPageInfo
 
 	if (picUrlR == -1 || (picUrlL == pCurKey->picUrlL.length() - 1))
 		return false;
+
+	// TODO: 不一定为jpg图片，处理PNG
+	if (picUrlR - picUrlL > 150)
+	{
+		picUrlR = htmlSrc.find(".png", picUrlL);
+	}
 
 	picUrlR += pCurKey->picUrlR.length();
 

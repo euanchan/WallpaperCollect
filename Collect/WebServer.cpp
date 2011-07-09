@@ -51,9 +51,10 @@ bool CWebServer::ColPageSourceHtml( const string& pageUrl, string& htmlStr)
 	if (file)
 	{
 		char recvBuf[1025] = {0};
-		while (file->Read((void*)recvBuf, 1024) != NULL) 
+		int readCount = 0;
+		while ((readCount = file->Read((void*)recvBuf, 1024)) > 0) 
 		{
-			htmlStr += recvBuf;
+			htmlStr.append(recvBuf, readCount);
 		}
 		//htmlWStr = htmlStr.c_str();  // 存储为本地文件时使用
 		int unicodeLen = MultiByteToWideChar(CP_UTF8, 0, htmlStr.c_str(), -1, NULL, 0);
