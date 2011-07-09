@@ -66,7 +66,13 @@ public:
 #define tYZGLog( a )
 #define tSkLog( a )
 #else
-		/*if( gSystem.iNeedLog )\*/
+/*if( gSystem.iNeedLog )\*/
+
+#define tDownloadLog( a ) \
+		{\
+			DbLog gLog( TEXT("download.txt") );\
+			gLog << DbLog::Time << a << DbLog::Enter << DbLog::Flush;\
+		}
 #define tTestLog( a ) \
 		{\
 			DbLog gLog( TEXT("TestLog.txt") );\

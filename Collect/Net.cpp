@@ -73,7 +73,7 @@ void CNet::AddTask(const string& url, const wstring& savePath)
 	taskInfoVec.push_back(make_pair(url, savePath));
 	taskCount++;
 	UpdateProcess();
-	tTestLog("Net task push_back: " << url.c_str() << "  ___  " << savePath.c_str());
+// 	tTestLog("Net task push_back: " << url.c_str() << "  ___  " << savePath.c_str());
 
 	rawCrisection.Signal();
 	// TODO: resume if pause.
@@ -101,8 +101,8 @@ void CNet::DoWork()
 	{
 		if (taskInfoVec.size() > 0)
 		{
-			vector<TPicTaskInfo>::iterator i = taskInfoVec.begin();
-			if (webServ->DownLoadFile(i->first, i->second))
+			TPicTaskInfo info = *taskInfoVec.begin();
+			if (webServ->DownLoadFile(info.first, info.second))
 			{
 				failCount = 0;
 				rawCrisection.Wait();
@@ -117,7 +117,6 @@ void CNet::DoWork()
 				if (failCount++ > 2)
 				{
 					rawCrisection.Wait();
-					TPicTaskInfo info = *i;
 					iter = taskInfoVec.erase(taskInfoVec.begin());
 					taskInfoVec.push_back(info);
 					rawCrisection.Signal();

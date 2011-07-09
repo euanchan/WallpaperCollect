@@ -66,6 +66,7 @@ HBITMAP LoadImageFile(const wstring& fileName)
 //////////////////////////////////////////////////////////////////////////
 CPicWallView::CPicWallView()
 : imgList(NULL)
+, indexFlag(0)
 {
 }
 
@@ -113,7 +114,7 @@ bool CPicWallView::InitWithImgInfoList()
 		int i = imgList->Add(bm, (HBITMAP)NULL);
 		if (i == -1)
 		{
-			;
+			indexFlag = imgList->GetImageCount();  // 
 		}
 		// 已下载辑不再显示
 		if (gPathInfo->CurPicsPageUrlFinished((*iter)->linkUrl))
@@ -135,9 +136,13 @@ bool CPicWallView::UpdateItem(const string& thumbnailUrl)
 	// 需要处理因主线程忙于添加任务时，错过从下载线程返回的消息而未更新已下载的缩略图
 	// 主要使用indexFlag变量来同时更新上一次更新到这次更新的所有缩略图
 
-	static int indexFlag = 0;  // 每次更新itemindex时更新，更新
-	// TODO: 刷新有问题，需要修改
-	SetRedraw(false);
+	// TODO: 未处理间隔的缩略图被删除情况
+	//SetRedraw(false);
+
+	// TODO: 切换视图时未正确处理
+	if (indexFlag > thumbnailInfoList.size() - 2)
+		return false;
+
 	vector<TCollectInfo*>::iterator iter = thumbnailInfoList.begin() + indexFlag;
 	int itemIndex = indexFlag;
 	for (; iter != thumbnailInfoList.end(); ++iter, ++itemIndex)
@@ -147,7 +152,6 @@ bool CPicWallView::UpdateItem(const string& thumbnailUrl)
 		int imageIndex = imgList->Add(bm, (HBITMAP)NULL);
 		if (imageIndex != -1)
 		{
-			tTestLog("<< item i: " << itemIndex << "   image index: " << imageIndex);
 			SetImageList(imgList->m_hImageList, LVSIL_NORMAL);
 			LPLVITEM pItem;
 			SetItem(itemIndex, 0, LVIF_TEXT|LVIF_IMAGE|LVIF_PARAM, 
@@ -159,12 +163,12 @@ bool CPicWallView::UpdateItem(const string& thumbnailUrl)
 			break;
 	}
 
-	RedrawItems(indexFlag, itemIndex);
+	//RedrawItems(indexFlag, itemIndex);
 	indexFlag = itemIndex;
 	if (indexFlag == GetItemCount())
 		indexFlag = 0;
 
-	SetRedraw(true);
-	Invalidate();
+	//SetRedraw(true);
+// 	Invalidate();
 	return true;
 }

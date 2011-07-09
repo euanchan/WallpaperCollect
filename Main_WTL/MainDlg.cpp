@@ -11,6 +11,12 @@
 
 void CMainDlg::Init()
 {
+	TTime t = GetLocalTime();	
+	char pOut[128] = {0};
+	sprintf( pOut, "--------------------[%d-%02d-%02d]--------------", 
+		t.wYear, t.wMonth, t.wDay );
+	tTestLog( pOut );
+
 	SetMsgRecvWindowH(this->m_hWnd);
 
 	channelAtt = new TChannelInfo();
@@ -18,12 +24,6 @@ void CMainDlg::Init()
 	//wstring cachePath = gPathInfo->CachePath();
 	wpCol.SetSite("http://www.deskcity.com/");
 	wpCol.ColChannelTree(channelAtt);
-
-	TTime t = GetLocalTime();	
-	char pOut[128] = {0};
-	sprintf( pOut, "--------------------[%d-%02d-%02d]--------------", 
-		t.wYear, t.wMonth, t.wDay );
-	tTestLog( pOut );
 }
 
 void CMainDlg::Release()
@@ -107,7 +107,7 @@ LRESULT CMainDlg::OnBnClickedBtnChangeDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	bi.hwndOwner = NULL;
 	bi.pidlRoot =NULL;    
 	bi.pszDisplayName = Buffer;
-	bi.lpszTitle = _T("修改接收路径");
+	bi.lpszTitle = _T("修改壁纸存放根路径");
 	bi.ulFlags = BIF_NEWDIALOGSTYLE | BIF_EDITBOX;
 	bi.lpfn = NULL;
 	bi.iImage = IDR_MAINFRAME;
@@ -236,11 +236,14 @@ LRESULT CMainDlg::OnDownloadPackage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	if (index == -1)
 		return 0;
 	TCollectInfo* pInfo = (TCollectInfo*)picWallView.GetItemData(index);
-	tTestLog("Add Task:" << pInfo->linkUrl.c_str() << "  ---  " << pInfo->displayName.c_str());
-	wpCol.AddTask(pInfo->linkUrl, savePath, ECmdColPicListPage);
-	wpCol.Start();
-	bool ret = SetWallpaperCollectEvent();
-	picWallView.DeleteItem(index);
+	if (pInfo)
+	{
+		//tTestLog("Add Task:" << pInfo->linkUrl.c_str() << "  ---  " << pInfo->displayName.c_str());
+		wpCol.AddTask(pInfo->linkUrl, savePath, ECmdColPicListPage);
+		wpCol.Start();
+		bool ret = SetWallpaperCollectEvent();
+		picWallView.DeleteItem(index);
+	}
 
 	return 0;
 }
@@ -248,6 +251,7 @@ LRESULT CMainDlg::OnDownloadPackage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 // 下载所有选中辑
 LRESULT CMainDlg::OnDownloadSelectPackage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	// TODO: 下载已选辑无法一次性加载完成
 	size_t itemCount = picWallView.GetItemCount();
 	wstring savePath = GetSavePathByChannelTreeState();
 
@@ -256,8 +260,11 @@ LRESULT CMainDlg::OnDownloadSelectPackage(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		if (picWallView.GetCheckState(i))
 		{
 			TCollectInfo* pInfo = (TCollectInfo*)picWallView.GetItemData(i);
-			wpCol.AddTask(pInfo->linkUrl, savePath, ECmdColPicListPage);
-			picWallView.DeleteItem(i);
+			if (pInfo)
+			{
+				wpCol.AddTask(pInfo->linkUrl, savePath, ECmdColPicListPage);
+				picWallView.DeleteItem(i);
+			}
 		}
 	}
 	wpCol.Start();
@@ -370,6 +377,12 @@ LRESULT CMainDlg::OnUpdateCurPicName(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPar
 LRESULT CMainDlg::ONNotifyThumbPicFinished(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// TODO: 需要处理字符串已释放。
+	char http[5];
+	memset(http, 0, 5);
+	memcpy(http, (void *)wParam, 4);
+	if (strcmp("http", http) != 0)
+		return 0;
+
 	string url = (char*)wParam;
 	picWallView.UpdateItem(url);
 	return 0;

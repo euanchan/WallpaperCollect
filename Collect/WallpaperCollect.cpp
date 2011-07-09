@@ -649,17 +649,17 @@ void CWallpaperCollect::DoWork()
 // 	tTestLog("[" << (long)this << "]" << "CWallpaperCollect::DoWork begin.");
 	while (onWork)
 	{
-		tTestLog("CWallpaperCollect::taskInfoVec.size() == " << (int)taskInfoVec.size());
+		//tTestLog("CWallpaperCollect::taskInfoVec.size() == " << (int)taskInfoVec.size());
 		if (taskInfoVec.size() > 0)
 		{
-			vector<TCollectTaskInfo>::iterator i = taskInfoVec.begin();
-			if (i->cmdType == ECmdColPackagePages)
+			TCollectTaskInfo task = *taskInfoVec.begin();
+			if (task.cmdType == ECmdColPackagePages)
 			{
-				ColFromPackagePages(i->url, i->savePath);
+				ColFromPackagePages(task.url, task.savePath);
 			}
-			else if (i->cmdType == ECmdColPicListPage)
+			else if (task.cmdType == ECmdColPicListPage)
 			{
-				ColFromPicListPage(i->url, i->savePath);
+				ColFromPicListPage(task.url, task.savePath);
 			}
 			rawCrisection.Wait();
 			iter = taskInfoVec.erase(taskInfoVec.begin());
@@ -667,12 +667,12 @@ void CWallpaperCollect::DoWork()
 		}
 		else
 		{
-			tTestLog("wait for wpCollect Event beg __");
+			//tTestLog("wait for wpCollect Event beg __");
 			// 将等待的CNet下载线程激活
 			SetEvent(ghNetEvent);
 
 			int i = WaitForSingleObject(ghWpCollEvent, INFINITE);
-			tTestLog("wait for wpCollect event end __" << i);
+			//tTestLog("wait for wpCollect event end __" << i);
 		}
 	}
 }

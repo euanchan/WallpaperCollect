@@ -114,8 +114,8 @@ bool CWebServer::DownLoadFile( const string& url, const wstring& filePath )
 		CString fileName = filePath.substr(pos).c_str();
 		UpdateCurPicName((WPARAM)fileName.GetBuffer());
 
-		tTestLog("[" << (long)this << "]" << url.c_str() << " DownLoading бнбн");
-		tTestLog("[" << (long)this << "]" << " Save As " << filePath.c_str());
+		tDownloadLog("[" << url.c_str() << "]");
+		tDownloadLog(" Save As [" <<  filePath.c_str() << "]");
 
 		DWORD dwFlag = INTERNET_FLAG_TRANSFER_BINARY|INTERNET_FLAG_DONT_CACHE|INTERNET_FLAG_RELOAD;
 		pHttpFile = (CHttpFile *)netSess.OpenURL(wUrl.c_str(), 1, dwFlag);
