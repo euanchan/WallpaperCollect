@@ -19,6 +19,8 @@ syntax: glob
 *.exe
 *.dep
 *.data
+*.aps
+Debug
 Cache
 Log
 Bin
