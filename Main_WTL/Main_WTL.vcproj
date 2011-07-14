@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CustomNClient.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\EButton.cpp"
 				>
 			</File>
@@ -243,6 +247,10 @@
 			>
 			<File
 				RelativePath=".\ChannelTree.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CustomNClient.h"
 				>
 			</File>
 			<File

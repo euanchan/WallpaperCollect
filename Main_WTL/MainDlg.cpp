@@ -43,6 +43,24 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	// ³õÊ¼»¯ÆµµÀÊ÷
 	Init();
 
+/*
+
+	BOOL bRet; 
+	CRgn m_rgn1, m_rgn2; 
+	RECT rc; 
+
+	GetWindowRect(&rc); 
+	OffsetRect(&rc, -rc.left, -rc.top); 
+	m_rgn1.CreateRoundRectRgn(rc.left - 5, rc.top - 40, rc.right + 5, rc.bottom + 7, 12, 12); 
+	m_rgn2.CreateRoundRectRgn(rc.left, rc.top - 18, rc.right + 1,rc.bottom + 2,12,12); 
+	m_rgn2.CombineRgn(m_rgn1, m_rgn2, RGN_OR); 
+	SetWindowRgn(m_rgn2, TRUE);
+
+	SetWindowPos(NULL, 0, 0, 0, 0, 
+		SWP_FRAMECHANGED|SWP_NOOWNERZORDER|SWP_NOMOVE|SWP_NOSIZE);*/
+
+
+
 	//////////////////////////////////////////////////////////////////////////
 	// center the dialog on the screen
 	CenterWindow();

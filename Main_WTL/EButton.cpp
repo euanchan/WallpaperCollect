@@ -28,6 +28,8 @@ void CEButton::DrawFrame(HDC& hdc, LPRECT rect)
 	//FillRect(hdc, rect, brush);
 	SelectObject(hdc, (HGDIOBJ)oldBrush);
 	SelectObject(hdc, (HGDIOBJ)oldPen);
+	DeleteObject(pen);
+	DeleteObject(brush);
 }
 
 void CEButton::DrawText(HDC& hdc, LPRECT rect)

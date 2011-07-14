@@ -7,14 +7,16 @@
 #include "ChannelTree.h"
 #include "PicWallView.h"
 #include "EButton.h"
+#include "CustomNClient.h"
 #include "WallpaperCollect.h"
 #include "Net.h"
 
 #define DLG_BK_COLOR RGB(222, 232, 237)
 
-class CMainDlg : 
-	public CDialogImpl<CMainDlg>,
-	public CWinDataExchange<CMainDlg>
+class CMainDlg 
+	: public CDialogImpl<CMainDlg>
+	, public CWinDataExchange<CMainDlg>
+	, public CCustomNClient<CMainDlg>
 {
 public:
 	enum { IDD = IDD_MAINDLG };
@@ -39,6 +41,7 @@ public:
 		COMMAND_ID_HANDLER(ID_DOWNLOAD_SEL, OnDownloadSelectPackage)
 		COMMAND_ID_HANDLER(ID_SELECT_ALL, OnSelectAll)
 		COMMAND_ID_HANDLER(ID_SELECT_INVERT, OnSelectInvert)
+		CHAIN_MSG_MAP(CCustomNClient<CMainDlg>)
 		REFLECT_NOTIFICATIONS() 
 	END_MSG_MAP()
 
