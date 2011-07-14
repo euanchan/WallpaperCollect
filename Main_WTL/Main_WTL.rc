@@ -74,7 +74,7 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(936)
+#pragma code_page(1252)
 #endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
@@ -138,9 +138,9 @@ BEGIN
     EDITTEXT        IDC_EDIT_SAVEDIR,112,319,203,17,ES_AUTOHSCROLL | ES_READONLY | WS_DISABLED
     CONTROL         "",IDC_PROGRESS_CUR,"msctls_progress32",WS_BORDER,381,330,171,10
     CONTROL         "",IDC_PROGRESS_TOTAL,"msctls_progress32",WS_BORDER,381,356,171,16
-    PUSHBUTTON      "Change",IDC_BTN_CHANGE_DIR,326,315,36,23
+    CONTROL         "Change",IDC_BTN_CHANGE_DIR,"Button",BS_OWNERDRAW | WS_TABSTOP,326,315,36,23
     GROUPBOX        "",IDC_STATIC,374,290,188,87
-    PUSHBUTTON      "Pause",IDC_BTN_PAUSE,513,302,43,18,WS_DISABLED
+    CONTROL         "Pause",IDC_BTN_PAUSE,"Button",BS_OWNERDRAW | WS_TABSTOP,513,302,43,18
     GROUPBOX        "",IDC_STATIC,103,291,267,86
     LTEXT           "Download Progress:",IDC_STATIC,384,302,67,8
     LTEXT           "Wallpaper Save Path:",IDC_STATIC,114,305,85,8
@@ -224,7 +224,7 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "FileDescription", "±ÚÖ½ÏÂÔØ¹¤¾ß"
+            VALUE "FileDescription", "??????"
             VALUE "FileVersion", "1, 0, 0, 1"
             VALUE "InternalName", "Wallpaper"
             VALUE "LegalCopyright", "euan1022@gmail.com Copyright 2011"

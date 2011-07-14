@@ -78,6 +78,10 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	progressCur.Attach(GetDlgItem(IDC_PROGRESS_CUR));
 	progressCur.SetRange(0, 100);
 
+	// Button
+	btnChangeDir.SubclassWindow(GetDlgItem(IDC_BTN_CHANGE_DIR));
+	//btnChangeDir.SubclassWindow(GetDlgItem(IDC_BTN_PAUSE));
+
 	// SavePath
 	wstring str = gPathInfo->GetSavePathRoot();
 	savePathRoot = str.c_str();
@@ -351,7 +355,7 @@ LRESULT CMainDlg::OnUpdateTotalProgress(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 	if (progressTotal.m_hWnd)
 		progressTotal.SetPos((float)wParam / (float)lParam * 100);
 
-	CString str;
+	ATL::CString str;
 	str.Format(_T("%d / %d"), wParam, lParam);
 	GetDlgItem(IDC_PROGRESS_TOTAL_TXT).SetWindowText(str);
 	RefreshControl(IDC_PROGRESS_TOTAL_TXT);
@@ -368,7 +372,7 @@ LRESULT CMainDlg::OnUpdateCurProgress(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 
 LRESULT CMainDlg::OnUpdateCurPicName(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CString str = (wchar*)wParam;
+	ATL::CString str = (wchar*)wParam;
 	GetDlgItem(IDC_CUR_PIC_NAME).SetWindowText(str);
 	RefreshControl(IDC_CUR_PIC_NAME);
 	return 0;

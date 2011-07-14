@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EButton.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Main_WTL.cpp"
 				>
 			</File>
@@ -239,6 +243,10 @@
 			>
 			<File
 				RelativePath=".\ChannelTree.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EButton.h"
 				>
 			</File>
 			<File

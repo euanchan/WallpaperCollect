@@ -7,7 +7,7 @@ public:
 	CPicWallView();
 	virtual ~CPicWallView(void);
 
-	BEGIN_MSG_MAP(CChannelTreeCtrl)
+	BEGIN_MSG_MAP(CPicWallView)
 		DEFAULT_REFLECTION_HANDLER() 
 	END_MSG_MAP() 
 

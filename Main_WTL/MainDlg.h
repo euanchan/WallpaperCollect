@@ -6,6 +6,7 @@
 
 #include "ChannelTree.h"
 #include "PicWallView.h"
+#include "EButton.h"
 #include "WallpaperCollect.h"
 #include "Net.h"
 
@@ -23,10 +24,10 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)	
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnCtlColorStatic)
 		MESSAGE_HANDLER(WM_CTLCOLORDLG, OnCtlColorDlg)
-		MESSAGE_HANDLER(MSG_UPDATE_TASK_LIST_PROCESS, OnUpdateTotalProgress);
-		MESSAGE_HANDLER(MSG_UPDATE_CUR_PIC_PROCESS, OnUpdateCurProgress);
-		MESSAGE_HANDLER(MSG_UPDATE_CUR_PIC_NAME, OnUpdateCurPicName);
-		MESSAGE_HANDLER(MSG_THUMBNAIL_PIC_FINISHED, ONNotifyThumbPicFinished);
+		MESSAGE_HANDLER(MSG_UPDATE_TASK_LIST_PROCESS, OnUpdateTotalProgress)
+		MESSAGE_HANDLER(MSG_UPDATE_CUR_PIC_PROCESS, OnUpdateCurProgress)
+		MESSAGE_HANDLER(MSG_UPDATE_CUR_PIC_NAME, OnUpdateCurPicName)
+		MESSAGE_HANDLER(MSG_THUMBNAIL_PIC_FINISHED, ONNotifyThumbPicFinished)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_HANDLER(IDC_BTN_CHANGE_DIR, BN_CLICKED, OnBnClickedBtnChangeDir)
 		COMMAND_HANDLER(IDC_BTN_PAUSE, BN_CLICKED, OnBnClickedBtnPause)
@@ -91,7 +92,10 @@ private:
 	CProgressBarCtrl progressTotal;
 	CProgressBarCtrl progressCur;
 	CEdit            savePathEdit;
-	CString          savePathRoot;           // 壁纸保存目录根路径
+	CEButton         btnChangeDir;
+	CEButton         btnPause;
+
+	ATL::CString          savePathRoot;           // 壁纸保存目录根路径
 	CBrush           dlgBkBrush;             // 对话框背景色画刷
 
 	vector<TPackagePageInfo*> collectInfoVec;
