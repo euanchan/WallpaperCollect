@@ -57,7 +57,7 @@ public:
 	LRESULT OnNcPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		CRgn rgn = (HRGN)wParam;
-
+		rgn.
 		T* pT = static_cast<T*>(this);
 		HDC hdc = pT->GetDC();
 		RECT rc;
