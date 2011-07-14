@@ -11,36 +11,52 @@ public:
 	COLORREF frameColorHover;
 	COLORREF frameColorPress;
 	COLORREF fontColor;
+	bool     bHover;
 
 public:
 	DECLARE_WND_SUPERCLASS(NULL, _T("Button"))
 	BEGIN_MSG_MAP(CEButton)
 		MSG_WM_MOUSEMOVE(OnMouseMove)
 		MSG_WM_MOUSELEAVE(OnMouseLeave)
+		MSG_WM_MOUSEHOVER(OnMouseHover)
  		CHAIN_MSG_MAP_ALT(COwnerDraw<CEButton>, 1)
 		DEFAULT_REFLECTION_HANDLER()
 	END_MSG_MAP()
 	
 	CEButton(void)
-		: frameColorNormal(RGB(200, 180, 255))
-		, frameColorHover(RGB(0, 180, 255))
-		, frameColorPress(RGB(200, 180, 0))
+		: frameColorNormal(RGB(221, 246, 255))
+		, frameColorHover(RGB(124, 230, 255))
+		, frameColorPress(RGB(0, 180, 255))
 		, fontColor(RGB(0, 55, 22))
+		, bHover(false)
 	{}
 	~CEButton(void){}
 
+
+	void OnMouseHover(UINT, CPoint point)
+	{
+		if (!bHover)
+		{
+			bHover = true;
+			Invalidate(0);
+		}
+	}
 	BOOL OnMouseMove(UINT nFlags, CPoint point)
 	{
-		//跟踪鼠标信息
-		SetState(true);
+		//跟踪鼠标信息,捕获MouseHover,MouseLeave
+		TRACKMOUSEEVENT tme;
+		tme.cbSize = sizeof(tme);
+		tme.hwndTrack = m_hWnd;
+		tme.dwFlags = TME_LEAVE | TME_HOVER;
+		tme.dwHoverTime = 1;
+		_TrackMouseEvent(&tme);
 
-		UpdateWindow();
 		return true;
 	}
 	BOOL OnMouseLeave()
 	{
-		SetState(true);
-		UpdateWindow();
+		bHover = false;
+		Invalidate(0);
 		return true;
 	}
 	void DrawItem(LPDRAWITEMSTRUCT ps)

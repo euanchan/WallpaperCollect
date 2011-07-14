@@ -80,7 +80,11 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	// Button
 	btnChangeDir.SubclassWindow(GetDlgItem(IDC_BTN_CHANGE_DIR));
-	//btnChangeDir.SubclassWindow(GetDlgItem(IDC_BTN_PAUSE));
+	btnPause.SubclassWindow(GetDlgItem(IDC_BTN_PAUSE));
+	long style;
+	style = btnPause.GetWindowLong(GWL_STYLE);
+	style |= WS_DISABLED;
+	btnPause.SetWindowLong(GWL_STYLE, style);
 
 	// SavePath
 	wstring str = gPathInfo->GetSavePathRoot();
