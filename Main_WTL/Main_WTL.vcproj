@@ -209,10 +209,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ECusDialog.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Main_WTL.cpp"
 				>
 			</File>
@@ -259,10 +255,6 @@
 			</File>
 			<File
 				RelativePath=".\EButton.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ECusDialog.h"
 				>
 			</File>
 			<File

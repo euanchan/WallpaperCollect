@@ -1,9 +1,8 @@
 #pragma once
 #include <atlmisc.h>
 
-template <class T>
+template<class T>
 class CCustomNClient : public CMessageMap
-	//: public CDialogImpl<CCustomNClient>
 {
 protected:
 	CBrush  brBkground;
@@ -25,55 +24,46 @@ public:
 	~CCustomNClient(void){}
 
 	BEGIN_MSG_MAP(CCustomNClient)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_NCPAINT, OnNcPaint)
 		MESSAGE_HANDLER(WM_NCACTIVATE, OnNcActivate)
 		MESSAGE_HANDLER(WM_NCCALCSIZE, OnNcCalcSize)
 		MESSAGE_HANDLER(WM_NCLBUTTONDOWN, OnNcLButtonDown)
 		MESSAGE_HANDLER(WM_NCLBUTTONUP, OnNcLButtonUp)
 		MESSAGE_HANDLER(WM_NCMOUSEMOVE, OnNcMouseMove)
+		MESSAGE_HANDLER(WM_NCHITTEST, OnNcHitTest)
 	END_MSG_MAP()
 
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	void DrawFrame()
 	{
-		T* pt = static_cast<T*>(this);
+		T* dlg = static_cast<T*>(this);
+		CWindowDC dc(dlg->m_hWnd);
+		CRect wndRect;
+		dlg->GetWindowRect(&wndRect);
+		
+		//dc.ExcludeClipRect(0, 0, wndRect.Width(), 20);
+		// Draw Frame
 
-		BOOL bRet; 
-		CRgn m_rgn1, m_rgn2; 
-		RECT rc; 
+		HBRUSH brush = CreateSolidBrush(RGB(0, 200, 200));
+		HBRUSH oldBr = (HBRUSH)SelectObject(dc.m_hDC, (HGDIOBJ)brush);
+		FillRect(dc.m_hDC, &wndRect, brush);
 
-		pt->GetWindowRect(&rc); 
-		OffsetRect(&rc, -rc.left, -rc.top); 
-		m_rgn1.CreateRoundRectRgn(rc.left, rc.top, rc.right + 1,rc.top - 45,12,12); 
-		m_rgn2.CreateRoundRectRgn(rc.left,rc.top + 18, rc.right + 1,rc.bottom + 2,12,12); 
-		m_rgn2.CombineRgn(m_rgn1, m_rgn2, RGN_OR); 
-		pt->SetWindowRgn(m_rgn2, TRUE);
-
-		pt->SetWindowPos(NULL, 0, 0, 0, 0, 
-			SWP_FRAMECHANGED|SWP_NOOWNERZORDER|SWP_NOMOVE|SWP_NOSIZE);
-		return 0;
+		SelectObject(dc.m_hDC, (HGDIOBJ)oldBr);
+		dc.SelectClipRgn(NULL);
 	}
 
-	LRESULT OnNcPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	LRESULT OnNcPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		CRgn rgn = (HRGN)wParam;
-		rgn.
-		T* pT = static_cast<T*>(this);
-		HDC hdc = pT->GetDC();
-		RECT rc;
-		pT->GetClientRect(&rc);
-		HBRUSH brush = CreateSolidBrush(RGB(0, 200, 200));
-		HBRUSH oldBr = (HBRUSH)SelectObject(hdc, (HGDIOBJ)brush);
-		FillRect(hdc, &rc, brush);
+		DrawFrame();
 
-		DeleteObject((HGDIOBJ)brush);
-
-		return 0;
+ 		return 1;
 	}
-	LRESULT OnNcActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	LRESULT OnNcActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		BOOL bActive = (BOOL)wParam;
+		DrawFrame();
 
+		bHandled = false;
 		return 0;
 	}
 	LRESULT OnNcCalcSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -82,27 +72,41 @@ public:
 		//T* pT = static_cast<T*>(this);
 		//pT->OnNcCalcSize(uMsg, bCalcValidRects);
 
-		return 0;
+		bHandled = false;
+		return -1;
 	}
-	LRESULT OnNcLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	LRESULT OnNcLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		UINT nHitTest = (UINT)wParam;
 		CPoint pt = _WTYPES_NS::CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
+		bHandled = false;
 		return 0;
 	}
-	LRESULT OnNcLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	LRESULT OnNcLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		UINT nHitTest = (UINT)wParam;
 		CPoint pt = _WTYPES_NS::CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
+		bHandled = false;
 		return 0;
 	}
-	LRESULT OnNcMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	LRESULT OnNcMouseMove(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		UINT nHitTest = (UINT)wParam;
 		CPoint pt = _WTYPES_NS::CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
+		bHandled = false;
 		return 0;
+	}
+
+	LRESULT OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		LRESULT lRet = DefWindowProc(uMsg, wParam, lParam);
+		// 屏蔽最大最小关闭消息.
+		if (lRet==HTZOOM || lRet == HTMINBUTTON || lRet == HTCLOSE)
+			return HTCAPTION;
+		else
+			return lRet;
 	}
 };

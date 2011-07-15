@@ -43,22 +43,6 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	// ³õÊ¼»¯ÆµµÀÊ÷
 	Init();
 
-/*
-
-	BOOL bRet; 
-	CRgn m_rgn1, m_rgn2; 
-	RECT rc; 
-
-	GetWindowRect(&rc); 
-	OffsetRect(&rc, -rc.left, -rc.top); 
-	m_rgn1.CreateRoundRectRgn(rc.left - 5, rc.top - 40, rc.right + 5, rc.bottom + 7, 12, 12); 
-	m_rgn2.CreateRoundRectRgn(rc.left, rc.top - 18, rc.right + 1,rc.bottom + 2,12,12); 
-	m_rgn2.CombineRgn(m_rgn1, m_rgn2, RGN_OR); 
-	SetWindowRgn(m_rgn2, TRUE);
-
-	SetWindowPos(NULL, 0, 0, 0, 0, 
-		SWP_FRAMECHANGED|SWP_NOOWNERZORDER|SWP_NOMOVE|SWP_NOSIZE);*/
-
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -109,7 +93,23 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	savePathRoot = str.c_str();
 	DoDataExchange(false);
 
-	return TRUE;
+
+	// 
+// 
+// 	BOOL bRet; 
+// 	CRgn m_rgn1, m_rgn2; 
+// 	RECT rc; 
+// 
+// 	GetWindowRect(&rc); 
+// 	OffsetRect(&rc, -rc.left, -rc.top); 
+// 	m_rgn1.CreateRoundRectRgn(rc.left - 5, rc.top - 40, rc.right + 5, rc.bottom + 7, 12, 12); 
+// 	m_rgn2.CreateRoundRectRgn(rc.left, rc.top - 18, rc.right + 1,rc.bottom + 2,12,12); 
+// 	m_rgn2.CombineRgn(m_rgn1, m_rgn2, RGN_OR); 
+// 	m_rgn2.CreateRectRgn(0, 0, 900, 700);
+// 	SetWindowRgn(m_rgn2, TRUE);
+
+
+	return 0;
 }
 
 LRESULT CMainDlg::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
