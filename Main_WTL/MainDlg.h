@@ -7,25 +7,24 @@
 #include "ChannelTree.h"
 #include "PicWallView.h"
 #include "EButton.h"
-#include "CustomNClient.h"
+#include "CustomNCClient.h"
 #include "WallpaperCollect.h"
 #include "Net.h"
 
-#define DLG_BK_COLOR RGB(222, 232, 237)
 
 class CMainDlg 
 	: public CDialogImpl<CMainDlg>
 	, public CWinDataExchange<CMainDlg>
-	, public CCustomNClient<CMainDlg>
+	, public CCustomNCClient<CMainDlg>
 {
 public:
 	enum { IDD = IDD_MAINDLG };
 
 	BEGIN_MSG_MAP(CMainDlg)
+		CHAIN_MSG_MAP(CCustomNCClient<CMainDlg>)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)	
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnCtlColorStatic)
-		MESSAGE_HANDLER(WM_CTLCOLORDLG, OnCtlColorDlg)
 		MESSAGE_HANDLER(MSG_UPDATE_TASK_LIST_PROCESS, OnUpdateTotalProgress)
 		MESSAGE_HANDLER(MSG_UPDATE_CUR_PIC_PROCESS, OnUpdateCurProgress)
 		MESSAGE_HANDLER(MSG_UPDATE_CUR_PIC_NAME, OnUpdateCurPicName)
@@ -41,8 +40,7 @@ public:
 		COMMAND_ID_HANDLER(ID_DOWNLOAD_SEL, OnDownloadSelectPackage)
 		COMMAND_ID_HANDLER(ID_SELECT_ALL, OnSelectAll)
 		COMMAND_ID_HANDLER(ID_SELECT_INVERT, OnSelectInvert)
-		CHAIN_MSG_MAP(CCustomNClient<CMainDlg>)
-		REFLECT_NOTIFICATIONS() 
+		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
 	BEGIN_DDX_MAP(CMainDlg)
@@ -58,7 +56,6 @@ public:
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnCtlColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnCtlColorDlg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnUpdateTotalProgress(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnUpdateCurProgress(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -99,7 +96,6 @@ private:
 	CEButton         btnPause;
 
 	ATL::CString          savePathRoot;           // 壁纸保存目录根路径
-	CBrush           dlgBkBrush;             // 对话框背景色画刷
 
 	vector<TPackagePageInfo*> collectInfoVec;
 

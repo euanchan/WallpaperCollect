@@ -38,26 +38,10 @@ void CMainDlg::Release()
 	}
 }
 
-LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	// 初始化频道树
 	Init();
-
-
-
-	//////////////////////////////////////////////////////////////////////////
-	// center the dialog on the screen
-	CenterWindow();
-
-	// set icons
-	HICON hIcon = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR);
-	SetIcon(hIcon, TRUE);
-	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
-		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
-	SetIcon(hIconSmall, FALSE);
-	
-	dlgBkBrush.CreateSolidBrush(DLG_BK_COLOR);    // 
 		
 	//////////////////////////////////////////////////////////////////////////
 	// channelTree
@@ -107,7 +91,9 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 // 	m_rgn2.CombineRgn(m_rgn1, m_rgn2, RGN_OR); 
 // 	m_rgn2.CreateRectRgn(0, 0, 900, 700);
 // 	SetWindowRgn(m_rgn2, TRUE);
+	
 
+	//bHandled = false;  // 继续交由 CustomNCClient处理
 
 	return 0;
 }
@@ -423,12 +409,6 @@ LRESULT CMainDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam
 	return (LRESULT)::GetStockObject(NULL_BRUSH);
 }
 
-LRESULT CMainDlg::OnCtlColorDlg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	
-	return (LRESULT)(HGDIOBJ)dlgBkBrush;  
-}
 
 void CMainDlg::RefreshControl(UINT uCtlID)
 {
