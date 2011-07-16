@@ -110,7 +110,7 @@ bool CPicWallView::InitWithImgInfoList()
 	this->SetImageList(imgList->m_hImageList, LVSIL_NORMAL);
 	for (; iter != thumbnailInfoList.end(); ++iter)
 	{
-		HBITMAP bm = LoadImageFile((*iter)->thumbSavePath);
+		CBitmap bm = LoadImageFile((*iter)->thumbSavePath);
 		int i = imgList->Add(bm, (HBITMAP)NULL);
 		if (i == -1)
 		{
@@ -148,7 +148,7 @@ bool CPicWallView::UpdateItem(const string& thumbnailUrl)
 	for (; iter != thumbnailInfoList.end(); ++iter, ++itemIndex)
 	{
 		// 有错过的消息，存在多个需要更新的缩略图
-		HBITMAP bm = LoadImageFile((*iter)->thumbSavePath);
+		CBitmap bm = LoadImageFile((*iter)->thumbSavePath);
 		int imageIndex = imgList->Add(bm, (HBITMAP)NULL);
 		if (imageIndex != -1)
 		{
