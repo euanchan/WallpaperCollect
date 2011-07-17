@@ -59,9 +59,16 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	savePathEdit.Attach(GetDlgItem(IDC_EDIT_SAVEDIR));
 
 	// Progress bar
-	progressTotal.Attach(GetDlgItem(IDC_PROGRESS_TOTAL));
+	RECT progressRect = {0};
+	::GetWindowRect(GetDlgItem(IDC_PROGRESS_TOTAL), &progressRect);
+	ScreenToClient(&progressRect);
+	progressTotal.Create(m_hWnd, progressRect, NULL, WS_VISIBLE | WS_CHILD);
 	progressTotal.SetRange(0, 100);
-	progressCur.Attach(GetDlgItem(IDC_PROGRESS_CUR));
+	//progressCur.Attach(GetDlgItem(IDC_PROGRESS_CUR));
+
+	::GetWindowRect(GetDlgItem(IDC_PROGRESS_CUR), &progressRect);
+	ScreenToClient(&progressRect);
+	progressCur.Create(m_hWnd, progressRect, NULL, WS_VISIBLE | WS_CHILD);
 	progressCur.SetRange(0, 100);
 
 	// Button
@@ -361,12 +368,15 @@ wstring CMainDlg::GetSavePathByChannelTreeState()
 LRESULT CMainDlg::OnUpdateTotalProgress(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	if (progressTotal.m_hWnd)
+	{
 		progressTotal.SetPos((float)wParam / (float)lParam * 100);
 
-	ATL::CString str;
-	str.Format(_T("%d / %d"), wParam, lParam);
-	GetDlgItem(IDC_PROGRESS_TOTAL_TXT).SetWindowText(str);
-	RefreshControl(IDC_PROGRESS_TOTAL_TXT);
+		ATL::CString str;
+		str.Format(_T("%d / %d"), wParam, lParam);
+		//GetDlgItem(IDC_PROGRESS_TOTAL_TXT).SetWindowText(str);
+		progressTotal.SetWindowText(str);
+		//RefreshControl(IDC_PROGRESS_TOTAL_TXT);
+	}
 
 	return 0;
 }

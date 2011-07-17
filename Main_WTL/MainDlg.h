@@ -4,10 +4,11 @@
 
 #pragma once
 
+#include "CustomNCClient.h"
 #include "ChannelTree.h"
 #include "PicWallView.h"
 #include "EButton.h"
-#include "CustomNCClient.h"
+#include "EProgressBar.h"
 #include "WallpaperCollect.h"
 #include "Net.h"
 
@@ -89,8 +90,8 @@ private:
 	CMenu menuChannelTree;
 	CChannelTreeCtrl channelTree; 
 	CPicWallView     picWallView;
-	CProgressBarCtrl progressTotal;
-	CProgressBarCtrl progressCur;
+	CEProgressBar    progressTotal;
+	CEProgressBar    progressCur;
 	CEdit            savePathEdit;
 	CEButton         btnChangeDir;
 	CEButton         btnPause;

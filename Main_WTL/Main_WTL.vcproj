@@ -201,11 +201,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CustomNCClient.cpp"
+				RelativePath=".\EButton.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\EButton.cpp"
+				RelativePath=".\EProgressBar.cpp"
 				>
 			</File>
 			<File
@@ -258,6 +258,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EProgressBar.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ImageListBox.h"
 				>
 			</File>
@@ -288,6 +292,10 @@
 			</File>
 			<File
 				RelativePath=".\Main_WTL.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\res\progress.bmp"
 				>
 			</File>
 		</Filter>

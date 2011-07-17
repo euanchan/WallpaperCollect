@@ -9,6 +9,8 @@
 #define IDR_MENU_LIST_IN                202
 #define IDR_MENU1                       203
 #define IDR_MENU_LIST_OUT               203
+#define IDB_BITMAP1                     204
+#define IDB_BITMAP_PROGRESS             204
 #define IDC_TREE_PACKAGE                1000
 #define IDC_CHANNEL_TREE                1000
 #define IDC_EDIT_SAVEDIR                1001
@@ -43,7 +45,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        204
+#define _APS_NEXT_RESOURCE_VALUE        205
 #define _APS_NEXT_COMMAND_VALUE         32791
 #define _APS_NEXT_CONTROL_VALUE         1013
 #define _APS_NEXT_SYMED_VALUE           101

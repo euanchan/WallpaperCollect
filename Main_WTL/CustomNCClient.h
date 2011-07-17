@@ -10,6 +10,7 @@
 #define COLOR_DLG_EXITBTN_PRESS  RGB(222, 100, 100)
 #define COLOR_DLG_FRAME          RGB(81, 162, 255)
 
+// 对话框窗体绘制内嵌类
 template<class T>
 class CCustomNCClient : public CMessageMap
 {
