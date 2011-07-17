@@ -209,6 +209,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EScrollBar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Main_WTL.cpp"
 				>
 			</File>
@@ -259,6 +263,10 @@
 			</File>
 			<File
 				RelativePath=".\EProgressBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EScrollBar.h"
 				>
 			</File>
 			<File
