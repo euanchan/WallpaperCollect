@@ -1,3 +1,4 @@
+#include "atlcrack.h"
 #pragma once
 
 class CEScrollBar

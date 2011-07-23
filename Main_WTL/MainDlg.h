@@ -11,7 +11,9 @@
 #include "EProgressBar.h"
 #include "WallpaperCollect.h"
 #include "Net.h"
+#include "escrollbar.h"
 
+const int scrollBarWidth = 12;
 
 class CMainDlg 
 	: public CDialogImpl<CMainDlg>
@@ -35,6 +37,7 @@ public:
 		COMMAND_HANDLER(IDC_BTN_PAUSE, BN_CLICKED, OnBnClickedBtnPause)
 		COMMAND_ID_HANDLER(ID_Download_CHANNEL, OnDownloadCollect)
 		NOTIFY_HANDLER(IDC_CHANNEL_TREE, TVN_SELCHANGED, OnTvnSelchangedChannelTree)
+		
 		NOTIFY_HANDLER(IDC_LIST_PIC, NM_CLICK, OnNMClickListPic)
 		NOTIFY_HANDLER(IDC_LIST_PIC, NM_RCLICK, OnNMRclickListPic)
 		COMMAND_ID_HANDLER(ID_DOWNLOAD_PICS, OnDownloadPackage)
@@ -89,6 +92,7 @@ protected:
 private: 
 	CMenu menuChannelTree;
 	CChannelTreeCtrl channelTree; 
+	CEScrollBar      channelScrollbar;
 	CPicWallView     picWallView;
 	CEProgressBar    progressTotal;
 	CEProgressBar    progressCur;

@@ -46,7 +46,24 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	//////////////////////////////////////////////////////////////////////////
 	// channelTree
 	channelTree.SubclassWindow(GetDlgItem(IDC_CHANNEL_TREE));
+// 	channelTree.ModifyStyle(0, TVS_NOSCROLL);
 	channelTree.InitWithChannelAtt(channelAtt);
+
+	// channelTree Scrollbar
+/*
+	RECT channelScrollBarRect;
+	::GetWindowRect(channelTree.m_hWnd, &channelScrollBarRect);
+	ScreenToClient(&channelScrollBarRect);
+	channelScrollBarRect.left = channelScrollBarRect.right - scrollBarWidth;
+	channelScrollBarRect.right -= 2;
+	channelScrollBarRect.top += 2;
+	channelScrollBarRect.bottom -= 2;
+	channelScrollbar.Create(m_hWnd, &channelScrollBarRect, NULL, 
+		WS_VISIBLE | WS_CHILD | WS_GROUP);
+	
+	// 关联 channelTree 和对应的 scrollbar
+	channelTree.SetScrollBar(channelScrollbar);
+*/
 
 	// 
 	picWallView.SubclassWindow(GetDlgItem(IDC_LIST_PIC));
@@ -74,10 +91,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	// Button
 	btnChangeDir.SubclassWindow(GetDlgItem(IDC_BTN_CHANGE_DIR));
 	btnPause.SubclassWindow(GetDlgItem(IDC_BTN_PAUSE));
-	long style;
-	style = btnPause.GetWindowLong(GWL_STYLE);
-	style |= WS_DISABLED;
-	btnPause.SetWindowLong(GWL_STYLE, style);
+	btnPause.ModifyStyle(0, WS_DISABLED);
 
 	// SavePath
 	wstring str = gPathInfo->GetSavePathRoot();
@@ -203,6 +217,7 @@ LRESULT CMainDlg::OnTvnSelchangedChannelTree(int /*idCtrl*/, LPNMHDR pNMHDR, BOO
 		netThumbnail.AddTask(iter->thumbUrl, iter->thumbSavePath);
 		SetWallpaperCollectEvent();
 	}
+	bHandled = false;
 
 	return 0;
 }
@@ -427,3 +442,4 @@ void CMainDlg::RefreshControl(UINT uCtlID)
 	ScreenToClient(&rc);     
 	InvalidateRect(&rc); 
 }
+

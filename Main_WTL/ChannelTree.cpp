@@ -6,21 +6,15 @@
 
 
 CChannelTreeCtrl::CChannelTreeCtrl()
+: lastItem(NULL)
+, lastChildItem(NULL)
+, scrollBar(NULL)
+, scrollAble(false)
 {
 }
 
 CChannelTreeCtrl::~CChannelTreeCtrl(void)
 {
-}
-
-BOOL CChannelTreeCtrl::PreTranslateMessage(MSG* pMsg) 
-{
-	return FALSE;
-}
-
-BOOL CChannelTreeCtrl::SubclassWindow( HWND hWnd )
-{
-	return CWindowImpl::SubclassWindow( hWnd );
 }
 
 LRESULT CChannelTreeCtrl::OnRBtnClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -52,9 +46,10 @@ bool CChannelTreeCtrl::InitWithChannelAtt(const TChannelInfo* channelAtt)
 	for (; iter != channelAtt->tree.end(); iter++)
 	{
 		HTREEITEM node = InsertNodeItem(iter->first, "", root);
+		lastItem = node;
 		for (size_t j = 0; j < iter->second.size(); j++)
 		{
-			InsertNodeItem(iter->second[j].first, iter->second[j].second, node);
+			lastChildItem = InsertNodeItem(iter->second[j].first, iter->second[j].second, node);
 		}
 	}
 	return true;
@@ -94,3 +89,71 @@ HTREEITEM CChannelTreeCtrl::InsertRootItem(const string& node)
 	
 	return hItem;
 }
+
+/*
+LRESULT CChannelTreeCtrl::OnReflectedItemExpanded(LPNMHDR pnmh)
+{
+	if (!NeedShowScrollBar())
+		return 0;
+
+	// 更新滚动条
+	//ScrollWindow()
+	UpdateScrollBarPos(0);
+	return 0;
+}
+
+
+void CChannelTreeCtrl::SetScrollBar(const HWND scrollBar)
+{
+	_ASSERT(::IsWindow(scrollBar));
+	this->scrollBar = scrollBar;
+
+	if (NeedShowScrollBar())
+	{
+
+	}
+}
+
+void CChannelTreeCtrl::UpdateScrollBarPos(const int pos)
+{
+	_ASSERT(scrollBar);
+	::SetScrollPos(scrollBar, SB_CTL, pos, TRUE);
+}
+
+bool CChannelTreeCtrl::NeedShowScrollBar()
+{
+	_ASSERT(scrollBar);
+
+	HTREEITEM item = (HTREEITEM)::SendMessage(m_hWnd, TVM_GETNEXTITEM, TVGN_LASTVISIBLE, 0L);
+	RECT lastItemRect = {0};
+	RECT wndRect = {0};
+	GetItemRect(item, &lastItemRect, false);
+	ClientToScreen(&lastItemRect);
+	GetWindowRect(&wndRect);
+	if (wndRect.bottom < lastItemRect.bottom - 2)
+	{
+		::ShowWindow(scrollBar, SW_SHOW);
+		scrollAble = true;
+		//::SetScrollRange(scrollBar, SB_CTL, )
+		return true;
+	}
+	else
+	{
+		::ShowWindow(scrollBar, SW_HIDE);
+		scrollAble = false;
+		return false;
+	}
+}
+
+BOOL CChannelTreeCtrl::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	if (!scrollAble)
+		return true;
+
+	RECT rect = {0};
+	GetWindowRect(&rect);
+	ScreenToClient(&rect);
+	ScrollWindow(0, zDelta, &rect, &rect);
+	UpdateWindow();
+	return true;
+}*/
